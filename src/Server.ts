@@ -19,12 +19,12 @@ class Server {
         this.routes();
     }
 
-    private jsonParse = () =>{
+    private jsonParse(){
         // Adiciona o middleware express.json() para fazer o parse do corpo da requisição
         this.app.use(express.json());
     };
 
-    private routes = ()=> {
+    private routes(){
         this.app.use(router);
     }
 
