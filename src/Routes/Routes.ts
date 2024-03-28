@@ -1,5 +1,4 @@
 import { Request, Response, Router } from "express";
-import * as Controll from "./Controllers/Controllers";
 
 const router: Router = Router();
 
