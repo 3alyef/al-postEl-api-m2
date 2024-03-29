@@ -14,7 +14,7 @@ class Server {
         this.server = createServer(this.app);
         this.socketIo = new Io(this.server, {
             cors: {
-                origin: "*" // Por enquanto, tenho que ainda configurar a origin
+                origin: ALLOW // Por enquanto, tenho que ainda configurar a origin
             }
         });
         this.jsonParse();
