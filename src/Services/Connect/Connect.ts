@@ -11,7 +11,7 @@ class Connect {
         const friendLetTest = this.decryptMessage(friendLetC , KEY, iv);
 
         const friendLet = process.env.FRIEND_LET;
-
+        console.log(friendLetTest, friendLetTest === friendLet)
         if( friendLetTest === friendLet) {
             const { idC, soulNameC, emailC } = req.body;
             
