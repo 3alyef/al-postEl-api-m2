@@ -2,6 +2,11 @@ import { Request, Response } from "express";
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 class Connect {
+    private URL_M2: string;
+    constructor(){
+        this.URL_M2=process.env.URL_M2 || 'needURL'
+    }
+
     public async initialize(req: Request, res: Response ) {
         const { idC, emailC, soulNameC } = req.body;
         const KEY = process.env.KEY || "test";
@@ -9,15 +14,15 @@ class Connect {
         const iv = Buffer.alloc(16);    
         
         const { id, email, soulName } = this.getDecryptKeys(idC, emailC, soulNameC, KEY, iv); // enviar para soketIo e M3
-
+        //console.log(id, email, soulName)
         const token = this.TokenGenerator( id, soulName ); // gera o token
 
 
-        return res.status(200).json({ auth: true, token }).end()
+        return res.status(200).json({ auth: true, token, URL_M2: this.URL_M2 }).end()
   
     }
 
-    private getDecryptKeys( idC: string, soulNameC: string, emailC: string, KEY: string, iv: Buffer ): { id: string, email: string, soulName: string } {
+    private getDecryptKeys( idC: string, emailC: string, soulNameC: string, KEY: string, iv: Buffer ): { id: string, email: string, soulName: string } {
 
         const id = this.decryptMessage(idC, KEY, iv);
         const soulName = this.decryptMessage(soulNameC, KEY, iv);

@@ -8,7 +8,7 @@ router.get("/", (req: Request, res: Response)=>{
     res.send("Hello! Welcome to Al-PostEl M2!")
 })
 
-router.post("/connect", Controll.loginCollection.postLogin)
+router.post("/connect", Controll.connectCollection.postConnect)
 
 
 export { router };

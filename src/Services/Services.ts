@@ -1,3 +1,3 @@
 import { Connect } from "./Connect/Connect"
-
-export { Connect };
+import { Login } from "./Login/Login"
+export { Connect, Login };
