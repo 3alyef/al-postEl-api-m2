@@ -4,7 +4,7 @@ import { router } from "./Routes/Routes";
 import { createServer, Server as ServerHTTP } from 'http';
 import { Server as Io } from "socket.io";
 const cors = require('cors');
-const ALLOW = process.env.ACESS_ALLOW_ORIGIN
+const ALLOW = process.env.ACESS_ALLOW_ORIGIN || "localhost:"
 class Server {
     public app: express.Application;
     public server: ServerHTTP;
@@ -14,7 +14,7 @@ class Server {
         this.server = createServer(this.app);
         this.socketIo = new Io(this.server, {
             cors: {
-                origin: "*" // Por enquanto, tenho que ainda configurar a origin
+                origin: "*" // Por enquanto, tenho ainda que configurar a origin
             }
         });
         this.jsonParse();
@@ -22,12 +22,12 @@ class Server {
         this.routes();
     }
 
-    private jsonParse(){
+    private jsonParse(): void {
         // Adiciona o middleware express.json() para fazer o parse do corpo da requisição
         this.app.use(express.json());
     };
 
-    private cors(){
+    private cors(): void {
         this.app.use((req: Request, res: Response, next)=>{
 
             res.header("Access-Control-Allow-Origin", ALLOW);
@@ -37,7 +37,7 @@ class Server {
         })
     }
 
-    private routes(){
+    private routes(): void {
         this.app.use(router);
     }
 

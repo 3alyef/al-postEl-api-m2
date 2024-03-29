@@ -9,5 +9,4 @@ class ConnectCollection {
 }
 
 const loginCollection = new ConnectCollection();
-
 export { loginCollection };
