@@ -2,11 +2,19 @@ import { Request, Response } from "express";
 const crypto = require("crypto")
 class Connect {
     public async initialize(req: Request, res: Response ) {
-        const { me } = req.body;
-        if( me === "שלוםسلام") {
+
+        const { friendLetC } = req.body;
+        const KEY = process.env.KEY || "test";
+        
+        const iv = Buffer.alloc(16);
+
+        const friendLetTest = this.decryptMessage(friendLetC , KEY, iv);
+
+        const friendLet = process.env.FRIEND_LET;
+
+        if( friendLetTest === friendLet) {
             const { idC, soulNameC, emailC } = req.body;
-            const KEY = process.env.KEY || "test";
-            const iv = Buffer.alloc(16);
+            
 
             const id = this.decryptMessage(idC, KEY, iv);
             const soulName = this.decryptMessage(soulNameC, KEY, iv);
@@ -14,7 +22,7 @@ class Connect {
 
             
             console.log(id, soulName, email );
-            return res.status(200).end()
+            return res.status(200).json({message: "você conseguiu!", friendLetTest}).end()
         } 
         return res.status(401).send({message: "unauthorized!"})
   
