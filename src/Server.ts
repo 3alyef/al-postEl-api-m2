@@ -20,7 +20,9 @@ class Server {
         this.server = createServer(this.app);    
         this.socketIo = new Io(this.server, {
             cors: {
-                origin: "*" // Por enquanto, tenho ainda que configurar a origin
+                origin: "*", // Configurando o CORS para o Socket.IO
+                methods: ["GET", "POST"], // Métodos permitidos
+                credentials: true // Habilitando o envio de credenciais (por exemplo, cookies)
             }
         });
         this.jsonParse();
