@@ -40,7 +40,7 @@ class Server {
     private setupCors(): void {
         this.app.use((req: Request, res: Response, next)=>{
 
-            res.header("Access-Control-Allow-Origin", this.ALLOW );
+            res.header("Access-Control-Allow-Origin", "*"/*this.ALLOW*/ );
             res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
             this.app.use(cors());
             next();
