@@ -2,23 +2,26 @@ import { Request, Response } from "express";
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 class Connect {
-    private URL_M2: string;
+    private SECURE: string;
+    private iv: Buffer;
+    private tokenKey: string;
     constructor(){
-        this.URL_M2=process.env.URL_M2 || 'needURL'
-    }
+        this.SECURE = process.env.KEY || "need secure key"; // chave de criptografia
+        this.iv = Buffer.alloc(16); // decryptMethod
+        this.tokenKey = process.env.TOKEN_KEY || "token key";// chave de criptografia do token
 
+    }
+  
     public async initialize(req: Request, res: Response ) {
         const { idC, emailC, soulNameC } = req.body;
-        const KEY = process.env.KEY || "test";
         
-        const iv = Buffer.alloc(16);    
-        
-        const { id, email, soulName } = this.getDecryptKeys(idC, emailC, soulNameC, KEY, iv); // enviar para soketIo e M3
-        //console.log(id, email, soulName)
+        const { id, email, soulName } = this.getDecryptKeys(idC, emailC, soulNameC, this.SECURE, this.iv); // enviar para soketIo e M3
+
+
         const token = this.TokenGenerator( id, soulName ); // gera o token
 
 
-        return res.status(200).json({ auth: true, token, URL_M2: this.URL_M2 }).end()
+        return res.status(200).json({ auth: true, token, email }).end()
   
     }
 
@@ -39,11 +42,10 @@ class Connect {
     }
 
     private TokenGenerator( userId: string, userSoul: string ): {token: string}{
-        const TOKEN_KEY = process.env.TOKEN_KEY;
         // 1800 30min
-        const token = jwt.sign({userId, userSoul}, TOKEN_KEY, { expiresIn: 60 })
+        const token = jwt.sign( { userId, userSoul }, this.tokenKey, { expiresIn: 30 })
 
-        return token 
+        return token;
     }
 }
 

@@ -12,20 +12,21 @@ class Server {
     public server: ServerHTTP;
     private socketIo: Io;
     private ALLOW: string;
-    private TOKEN_KEY: string;
+    private tokenKey: string;
     constructor(){
-        this.TOKEN_KEY = process.env.TOKEN_KEY || "need key";
-        this.ALLOW = process.env.ACCESS_ALLOW_ORIGIN || "nothing";
+        this.tokenKey = process.env.TOKEN_KEY || "need key";
+        this.ALLOW = process.env.ACCESS_ALLOW_ORIGIN || "http://localhost:1467";
         this.app = express();
         this.server = createServer(this.app);    
-        this.jsonParse();
-        this.cors();
-        this.routes();
         this.socketIo = new Io(this.server, {
             cors: {
                 origin: "*" // Por enquanto, tenho ainda que configurar a origin
             }
         });
+        this.jsonParse();
+        this.setupCors();
+        this.routes();
+        
         this.setupSocketIo();
     }
 
@@ -34,7 +35,7 @@ class Server {
         this.app.use(express.json());
     };
 
-    private cors(): void {
+    private setupCors(): void {
         this.app.use((req: Request, res: Response, next)=>{
 
             res.header("Access-Control-Allow-Origin", this.ALLOW );
@@ -50,8 +51,9 @@ class Server {
 
     private setupSocketIo(){     
         this.socketIo.on("connection", (socket: Socket)=> {
-            const token: string = socket.handshake.headers.authorization || "";// pega o token 
-            const {decoded, error} = this.tokenValidate(token); // Ainda precisa solucionar o problema de desconexão automatica do usuario quando já logado e o token expira enquanto está na seção. (talvez não seja necessário mas...)
+            const token: string = socket.handshake.headers.authorization || ""; // pega o token
+            
+            const {decoded, error} = this.tokenValidate(token);
             if(error){ // Se o token for valido o user tem acesso as outras salas se não a conexão é encerrada
                 const {status, message} = error;
                 console.error('Erro de autenticação:', error.message);
@@ -71,7 +73,7 @@ class Server {
 
     private tokenValidate(token: string): {decoded: any, error: { message: string, status: number} | null }{
         try {
-            const decoded = jwt.verify(token, this.TOKEN_KEY);
+            const decoded = jwt.verify(token, this.tokenKey);
             return { decoded, error: null };
         } catch (err) {
             const error = { message: 'Autenticação falhou', status: 401 };
