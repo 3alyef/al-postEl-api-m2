@@ -1,37 +1,29 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, Application } from "express";
 
 import { router as expressRoutes } from "../express/routes/Routes";
-import { router as socketIoRoutes } from "../socket-io/routes/Routes";
 
+import SocketIo from "./SocketIo/SocketIo"; // Class que cuidará das regras de SocketIo
 
-import { createServer, Server as ServerHTTP } from 'http';
-import { Server as Io, Socket } from "socket.io";
+import { createServer } from 'http';
+
+import { Server as ServerHTTP } from 'http';
 const cors = require("cors");
-const jwt = require("jsonwebtoken");
 
-class Server {
-    
-    public app: express.Application;
-    public server: ServerHTTP;
-    private socketIo: Io;
+class Server extends SocketIo {
+    private app: Application;
     private ALLOW: string;
-    private tokenKey: string;
+    public server: ServerHTTP;
     constructor(){
-        this.tokenKey = process.env.TOKEN_KEY || "need key";
-        this.ALLOW = process.env.ACCESS_ALLOW_ORIGIN || "http://localhost:8282";
-        this.app = express();
-        this.server = createServer(this.app);    
-        this.socketIo = new Io(this.server, {
-            cors: {
-                origin: "*", // Configurando o CORS para o Socket.IO
-                methods: ["GET", "POST"], // Métodos permitidos
-                credentials: true // Habilitando o envio de credenciais (por exemplo, cookies)
-            }
-        });
+        const app = express();     
+        const server = createServer(app);  
+        super( server );
+        this.server = server;
+        this.app = app;  
+        this.ALLOW = process.env.ACCESS_ALLOW_ORIGIN || "http://localhost:8282";    
         this.jsonParse();
         this.setupCors();
         this.routes(); 
-        this.setupSocketIo();
+     
     }
 
     private jsonParse(): void {
@@ -52,39 +44,6 @@ class Server {
     private routes(): void {
         this.app.use(expressRoutes);
     }
-
-    private setupSocketIo(){     
-        this.socketIo.on("connection", (socket: Socket)=> {
-            const token: string = socket.handshake.headers.authorization || ""; // pega o token
-            
-            const {decoded, error} = this.tokenValidate(token);
-            if(error){ // Se o token for valido o user tem acesso as outras salas se não a conexão é encerrada
-                const {status, message} = error;
-                console.error('Erro de autenticação:', error.message);
-                socket.emit('auth_error', { message, status });
-                socket.once('disconnect', () => {
-                    console.log('Cliente desconectado após erro de autenticação');
-                });
-                
-                socket.disconnect(true)
-                
-            } else {
-                console.log(decoded)
-                socketIoRoutes( socket, this.socketIo )
-            }
-        }) 
-    }
-
-    private tokenValidate(token: string): {decoded: any, error: { message: string, status: number} | null }{
-        try {
-            const decoded = jwt.verify(token, this.tokenKey);
-            return { decoded, error: null };
-        } catch (err) {
-            const error = { message: 'Autenticação falhou', status: 401 };
-            return { decoded: null, error };
-        }
-    }
-
 
 }
 

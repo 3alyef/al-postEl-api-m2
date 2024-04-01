@@ -1,21 +1,14 @@
 import { Server as Io, Socket } from "socket.io";
-const jwt = require("jsonwebtoken");
 import { router as socketIoRoutes } from "../../socket-io/routes/Routes";
 import { Server as ServerHTTP } from 'http';
-import { Request, Response, Application } from "express";
-
+const jwt = require("jsonwebtoken");
 
 abstract class SocketIo{
     private socketIo: Io;
-    private ALLOW: string;
     private tokenKey: string;
-    private app: Application;
-    private server: ServerHTTP;
-    constructor(socketIo: Io, createServer: (app: Application)=> ServerHTTP, express: ()=> Application){
-        this.socketIo = socketIo;
-        this.app = express();
-        this.server = createServer(this.app);    
-        this.socketIo = new Io(this.server, {
+    constructor( server: ServerHTTP ){
+          
+        this.socketIo = new Io( server, {
             cors: {
                 origin: "*", // Configurando o CORS para o Socket.IO
                 methods: ["GET", "POST"], // Métodos permitidos
@@ -24,7 +17,8 @@ abstract class SocketIo{
         });
 
         this.tokenKey = process.env.TOKEN_KEY || "need key";
-        this.ALLOW = process.env.ACCESS_ALLOW_ORIGIN || "http://localhost:8282";
+
+        this.setupSocketIo();
     }
 
     private setupSocketIo(){     
@@ -58,7 +52,6 @@ abstract class SocketIo{
             return { decoded: null, error };
         }
     }
-
 
 }
 
