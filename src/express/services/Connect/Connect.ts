@@ -18,7 +18,7 @@ class Connect {
         const { id, email, soulName } = this.getDecryptKeys(idC, emailC, soulNameC, this.SECURE, this.iv); // enviar para soketIo e M3
 
 
-        const token = this.TokenGenerator( id, soulName ); // gera o token
+        const token = this.TokenGenerator( id, soulName, email ); // gera o token
 
 
         return res.status(200).json({ auth: true, token, email }).end()
@@ -41,9 +41,9 @@ class Connect {
         return decrypted;
     }
 
-    private TokenGenerator( userId: string, userSoul: string ): {token: string}{
+    private TokenGenerator( userId: string, userSoul: string, email:string ): {token: string}{
         // 1800 => 30min  30 => 0.5min
-        const token = jwt.sign( { userId, userSoul }, this.tokenKey, { expiresIn: 1800 })
+        const token = jwt.sign( { userId, userSoul, email }, this.tokenKey, { expiresIn: 1800 })
 
         return token;
     }

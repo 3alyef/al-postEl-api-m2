@@ -3,10 +3,23 @@ import { router as socketIoRoutes } from "./routes/Routes";
 import { Server as ServerHTTP } from 'http';
 const jwt = require("jsonwebtoken");
 
+interface decodedToken {
+    userId: string;
+    userSoul: string;
+    email: string;
+    iat: number;
+    exp: number;
+
+}
+
+const userSocketMap = new Map();
+
 abstract class SocketIo{
     private socketIo: Io;
     private tokenKey: string;
-    constructor( server: ServerHTTP ){        
+    private userSocketMap: Map<string, Socket>
+    constructor( server: ServerHTTP ){     
+        this.userSocketMap = new Map();
         this.socketIo = new Io( server, {
             cors: {
                 origin: "*", // Configurando o CORS para o Socket.IO
@@ -20,8 +33,17 @@ abstract class SocketIo{
 
     private setupSocketIo(){     
         this.socketIo.on("connection", (socket: Socket)=> {
-            const token: string = socket.handshake.headers.authorization || ""; // pega o token
+
+         
             
+
+            const token: string = socket.handshake.headers.authorization || ""; // pega o token
+
+
+            userSocketMap.set(token, socket); // linka o link criptografado com o usuário
+
+
+
             const {decoded, error} = this.tokenValidate(token);
             // Descriptografa o token e verifica a validade
 
@@ -39,12 +61,19 @@ abstract class SocketIo{
                 
             } else {
                 console.log(decoded);
-                socketIoRoutes( socket, this.socketIo ); // Envia para o routes.ts
+                if( decoded?.userSoul){
+                    socketIoRoutes( socket, this.socketIo, decoded, token,  userSocketMap); // Envia para o routes.ts
+                }        
             }
+
+            socket.on('disconnect', () => {
+                // Remove a entrada do mapeamento quando o usuário se desconecta
+                userSocketMap.delete(token);
+            });
         }) 
     }
 
-    private tokenValidate(token: string): {decoded: any, error: { message: string, status: number} | null }{
+    private tokenValidate(token: string): {decoded: decodedToken | null, error: { message: string, status: number} | null }{
         try {
             const decoded = jwt.verify(token, this.tokenKey);
             return { decoded, error: null };

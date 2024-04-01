@@ -1,2 +1,3 @@
 import { searchUserController } from "./SearchUserController/SearchUserController";
-export { searchUserController };
+import { joinRoomController } from "./JoinRoomController/JoinRoomController";
+export { searchUserController, joinRoomController };
