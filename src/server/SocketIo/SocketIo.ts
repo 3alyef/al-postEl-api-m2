@@ -1,21 +1,18 @@
-// const express = require("express");
-import express, { Request, Response } from "express";
-import { router } from "./Routes/Routes";
-import { routerSocket } from "./Routes/Routes_Socket_Io";
-import { createServer, Server as ServerHTTP } from 'http';
 import { Server as Io, Socket } from "socket.io";
-const cors = require("cors");
 const jwt = require("jsonwebtoken");
-class Server {
-    
-    public app: express.Application;
-    public server: ServerHTTP;
+import { router as socketIoRoutes } from "../../socket-io/routes/Routes";
+import { Server as ServerHTTP } from 'http';
+import { Request, Response, Application } from "express";
+
+
+abstract class SocketIo{
     private socketIo: Io;
     private ALLOW: string;
     private tokenKey: string;
-    constructor(){
-        this.tokenKey = process.env.TOKEN_KEY || "need key";
-        this.ALLOW = process.env.ACCESS_ALLOW_ORIGIN || "http://localhost:1467";
+    private app: Application;
+    private server: ServerHTTP;
+    constructor(socketIo: Io, createServer: (app: Application)=> ServerHTTP, express: ()=> Application){
+        this.socketIo = socketIo;
         this.app = express();
         this.server = createServer(this.app);    
         this.socketIo = new Io(this.server, {
@@ -25,30 +22,9 @@ class Server {
                 credentials: true // Habilitando o envio de credenciais (por exemplo, cookies)
             }
         });
-        this.jsonParse();
-        this.setupCors();
-        this.routes();
-        
-        this.setupSocketIo();
-    }
 
-    private jsonParse(): void {
-        // Adiciona o middleware express.json() para fazer o parse do corpo da requisição
-        this.app.use(express.json());
-    };
-
-    private setupCors(): void {
-        this.app.use((req: Request, res: Response, next)=>{
-
-            res.header("Access-Control-Allow-Origin", "*"/*this.ALLOW*/ );
-            res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-            this.app.use(cors());
-            next();
-        })
-    }
-
-    private routes(): void {
-        this.app.use(router);
+        this.tokenKey = process.env.TOKEN_KEY || "need key";
+        this.ALLOW = process.env.ACCESS_ALLOW_ORIGIN || "http://localhost:8282";
     }
 
     private setupSocketIo(){     
@@ -68,7 +44,7 @@ class Server {
                 
             } else {
                 console.log(decoded)
-                routerSocket( socket, this.socketIo )
+                socketIoRoutes( socket, this.socketIo )
             }
         }) 
     }
@@ -87,5 +63,4 @@ class Server {
 }
 
 
-
-export { Server };
+export default SocketIo;

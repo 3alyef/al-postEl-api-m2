@@ -1,6 +1,6 @@
 import { Socket, Server } from "socket.io";
-import * as Controll from "./Controllers_Socket_Io/Controllers_SoketIo";
-function routerSocket( socket: Socket, io: Server ) {
+import * as Controll from "./controllers/Controllers";
+function router( socket: Socket, io: Server ) {
     
     socket.on("createNewRoom", ()=>{
         
@@ -9,4 +9,6 @@ function routerSocket( socket: Socket, io: Server ) {
     
 }
 
-export { routerSocket };
+
+
+export { router };
