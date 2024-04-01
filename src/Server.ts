@@ -1,8 +1,8 @@
 import express, { Request, Response, Application } from "express";
 
-import { router as expressRoutes } from "../express/routes/Routes";
+import { router as expressRoutes } from "./express/routes/Routes";
 
-import SocketIo from "./SocketIo/SocketIo"; // Class que cuidará das regras de SocketIo
+import SocketIo from "./socketIo/SocketIo"; // Class que cuidará das regras de SocketIo
 
 import { createServer } from 'http';
 
