@@ -17,7 +17,9 @@ const userSocketMap = new Map();
 abstract class SocketIo{
     private socketIo: Io;
     private tokenKey: string;
-    private userSocketMap: Map<string, Socket>
+
+    private userSocketMap: Map<string, Socket>; // ||HERE
+
     constructor( server: ServerHTTP ){     
         this.userSocketMap = new Map();
         this.socketIo = new Io( server, {
@@ -34,18 +36,12 @@ abstract class SocketIo{
     private setupSocketIo(){     
         this.socketIo.on("connection", (socket: Socket)=> {
 
-         
-            
-
             const token: string = socket.handshake.headers.authorization || ""; // pega o token
-
-
-            userSocketMap.set(token, socket); // linka o link criptografado com o usuário
-
-
 
             const {decoded, error} = this.tokenValidate(token);
             // Descriptografa o token e verifica a validade
+
+            userSocketMap.set(decoded?.userSoul, socket); // linka o userSoul da pessoa no sitema
 
             if(error){ 
                 // Se o token for válido o user tem acesso as outras salas se não a conexão é encerrada
@@ -62,7 +58,7 @@ abstract class SocketIo{
             } else {
                 console.log(decoded);
                 if( decoded?.userSoul){
-                    socketIoRoutes( socket, this.socketIo, decoded, token,  userSocketMap); // Envia para o routes.ts
+                    socketIoRoutes( socket, this.socketIo, decoded, userSocketMap); // Envia para o routes.ts // ||HERE
                 }        
             }
 

@@ -11,7 +11,7 @@ interface decodedToken {
 
 
 class SearchUserController{
-    searchUser( socket: Socket, io: Server, routeName: string, decoded: decodedToken, token: string, userSocketMap:Map<string, Socket>){
+    searchUser( socket: Socket, io: Server, routeName: string, decoded: decodedToken, userSocketMap:Map<string, Socket>){ // ||HERE
         socket.on(routeName, async ({ email }: { email: string })=>{
             // o usuario vai procurar um usuario pelo email, / Enviando uma requisição para M1 para buscar pelo userSoul correspondente a esse email /   
 
@@ -22,25 +22,24 @@ class SearchUserController{
                 const content: { found: boolean, userSoul: string | null, message: string } = await new SearchUserByEmail().initialize( email );
 
                 const friendName = content.userSoul;
-                const socketTo = userSocketMap.get(token); // busca o usuario que fez a requisição
+                
 
-                if(content.found){
-                    // Se foi encontrado
-                    
-                    
-                    if (socketTo) {
-                        // Envia a mensagem para o usuário específico
-                        socket.emit(`${friendName}`);
-                        
-                    }
+                if(content.found){     
+                    // Envia a mensagem para o usuário específico contendo o friendName requisitado
+
+                    // ||HERE------------------
+
+                    if(userSocketMap.get(decoded.userSoul)){
+                        console.log("here",userSocketMap.get(decoded.userSoul))
+                        io.emit(routeName ,`${friendName}`); 
+                    }                 
                     
                 } else {
-                    // Se não
-                    if (socketTo) {
-                        // Envia a mensagem para o usuário específico
-                        socket.emit(`${friendName}`);
-                        
-                    }
+                    // Envia a mensagem para o usuário específico
+
+                    // ||HERE ------------------
+                    socket.emit(routeName, `Usuário não encontrado`);                 
+                    
                     throw new Error("Usuário não encontrado");
                 }
                 

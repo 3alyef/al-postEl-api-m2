@@ -11,10 +11,10 @@ interface decodedToken {
 }
 
 
-function router( socket: Socket, io: Server, decoded: decodedToken, token:string, userSocketMap:Map<string, Socket> ) {
+function router( socket: Socket, io: Server, decoded: decodedToken, userSocketMap:Map<string, Socket> ) { // ||HERE
 
-    Controll.searchUserController.searchUser( socket, io,"searchByEmail", decoded, token,  userSocketMap);
-    Controll.joinRoomController.joinRoom( socket, io, "joinRoom", decoded, token,  userSocketMap);
+    Controll.searchUserController.searchUser( socket, io,"searchByEmail", decoded, userSocketMap);
+    Controll.joinRoomController.joinRoom( socket, io, "joinRoom", decoded,  userSocketMap);
     
 }
 
