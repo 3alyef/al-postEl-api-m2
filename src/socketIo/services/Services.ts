@@ -1,2 +1,3 @@
 import { SearchUserByEmail } from "./Login/SearchUserByEmail";
-export { SearchUserByEmail };
+import { TokenValidate } from "./TokenValidate/TokenValidate";
+export { SearchUserByEmail, TokenValidate };

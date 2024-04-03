@@ -1,6 +1,7 @@
 import { Server as Io, Socket } from "socket.io";
 import { router as socketIoRoutes } from "./routes/Routes";
 import { Server as ServerHTTP } from 'http';
+import { TokenValidate } from "./services/Services";
 const jwt = require("jsonwebtoken");
 
 interface decodedToken {
@@ -9,18 +10,18 @@ interface decodedToken {
     email: string;
     iat: number;
     exp: number;
-
 }
-
-const userSocketMap = new Map();
 
 abstract class SocketIo{
     private socketIo: Io;
     private tokenKey: string;
 
-    private userSocketMap: Map<string, Socket[]>; // ||HERE
+    private userSocketMap: Map<string, Socket[]>; 
+
+    private userRoomMap: Map<string, string[]>;
 
     constructor( server: ServerHTTP ){     
+        this.userRoomMap = new Map<string, string[]>();
         this.userSocketMap = new Map<string, Socket[]>();
         this.socketIo = new Io( server, {
             cors: {
@@ -38,11 +39,12 @@ abstract class SocketIo{
             console.log("novo usuário")
             const token: string = socket.handshake.headers.authorization || ""; // pega o token
 
-            const {decoded, error} = this.tokenValidate(token);
+            const {decoded, error} = new TokenValidate().tokenValidate(token);
             // Descriptografa o token e verifica a validade
             if(decoded){
                 const userSoul = decoded.userSoul;
-                let sockets = this.userSocketMap.get(userSoul);
+
+                let sockets: Socket[] | undefined = this.userSocketMap.get(userSoul);
                 if(!sockets){
                     // Se não existir, inicialize um novo array
                     sockets = [];
@@ -58,6 +60,12 @@ abstract class SocketIo{
                     if (index !== -1) { // !== -1 quer dizer que existe
                         sockets.splice(index, 1);
                         console.log('Socket removido do array de sockets.');
+                    }
+
+                    // Se não houver mais sockets associados ao soulName, remova o soulName do mapeamento
+                    if (sockets.length === 0) {
+                        this.userSocketMap.delete(userSoul);
+                        console.log(`SoulName ${userSoul} removido do mapeamento.`);
                     }
                 });
             }
@@ -76,26 +84,20 @@ abstract class SocketIo{
                 
             } else {
                 console.log(decoded);
-                if( decoded?.userSoul){
-                    socketIoRoutes( socket, this.socketIo, decoded, this.userSocketMap); // Envia para o routes.ts 
+                if( decoded?.userSoul ){
+                    socketIoRoutes( socket, this.socketIo, this.userRoomMap, decoded, this.userSocketMap ); 
+                    // Envia para o routes.ts 
                 }        
             }
-
             
         }) 
-    }
-
-    private tokenValidate(token: string): {decoded: decodedToken | null, error: { message: string, status: number} | null }{
-        try {
-            const decoded = jwt.verify(token, this.tokenKey);
-            return { decoded, error: null };
-        } catch (err) {
-            const error = { message: 'Autenticação falhou', status: 401 };
-            return { decoded: null, error };
-        }
     }
 
 }
 
 
 export default SocketIo;
+
+/* O userRoomMap será responsável por guardar as informações da sala, será mais ou menos assim:
+    ==> [roomName1=>[[userSoul1],[userSoul2]], roomName2=>[[userSoul1],[userSoul2]]]; Assim só ingressa na sala quem tem o mesmo userSoul já pre preenchido
+*/

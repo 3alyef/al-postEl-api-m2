@@ -16,14 +16,16 @@ interface Message {
     message: string 
 }
 
-
 class SearchUserController{
     searchUser( socket: Socket, io: Server, routeName: string, decoded: decodedToken, userSocketMap:Map<string, Socket[]>){
         socket.on(routeName, async ({ email }: { email: string })=>{
-            // o usuario vai procurar um usuario pelo email, / Enviando uma requisição para M1 para buscar pelo userSoul correspondente a esse email /   
+            // o usuario vai procurar um "friend" pelo email, / Enviando uma requisição para M1 para buscar pelo userSoul correspondente a esse email /   
 
             try {
-                if(decoded.email === email)throw new Error("O email procurado não pode ser igual ao email de origem.");
+                if(decoded.email === email){
+                    socket.emit(routeName, "O email procurado não pode ser igual ao email de origem." )
+                    throw new Error("O email procurado não pode ser igual ao email de origem.");           
+                }
 
                 const content: Message = await new SearchUserByEmail().initialize( email );
 
@@ -41,6 +43,8 @@ class SearchUserController{
                     
                 } else {
                     // Caso não for encontrado
+
+                    // sockets is the same than => [[{}],[{}],[{}]]
                     const sockets = userSocketMap.get(decoded.userSoul);
                     if(sockets){
                         sockets.forEach((socketElement) => {
@@ -49,14 +53,12 @@ class SearchUserController{
                             
                         });
                     }   
-                                   
-                    
+                                               
                     throw new Error("Usuário não encontrado");
                 }
                 
             } catch(error){
-                console.log(error)
-                socket.emit("Ocorreu um erro ao buscar o usuário", {error})
+                console.log(error)            
             }
 
             // Se tudo ocorrer bem, (usuário encontrado) o userSoul é enviado de volta para o user1, se ele quiser iniciar uma conversa com o usuario2 (o buscado) ele vai enviar de volta o soulName para a criação da sala. (se já existir a sala ele só reetorna para a sala já criada...)
