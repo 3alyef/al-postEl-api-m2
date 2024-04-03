@@ -18,10 +18,10 @@ abstract class SocketIo{
     private socketIo: Io;
     private tokenKey: string;
 
-    private userSocketMap: Map<string, Socket>; // ||HERE
+    private userSocketMap: Map<string, Socket[]>; // ||HERE
 
     constructor( server: ServerHTTP ){     
-        this.userSocketMap = new Map();
+        this.userSocketMap = new Map<string, Socket[]>();
         this.socketIo = new Io( server, {
             cors: {
                 origin: "*", // Configurando o CORS para o Socket.IO
@@ -35,14 +35,33 @@ abstract class SocketIo{
 
     private setupSocketIo(){     
         this.socketIo.on("connection", (socket: Socket)=> {
-
+            console.log("novo usuário")
             const token: string = socket.handshake.headers.authorization || ""; // pega o token
 
             const {decoded, error} = this.tokenValidate(token);
             // Descriptografa o token e verifica a validade
+            if(decoded){
+                const userSoul = decoded.userSoul;
+                let sockets = this.userSocketMap.get(userSoul);
+                if(!sockets){
+                    // Se não existir, inicialize um novo array
+                    sockets = [];
+                    this.userSocketMap.set(userSoul, sockets);
 
-            userSocketMap.set(decoded?.userSoul, socket); // linka o userSoul da pessoa no sitema
+                }
+                // Adicione o socket atual ao array de sockets
+                sockets.push(socket); 
 
+                socket.on('disconnect', () => {
+                    // Remove a entrada do mapeamento quando o usuário se desconect
+                    const index = sockets.indexOf(socket); // Procura o index do socket que está saindo
+                    if (index !== -1) { // !== -1 quer dizer que existe
+                        sockets.splice(index, 1);
+                        console.log('Socket removido do array de sockets.');
+                    }
+                });
+            }
+            
             if(error){ 
                 // Se o token for válido o user tem acesso as outras salas se não a conexão é encerrada
                 const {status, message} = error;
@@ -58,14 +77,11 @@ abstract class SocketIo{
             } else {
                 console.log(decoded);
                 if( decoded?.userSoul){
-                    socketIoRoutes( socket, this.socketIo, decoded, userSocketMap); // Envia para o routes.ts // ||HERE
+                    socketIoRoutes( socket, this.socketIo, decoded, this.userSocketMap); // Envia para o routes.ts 
                 }        
             }
 
-            socket.on('disconnect', () => {
-                // Remove a entrada do mapeamento quando o usuário se desconecta
-                userSocketMap.delete(token);
-            });
+            
         }) 
     }
 

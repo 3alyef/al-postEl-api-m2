@@ -1,3 +1,8 @@
+interface Message {
+    found: boolean,
+    userSoul: string | null, 
+    message: string 
+}
 
 class SearchUserByEmail {
     private URL_M1;
@@ -5,7 +10,7 @@ class SearchUserByEmail {
         this.URL_M1 = process.env.ACCESS_ALLOW_ORIGIN || "need M1";
     }
 
-    public async initialize( email: string ) {
+    public async initialize( email: string ): Promise< Message >{
         const body = JSON.stringify({email})
 
         try {
@@ -17,14 +22,16 @@ class SearchUserByEmail {
                 body: body
             });
 
-            if (!response.ok) {
-                throw new Error(`Falha na solicitação: ${response.statusText}`);
-            }  
+            if (response.status === 500) {
+                throw new Error(`status ${ response.status }`);
+            } else if(response.status === 401){
+                return { found: false, userSoul: null, message: "user not found" }
+            }
 
             return await response.json();
         } catch (error) {
-            console.error('Erro ao conectar com M2:', error);
-            return;
+            console.error('Erro ao conectar com M2: ', error);
+            return { found: false, userSoul: null, message: "internal server error" };
         }
     
     }

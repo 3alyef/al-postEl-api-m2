@@ -12,7 +12,7 @@ interface decodedToken {
 
 
 class JoinRoomController {
-    joinRoom(socket: Socket, io: Server, routeName: string, decoded: decodedToken, userSocketMap:Map<string, Socket>){ // ||HERE
+    joinRoom(socket: Socket, io: Server, routeName: string, decoded: decodedToken, userSocketMap:Map<string, Socket[]>){ // ||HERE
         socket.on(routeName, async ({friendName}: {friendName: string})=>{
 
             /* Procurar pelo socket correspondente ao token no userSocketMap and so send to respectful user */

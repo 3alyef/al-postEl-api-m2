@@ -1,5 +1,6 @@
 import { Socket, Server } from "socket.io";
 import { SearchUserByEmail } from "../../../services/Services";
+
 interface decodedToken {
     userId: string;
     userSoul: string;
@@ -9,36 +10,46 @@ interface decodedToken {
 
 }
 
+interface Message {
+    found: boolean,
+    userSoul: string | null, 
+    message: string 
+}
+
 
 class SearchUserController{
-    searchUser( socket: Socket, io: Server, routeName: string, decoded: decodedToken, userSocketMap:Map<string, Socket>){ // ||HERE
+    searchUser( socket: Socket, io: Server, routeName: string, decoded: decodedToken, userSocketMap:Map<string, Socket[]>){
         socket.on(routeName, async ({ email }: { email: string })=>{
             // o usuario vai procurar um usuario pelo email, / Enviando uma requisição para M1 para buscar pelo userSoul correspondente a esse email /   
 
             try {
-
                 if(decoded.email === email)throw new Error("O email procurado não pode ser igual ao email de origem.");
 
-                const content: { found: boolean, userSoul: string | null, message: string } = await new SearchUserByEmail().initialize( email );
+                const content: Message = await new SearchUserByEmail().initialize( email );
 
                 const friendName = content.userSoul;
                 
-
-                if(content.found){     
-                    // Envia a mensagem para o usuário específico contendo o friendName requisitado
-
-                    // ||HERE------------------
-
-                    if(userSocketMap.get(decoded.userSoul)){
-                        console.log("here",userSocketMap.get(decoded.userSoul))
-                        io.emit(routeName ,`${friendName}`); 
-                    }                 
+                if(content.found){  
+                    const sockets = userSocketMap.get(decoded.userSoul);
+                    if(sockets){
+                        sockets.forEach((socketElement) => {
+                            // Envia a mensagem para todos os /'nicknames" que detenham o mesmo soulName
+                            socketElement.emit(routeName ,`${friendName}`);
+                            
+                        });
+                    }            
                     
                 } else {
-                    // Envia a mensagem para o usuário específico
-
-                    // ||HERE ------------------
-                    socket.emit(routeName, `Usuário não encontrado`);                 
+                    // Caso não for encontrado
+                    const sockets = userSocketMap.get(decoded.userSoul);
+                    if(sockets){
+                        sockets.forEach((socketElement) => {
+                            // Envia a mensagem para todos os "nicknames" que detenham o mesmo soulName
+                            socketElement.emit(routeName, `Usuário não encontrado`);  
+                            
+                        });
+                    }   
+                                   
                     
                     throw new Error("Usuário não encontrado");
                 }
