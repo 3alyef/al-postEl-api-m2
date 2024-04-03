@@ -1,4 +1,5 @@
 import { Socket, Server } from "socket.io";
+import { EncryptJWT } from "../../../services/Services"
 interface decodedToken {
     userId: string;
     userSoul: string;
@@ -20,6 +21,7 @@ class JoinRoomController {
     joinRoom(
         socket: Socket, 
         io: Server, 
+        userRoomMap: Map<string, string[]>, 
         routeName: string, 
         decoded: decodedToken, 
         userSocketMap:Map<string, Socket[]>
@@ -41,16 +43,16 @@ class JoinRoomController {
 
                 // Inclui todas as instâncias de fromUser a roomName
                 socketsFromUser?.forEach((socketElement, i)=>{
-                    if( i === 0 ){
-                        // Adiciona o userSoul do user em questao
-                        this.usersToRoom.push(fromUser);
-                        
-                    };
+                    socketElement.join(roomName)
 
                     // Enviará uma mensagem: "Connectado a uma nova sala nome: `randomNumber2 + friendName + El + userSoul + randomNumber2`"
 
                     socketElement.emit(routeName, `Conectado a uma nova sala nome: ${roomName}`);
-                   
+                    if( i === 0 ){
+                        // Adiciona o userSoul do user em questao
+                        this.usersToRoom.push(fromUser);
+                        
+                    }
 
                     socketElement.leave(roomName);
                     
@@ -58,11 +60,11 @@ class JoinRoomController {
 
                 // Inclui todas as instâncias de friendSocket
                 socketsFromFriend.forEach((socketElement, i)=>{
-                    
+                    socketElement.join(roomName)
                     if( i === 0 ){
                         // Adiciona o userSoul do user em questao
                         this.usersToRoom.push(fromUser);
-                    };
+                    }
 
                     // Enviará uma mensagem: "Connectado a uma nova sala nome: `randomNumber2 + friendName + El + userSoul + randomNumber2`"
                     
@@ -72,7 +74,10 @@ class JoinRoomController {
                        
                 })
 
-                io.emit("updateLinks", {update: true, roomName: roomName, users: this.usersToRoom, token: this.token})
+                const content = new EncryptJWT().TokenGenerator({update: true, roomName, users: this.usersToRoom, token: this.token})
+
+                // It works on this way: SERVER => CLIENT => SERVER
+                socket.emit( "updateLinks", content );
              
             } else {
                 // Em caso o user2 não estiver online

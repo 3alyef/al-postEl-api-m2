@@ -4,7 +4,7 @@ import { Server as ServerHTTP } from 'http';
 import { TokenValidate } from "./services/Services";
 const jwt = require("jsonwebtoken");
 
-interface decodedToken {
+type DecodedData  = {
     userId: string;
     userSoul: string;
     email: string;
@@ -35,11 +35,13 @@ abstract class SocketIo{
     }
 
     private setupSocketIo(){     
+        
         this.socketIo.on("connection", (socket: Socket)=> {
             console.log("novo usuário")
             const token: string = socket.handshake.headers.authorization || ""; // pega o token
+            
 
-            const {decoded, error} = new TokenValidate().tokenValidate(token);
+            const {decoded, error} = new TokenValidate<DecodedData>().tokenValidate(token);
             // Descriptografa o token e verifica a validade
             if(decoded){
                 const userSoul = decoded.userSoul;
@@ -89,6 +91,10 @@ abstract class SocketIo{
                     // Envia para o routes.ts 
                 }        
             }
+
+            this.socketIo.of("/").adapter.on("create-room", (room: string) => {
+                console.log(`room ${room} was created`);
+              });
             
         }) 
     }

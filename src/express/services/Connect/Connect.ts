@@ -41,7 +41,7 @@ class Connect {
         return decrypted;
     }
 
-    private TokenGenerator( userId: string, userSoul: string, email:string ): {token: string}{
+    private TokenGenerator( userId: string, userSoul: string, email:string ): string {
         // 1800 => 30min  30 => 0.5min
         const token = jwt.sign( { userId, userSoul, email }, this.tokenKey, { expiresIn: 3600 })
 

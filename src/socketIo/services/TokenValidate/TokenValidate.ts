@@ -1,23 +1,19 @@
 const jwt = require("jsonwebtoken");
+/*
+*/
 
-interface decodedToken {
-    userId: string;
-    userSoul: string;
-    email: string;
-    iat: number;
-    exp: number;
-}
+type DecodedToken<T> = T | null;
 
-class TokenValidate{
+class TokenValidate<T>{
 
     private tokenKey: string;
     constructor(){
         this.tokenKey = process.env.TOKEN_KEY || "need key";
     }
 
-    tokenValidate(token: string): {decoded: decodedToken | null, error: { message: string, status: number} | null }{
+    tokenValidate(token: string): {decoded: DecodedToken<T>, error: { message: string, status: number} | null }{
         try {
-            const decoded = jwt.verify(token, this.tokenKey);
+            const decoded = jwt.verify(token, this.tokenKey) as T;
             return { decoded, error: null };
         } catch (err) {
             const error = { message: 'Autenticação falhou', status: 401 };

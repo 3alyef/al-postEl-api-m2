@@ -28,16 +28,16 @@ function router(
     Controll.joinRoomController.joinRoom( 
         socket, 
         io, 
+        userRoomMap, 
         "joinRoom", 
         decoded,  
         userSocketMap
     );
 
-    Controll.updateLinksController.updateLinks(
+    Controll.updateLinksController.updateLinks( // Isso terá que ser implementado com o auxilio do client
         socket, 
         io, 
         "updateLinks", 
-        decoded, 
         userRoomMap
     )
 

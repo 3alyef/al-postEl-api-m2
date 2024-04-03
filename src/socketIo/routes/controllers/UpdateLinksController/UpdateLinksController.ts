@@ -1,6 +1,6 @@
 import { Socket, Server } from "socket.io";
 import { TokenValidate } from "../../../services/Services";
-interface decodedToken {
+type DecodedToken = {
     userId: string;
     userSoul: string;
     email: string;
@@ -8,6 +8,14 @@ interface decodedToken {
     exp: number;
 
 }
+
+type Content = {
+    update: boolean;
+    roomName: string;
+    users: string[];
+    token: string;
+};
+
 
 class UpdateLinksController {
     private token: string;
@@ -18,9 +26,58 @@ class UpdateLinksController {
         socket: Socket, 
         io: Server, 
         routeName: string, 
-        decoded: decodedToken, 
         userRoomMap:Map<string, string[]>     
-    ){  /*
+    ){      
+        socket.use(([room, content] , next)=>{
+
+            if( room = routeName){
+                console.log("sala: ", room)
+                console.log("cotent: ", content)
+            }
+            
+            next();
+        })
+        socket.on(routeName, async (content: { token: string }) => {
+            const { decoded, error } = new TokenValidate<Content>().tokenValidate(content.token);
+            const data = decoded;
+            console.log('tentativa de adicao de sala', io.sockets.adapter.rooms)
+            if (data?.roomName) { 
+                io.to(data.roomName).emit('shalom')
+                console.log("Sala atualizada:", data.roomName);
+                
+                // Agora que o nome da sala foi atualizado, você pode acessar a sala aqui
+                socket.on(data.roomName, (anotherSocket) => {
+                    socket.to(data.roomName).emit("Hello")
+                    console.log("Oi........")
+                    const token: string = socket.handshake.headers.authorization || "";
+                    const { decoded, error } = new TokenValidate<DecodedToken>().tokenValidate(token);
+
+                    if (decoded && data.users.includes(decoded.userSoul)) {
+                        console.log("Usuário ingressou na sala: " + data.roomName);
+                    } else {
+                        socket.disconnect(true);
+                        console.log("Token inválido!");
+                    }
+                });
+
+                console.log(io.sockets.adapter.rooms)
+            } else {
+                console.log("Erro ao receber o nome da sala no evento 'updateLinks'");
+            }
+        });
+    
+            
+        
+    }
+
+   
+
+}
+
+const updateLinksController = new UpdateLinksController()
+export { updateLinksController };
+
+/*
         const setupRooms = () => {          
             userRoomMap.forEach((users, roomName) => {       
                 socket.on(roomName, () => {
@@ -38,29 +95,3 @@ class UpdateLinksController {
                 // Configurar quando o M3 estiver em execução...
         setupRooms();
         */
-        socket.on(routeName, ({update, roomName, users, token}: {update: boolean, roomName:string, users: string[], token: string}) => {
-
-            if(update && token === this.token){
-                console.log("tentativa de atualização");
-                socket.on(roomName, (socket: Socket)=>{
-                    const token: string = socket.handshake.headers.authorization || ""; // pega o token
-
-                    const {decoded, error} = new TokenValidate().tokenValidate(token);
-                    if(decoded?.userSoul){
-                        if(users.includes(decoded?.userSoul)){
-                            console.log("Usuário ingressou na sala: "+roomName)
-                        }
-                    } else {
-                        socket.disconnect(true);
-                        console.log("token inválido!")
-                    }
-                })
-            }
-        });
-        
-    }
-
-}
-
-const updateLinksController = new UpdateLinksController()
-export { updateLinksController };
