@@ -5,56 +5,86 @@ import { Socket, Server } from "socket.io";
 class NewRoomController {
     newRoom(
         socket: Socket, 
-        io: Server, 
         routeName: string, 
-        userSocketMap:Map<string, Socket[]>
+        userSocketMap:Map<string, Socket[]>,
+        roomsExpectUsers: Map<string, string[]>
         ){ 
 
         socket.on(routeName, async ({friendName}: {friendName: string})=>{
             // 1 - Se o user2 estiver conectado ele vai criar uma sala com `randomNumber2 + friendName + El + userSoul + randomNumber2`, enviando a mensagem em seguida para a sala e depois para M3.
             const decoded = socket.auth;
             const fromUser = decoded.userSoul;
-            
-            const socketsFromFriend = userSocketMap.get(friendName);
-            const socketsFromUser = userSocketMap.get(fromUser);
-            if(socketsFromFriend){
-                //console.log(socketsFromFriend, socketsFromUser)
-                const randomRoomNumber1 = Math.floor(Math.random() * 101); // Gera um número entre 0 e 100
 
-                const randomRoomNumber2 = Math.floor(Math.random() * 101); // Gera um número entre 0 e 100
+            try{
+                if(friendName === fromUser){ 
+                    const error = "O email de origem não pode ser igual ao email de destino!";
+
+                    socket.emit(routeName, error);
+                    throw new Error(error);
+                }
+
+                const socketsFromFriend = userSocketMap.get(friendName);
+
+                const socketsFromUser = userSocketMap.get(fromUser);
+                //console.log(socketsFromFriend, socketsFromUser);
+
+                const randomRoomNumber1 = Math.floor(Math.random() * 101); 
+
+                const randomRoomNumber2 = Math.floor(Math.random() * 101); 
 
                 const roomName = `${randomRoomNumber1}${friendName}El${fromUser}${randomRoomNumber2}`;
 
-                console.log(io.sockets.adapter.rooms)
-     
+                if(socketsFromFriend){
+                    
+        
 
-                // Inclui todas as instâncias de fromUser a roomName
-                socketsFromUser?.forEach((socketElement)=>{
-                    
-                    // Enviará uma mensagem: "Connectado a uma nova sala nome: `randomNumber2 + friendName + El + userSoul + randomNumber2`"
-                    
-                    socketElement.emit(routeName, `Nova sala: ${roomName}`);
-                    socketElement.leave(routeName);
-                    socketElement.join(roomName);
-                    
-                })
+                    // Inclui todas as instâncias de fromUser a roomName
+                    socketsFromUser?.forEach((socketElement)=>{
+                        
+                        // Enviará uma mensagem: "Connectado a uma nova sala nome: `randomNumber2 + friendName + El + userSoul + randomNumber2`"
+                        
+                        socketElement.emit(routeName, `Nova sala: ${roomName}`);
+                        socketElement.leave(routeName);
+                        socketElement.join(roomName);
+                        
+                    })
 
-                // Inclui todas as instâncias de friendSocket
-                socketsFromFriend.forEach((socketElement)=>{
-                    
-      
-                    // Enviará uma mensagem: "Connectado a uma nova sala nome: `randomNumber2 + friendName + El + userSoul + randomNumber2`"
-                    
-                    socketElement.emit(routeName, `Nova sala: ${roomName}`);
-                    socketElement.leave(routeName);
-                    socketElement.join(roomName);
-                       
-                })
+                    // Inclui todas as instâncias de friendSocket
+                    socketsFromFriend.forEach((socketElement)=>{
+                        
+        
+                        // Enviará uma mensagem: "Connectado a uma nova sala nome: `randomNumber2 + friendName + El + userSoul + randomNumber2`"
+                        
+                        socketElement.emit(routeName, `Nova sala: ${roomName}`);
+                        socketElement.leave(routeName);
+                        socketElement.join(roomName);
+                        
+                    })
 
-                console.log(io.sockets.adapter.rooms)
-            } else {
-                // Em caso o user2 não estiver online
+                    //console.log(io.sockets.adapter.rooms)
+                } else {
+                    const _friendList = roomsExpectUsers.get(friendName);
+
+                    if(!_friendList){
+                        roomsExpectUsers.set(friendName, [roomName]);
+                    }
+                    _friendList?.push(roomName);
+
+                    // Inclui todas as instâncias de fromUser a roomName
+                    socketsFromUser?.forEach((socketElement)=>{
+                        
+                        // Enviará uma mensagem: "Connectado a uma nova sala nome: `randomNumber2 + friendName + El + userSoul + randomNumber2`"
+                        
+                        socketElement.emit(routeName, `Nova sala: ${roomName}`);
+                        socketElement.leave(routeName);
+                        socketElement.join(roomName);
+                        
+                    })
+                }
+            } catch(error){
+                console.log(error)
             }
+            
         })
 
         

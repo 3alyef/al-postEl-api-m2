@@ -4,8 +4,8 @@ import * as Controll from "./controllers/Controllers";
 const router = ( 
     socket: Socket, 
     io: Server, 
-    userRoomMap: Map<string, string[]>, 
-    userSocketMap:Map<string, Socket[]> ) => { 
+    userSocketMap:Map<string, Socket[]>,
+    roomsExpectUsers: Map<string, string[]> ) => { 
     
     Controll.searchUserController.searchUser( 
         socket, 
@@ -15,10 +15,10 @@ const router = (
     );
 
     Controll.newRoomController.newRoom( 
-        socket, 
-        io, 
+        socket,
         "newRoom",  
-        userSocketMap
+        userSocketMap,
+        roomsExpectUsers
     );
 
     Controll.sendMsgController.sendMsg(
@@ -26,8 +26,14 @@ const router = (
         io, 
         "sendMsg",
         userSocketMap
-    )
-        
+    );
+    
+    //Controll.updateAllController.updateAll(
+  ///      socket,
+  //      "updateAll",
+  //      roomsExpectUsers
+    //);
+
     /*Controll.newRoomController.joinRoom(
         socket,
         io,

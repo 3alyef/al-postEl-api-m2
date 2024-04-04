@@ -2,15 +2,14 @@ import { Server as Io, Socket } from "socket.io";
 import { router as socketIoRoutes } from "./routes/Routes";
 import { Server as ServerHTTP } from 'http';
 import * as middlewares from "./middlewares/middlewares";
-import { DecodedData } from "../../custom";
+import { DecodedData, ExpectUsers } from "../../custom";
 
 abstract class SocketIo{
     private socketIo: Io;
     private userSocketMap: Map<string, Socket[]>; // Rooms list on
-    private userRoomMap: Map<string, string[]>; // Users list on
-
+    public roomsExpectUsers: Map<string, string[]>;
     constructor( server: ServerHTTP ){     
-        this.userRoomMap = new Map<string, string[]>();
+        this.roomsExpectUsers = new Map<string, string[]>();
         this.userSocketMap = new Map<string, Socket[]>(); 
         this.socketIo = new Io( server, {
             cors: {
@@ -24,9 +23,15 @@ abstract class SocketIo{
 
     private setupSocketIo(){     
         this.socketIo.use(middlewares.verifyJWT);
-        this.socketIo.on("connection", (socket: Socket)=> {       
+
+        const expectUsers = middlewares.expectUsers.bind(this) as ExpectUsers
+        this.socketIo.use((socket, next)=>expectUsers(socket, next));
+
+        this.socketIo.on("connection", (socket: Socket)=> {    
+
+
             const decoded: DecodedData = socket.auth;
-            
+            console.log("new user")
             let socketsList: Socket[] | undefined = this.userSocketMap.get(decoded.userSoul);
 
             if(!socketsList){
@@ -52,7 +57,7 @@ abstract class SocketIo{
 
             //console.log(decoded);
         
-            socketIoRoutes( socket, this.socketIo, this.userRoomMap, this.userSocketMap ); 
+            socketIoRoutes( socket, this.socketIo, this.userSocketMap, this.roomsExpectUsers ); 
     
             this.socketIo.of("/").adapter.on("create-room", (room: string) => {
                 console.log(`room ${room} was created`);

@@ -1,6 +1,8 @@
 import { Socket } from 'socket.io';
 import { DecodedData } from './types'; // Importe seus tipos aqui
 
+type ExpectUsers = (this: SocketIo, socket: Socket, next: (err?: any) => void) => void;
+
 type DecodedData  = {
     userId: string;
     userSoul: string;
@@ -9,7 +11,6 @@ type DecodedData  = {
     exp: number;
 
 }
-
 
 
 declare module 'socket.io' {

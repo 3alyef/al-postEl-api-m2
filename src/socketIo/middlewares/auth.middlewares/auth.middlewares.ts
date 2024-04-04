@@ -1,8 +1,8 @@
 import { Socket } from "socket.io";
 const jwt = require("jsonwebtoken");
-import { TokenValidate } from "../services/Services";
+import { TokenValidate } from "../../services/Services";
 import { ExtendedError } from "socket.io/dist/namespace";
-import { DecodedData, CustomError } from "../../../custom";
+import { DecodedData, CustomError } from "../../../../custom";
 
 
 export const verifyJWT = (socket: Socket, next: (err?: ExtendedError | undefined) => void)=>{
