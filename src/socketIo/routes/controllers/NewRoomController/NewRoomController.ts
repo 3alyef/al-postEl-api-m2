@@ -1,84 +1,57 @@
 import { Socket, Server } from "socket.io";
-import { EncryptJWT } from "../../../services/Services"
-interface decodedToken {
-    userId: string;
-    userSoul: string;
-    email: string;
-    iat: number;
-    exp: number;
 
-}
 // friendName is the same than userSoul, but is from user's friend.
 
-class JoinRoomController {
-    private token: string;
-    private usersToRoom: string[];
-    constructor(){
-        this.usersToRoom = []
-        this.token = process.env.TOKEN_KEY || "need token";
-    }
-
-    joinRoom(
+class NewRoomController {
+    newRoom(
         socket: Socket, 
         io: Server, 
-        userRoomMap: Map<string, string[]>, 
         routeName: string, 
-        decoded: decodedToken, 
         userSocketMap:Map<string, Socket[]>
         ){ 
 
         socket.on(routeName, async ({friendName}: {friendName: string})=>{
             // 1 - Se o user2 estiver conectado ele vai criar uma sala com `randomNumber2 + friendName + El + userSoul + randomNumber2`, enviando a mensagem em seguida para a sala e depois para M3.
-
-           
+            const decoded = socket.auth;
             const fromUser = decoded.userSoul;
+            
             const socketsFromFriend = userSocketMap.get(friendName);
             const socketsFromUser = userSocketMap.get(fromUser);
             if(socketsFromFriend){
+                //console.log(socketsFromFriend, socketsFromUser)
                 const randomRoomNumber1 = Math.floor(Math.random() * 101); // Gera um número entre 0 e 100
 
                 const randomRoomNumber2 = Math.floor(Math.random() * 101); // Gera um número entre 0 e 100
 
                 const roomName = `${randomRoomNumber1}${friendName}El${fromUser}${randomRoomNumber2}`;
 
+                console.log(io.sockets.adapter.rooms)
+     
+
                 // Inclui todas as instâncias de fromUser a roomName
-                socketsFromUser?.forEach((socketElement, i)=>{
-                    socketElement.join(roomName)
-
+                socketsFromUser?.forEach((socketElement)=>{
+                    
                     // Enviará uma mensagem: "Connectado a uma nova sala nome: `randomNumber2 + friendName + El + userSoul + randomNumber2`"
-
-                    socketElement.emit(routeName, `Conectado a uma nova sala nome: ${roomName}`);
-                    if( i === 0 ){
-                        // Adiciona o userSoul do user em questao
-                        this.usersToRoom.push(fromUser);
-                        
-                    }
-
-                    socketElement.leave(roomName);
+                    
+                    socketElement.emit(routeName, `Nova sala: ${roomName}`);
+                    socketElement.leave(routeName);
+                    socketElement.join(roomName);
                     
                 })
 
                 // Inclui todas as instâncias de friendSocket
-                socketsFromFriend.forEach((socketElement, i)=>{
-                    socketElement.join(roomName)
-                    if( i === 0 ){
-                        // Adiciona o userSoul do user em questao
-                        this.usersToRoom.push(fromUser);
-                    }
-
+                socketsFromFriend.forEach((socketElement)=>{
+                    
+      
                     // Enviará uma mensagem: "Connectado a uma nova sala nome: `randomNumber2 + friendName + El + userSoul + randomNumber2`"
                     
-                    socketElement.emit(routeName, `Connectado a uma nova sala nome: ${roomName}`);
-
-                    socketElement.leave(roomName);
+                    socketElement.emit(routeName, `Nova sala: ${roomName}`);
+                    socketElement.leave(routeName);
+                    socketElement.join(roomName);
                        
                 })
 
-                const content = new EncryptJWT().TokenGenerator({update: true, roomName, users: this.usersToRoom, token: this.token})
-
-                // It works on this way: SERVER => CLIENT => SERVER
-                socket.emit( "updateLinks", content );
-             
+                console.log(io.sockets.adapter.rooms)
             } else {
                 // Em caso o user2 não estiver online
             }
@@ -91,9 +64,9 @@ class JoinRoomController {
     }
 }
 
-const joinRoomController = new JoinRoomController()
+const newRoomController = new NewRoomController()
 
-export { joinRoomController };
+export { newRoomController };
 
 
 /*

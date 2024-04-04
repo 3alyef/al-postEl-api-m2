@@ -43,7 +43,7 @@ class Connect {
 
     private TokenGenerator( userId: string, userSoul: string, email:string ): string {
         // 1800 => 30min  30 => 0.5min
-        const token = jwt.sign( { userId, userSoul, email }, this.tokenKey, { expiresIn: 3600 })
+        const token = jwt.sign( { userId, userSoul, email }, this.tokenKey, { expiresIn: 7200 })
 
         return token;
     }

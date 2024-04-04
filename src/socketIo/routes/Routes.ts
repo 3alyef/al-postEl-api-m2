@@ -1,45 +1,40 @@
 import { Socket, Server } from "socket.io";
 import * as Controll from "./controllers/Controllers";
 
-interface decodedToken {
-    userId: string;
-    userSoul: string;
-    email: string;
-    iat: number;
-    exp: number;
-
-}
-
-function router( 
+const router = ( 
     socket: Socket, 
     io: Server, 
     userRoomMap: Map<string, string[]>, 
-    decoded: decodedToken, 
-    userSocketMap:Map<string, Socket[]> ) { 
-
+    userSocketMap:Map<string, Socket[]> ) => { 
+    
     Controll.searchUserController.searchUser( 
         socket, 
         io, 
-        "searchByEmail", 
-        decoded, 
+        "searchByEmail",
         userSocketMap
     );
 
-    Controll.joinRoomController.joinRoom( 
+    Controll.newRoomController.newRoom( 
         socket, 
         io, 
-        userRoomMap, 
-        "joinRoom", 
-        decoded,  
+        "newRoom",  
         userSocketMap
     );
 
-    Controll.updateLinksController.updateLinks( // Isso terá que ser implementado com o auxilio do client
+    Controll.sendMsgController.sendMsg(
         socket, 
         io, 
-        "updateLinks", 
-        userRoomMap
+        "sendMsg",
+        userSocketMap
     )
+        
+    /*Controll.newRoomController.joinRoom(
+        socket,
+        io,
+        "joinRoom",
+        decoded
+    )
+*/
 
 
 }

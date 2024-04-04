@@ -17,11 +17,14 @@ interface Message {
 }
 
 class SearchUserController{
-    searchUser( socket: Socket, io: Server, routeName: string, decoded: decodedToken, userSocketMap:Map<string, Socket[]>){
+    searchUser( socket: Socket, io: Server, routeName: string, userSocketMap:Map<string, Socket[]>){
         socket.on(routeName, async ({ email }: { email: string })=>{
             // o usuario vai procurar um "friend" pelo email, / Enviando uma requisição para M1 para buscar pelo userSoul correspondente a esse email /   
-
+            
             try {
+                const decoded = socket.auth;
+                
+                console.log(decoded)
                 if(decoded.email === email){
                     socket.emit(routeName, "O email procurado não pode ser igual ao email de origem." )
                     throw new Error("O email procurado não pode ser igual ao email de origem.");           
@@ -42,7 +45,6 @@ class SearchUserController{
                     }            
                     
                 } else {
-                    // Caso não for encontrado
 
                     // sockets is the same than => [[{}],[{}],[{}]]
                     const sockets = userSocketMap.get(decoded.userSoul);
