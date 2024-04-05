@@ -1,13 +1,5 @@
+import { Content } from "../../../../custom";
 const jwt = require("jsonwebtoken");
-
-type TokenPayload = {
-    update: boolean;
-    roomName: string;
-    users: string[];
-    token: string;
-};
-
-type Content = TokenPayload | Array<string | boolean | string[]>;
 
 
 class EncryptJWT {

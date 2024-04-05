@@ -2,15 +2,21 @@ import { Server as Io, Socket } from "socket.io";
 import { router as socketIoRoutes } from "./routes/Routes";
 import { Server as ServerHTTP } from 'http';
 import * as middlewares from "./middlewares/middlewares";
-import { DecodedData, ExpectUsers } from "../../custom";
+import { DecodedData, ExpectUsers, Message } from "../../custom";
 
 abstract class SocketIo{
     private socketIo: Io;
     private userSocketMap: Map<string, Socket[]>; // Rooms list on
+
+    public previousMessages: Map<string, Message[]>; // Msg List
+
     public roomsExpectUsers: Map<string, string[]>;
     constructor( server: ServerHTTP ){     
         this.roomsExpectUsers = new Map<string, string[]>();
-        this.userSocketMap = new Map<string, Socket[]>(); 
+        this.userSocketMap = new Map<string, Socket[]>();
+        
+        this.previousMessages = new Map();
+        
         this.socketIo = new Io( server, {
             cors: {
                 origin: "*", 
@@ -57,7 +63,7 @@ abstract class SocketIo{
 
             //console.log(decoded);
         
-            socketIoRoutes( socket, this.socketIo, this.userSocketMap, this.roomsExpectUsers ); 
+            socketIoRoutes( socket, this.userSocketMap, this.roomsExpectUsers, this.previousMessages ); 
     
             this.socketIo.of("/").adapter.on("create-room", (room: string) => {
                 console.log(`room ${room} was created`);

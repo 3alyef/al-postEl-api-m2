@@ -1,23 +1,10 @@
 import { Socket, Server } from "socket.io";
 import { SearchUserByEmail } from "../../../services/Services";
+import { MessageUser } from "../../../../../custom";
 
-interface decodedToken {
-    userId: string;
-    userSoul: string;
-    email: string;
-    iat: number;
-    exp: number;
-
-}
-
-interface Message {
-    found: boolean,
-    userSoul: string | null, 
-    message: string 
-}
 
 class SearchUserController{
-    searchUser( socket: Socket, io: Server, routeName: string, userSocketMap:Map<string, Socket[]>){
+    searchUser( socket: Socket, routeName: string, userSocketMap:Map<string, Socket[]>){
         socket.on(routeName, async ({ email }: { email: string })=>{
             // o usuario vai procurar um "friend" pelo email, / Enviando uma requisição para M1 para buscar pelo userSoul correspondente a esse email /   
             
@@ -30,7 +17,7 @@ class SearchUserController{
                     throw new Error("O email procurado não pode ser igual ao email de origem.");           
                 }
 
-                const content: Message = await new SearchUserByEmail().initialize( email );
+                const content: MessageUser = await new SearchUserByEmail().initialize( email );
 
                 const friendName = content.userSoul;
                 

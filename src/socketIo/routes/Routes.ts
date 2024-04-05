@@ -1,15 +1,16 @@
-import { Socket, Server } from "socket.io";
+import { Socket } from "socket.io";
 import * as Controll from "./controllers/Controllers";
+import { Message } from "../../../custom";
 
 const router = ( 
-    socket: Socket, 
-    io: Server, 
+    socket: Socket,
     userSocketMap:Map<string, Socket[]>,
-    roomsExpectUsers: Map<string, string[]> ) => { 
+    roomsExpectUsers: Map<string, string[]>,
+    previousMessages: Map<string, Message[]>
+    ) => { 
     
     Controll.searchUserController.searchUser( 
         socket, 
-        io, 
         "searchByEmail",
         userSocketMap
     );
@@ -22,27 +23,11 @@ const router = (
     );
 
     Controll.sendMsgController.sendMsg(
-        socket, 
-        io, 
+        socket,
         "sendMsg",
-        userSocketMap
+        previousMessages
     );
     
-    //Controll.updateAllController.updateAll(
-  ///      socket,
-  //      "updateAll",
-  //      roomsExpectUsers
-    //);
-
-    /*Controll.newRoomController.joinRoom(
-        socket,
-        io,
-        "joinRoom",
-        decoded
-    )
-*/
-
-
 }
 
 export { router };

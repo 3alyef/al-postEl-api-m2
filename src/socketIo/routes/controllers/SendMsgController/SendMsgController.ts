@@ -1,5 +1,5 @@
-import { Server, Socket } from "socket.io";
-import { sendMsg } from "../../../../../custom";
+import { Socket } from "socket.io";
+import { sendMsg, Message } from "../../../../../custom";
 
 /* 
     NOTE: Todas as mensagens enviadas do tipo user1 => user2 são direcionadas à um channel especifico criado a partir da rendomização de 2 numbers + soulName1 + soulName2
@@ -8,19 +8,29 @@ import { sendMsg } from "../../../../../custom";
 class SendMsgController {
     sendMsg(
         socket: Socket,
-        io: Server,
         routeName: string, 
-        userSocketMap:Map<string, Socket[]>
+        previousMessages: Map<string, Message[]>
     ){
-        socket.on(routeName, ({ content, to, sender, chatName }: sendMsg)=>{ 
-            const payload = {
-                content,
-                chatName,
-                sender
-            };
-
-            console.log(payload);
-            socket.to(to).emit("newMsg", content);                 
+        socket.on(routeName, async ({ content, to, sender, chatName, isChannel }: sendMsg)=>{ 
+            if(!isChannel){
+                const dateInf = new Date(); 
+                const data = dateInf.toISOString();
+                const msgs: Message = {
+                    from: sender,
+                    content, 
+                    to,
+                    data
+                }
+                const roomObj = previousMessages.get(to);
+                if(!roomObj){
+                    const roomObj: Message[] = [];
+                    previousMessages.set(to, roomObj);
+                }
+                roomObj?.push(msgs);
+                console.log(roomObj);
+                socket.to(to).emit("newMsg", content);  
+            } 
+                           
         })
     }
 }
@@ -28,3 +38,16 @@ class SendMsgController {
 const sendMsgController = new SendMsgController();
 
 export {sendMsgController};
+
+/*
+            || Como funcionará o envio de mensagens ||
+
+    1 - Se o user2 estiver conectado ele vai criar uma sala com `randomNumber2 + friendName + El + userSoul + randomNumber2`, enviando a mensagem em seguida para a sala e depois para M3. OK
+    (FALTA M3)
+
+    2 - Se o user2 não estiver conectado o M2 vai enviar as mensagens para M3. Deve-se criar um Map[] com "usuários esperados", todo usuário que entrar vai passar por esse Map[]. OK 
+   
+    
+    3 - Quando o user2 se conectar, se o userSoul dele (friendName) estiver na lista, ele já coloca este usuário na sala e avisa-o no canal reservado (que todo user tem userSoul) que uma nova sala foi criada e envia o nameRoom. E em seguida envia também para user1 dizendo que o user2 se conectou, além disso envia o novo nome do canal entre user1 e user2. User1 muda o enderaçamento do canal para `randomNumber2 + friendName + El + userSoul + randomNumber2`, then, m2 pega as msgs já enviadas por user1 e guardadas com m3, e envia para user2.
+            
+*/
