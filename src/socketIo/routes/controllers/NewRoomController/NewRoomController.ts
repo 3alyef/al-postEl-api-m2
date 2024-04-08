@@ -1,15 +1,9 @@
 import { Socket } from "socket.io";
-import { msgsRequest, msgsResponse } from "../../../interfaces/msgs.interface";
+import { msgsRequest, msgsResponse } from '../../../interfaces/msgs.interface';
 
 // friendName is the same than userSoul, but is from user's friend.
 
 class NewRoomController {
-    private URL_M3: string;
-    constructor(){
-        this.URL_M3 = process.env.URL_M3 || "need url"
-    }
-
-
     newRoom(socket: Socket, routeName: string, userSocketMap:Map<string, Socket[]>, roomsExpectUsers: Map<string, string[]>, previousMessages: Map<string, msgsResponse[]>){ 
 
         socket.on(routeName, async ({friendName}: {friendName: string})=>{
@@ -30,13 +24,16 @@ class NewRoomController {
 
                 const roomName: string = this.roomNameGenerate(userName, friendName);
 
+                console.log(roomName)
                 // Agora deve-se certificar se já há mensagens entre x (user1) e y (user2)
                 
-                const previous_messages: msgsResponse[] | null = await this.previousMsgs(userName, friendName);
+                const previous_messages: msgsResponse[] | null = await this.getPreviousMsgs(userName, friendName);
 
                 if(previous_messages){
                     this.usersNotificate(socketsFromUser, socketsFromFriend,  routeName, roomName, previous_messages);
-                    this.keepPrevMsgs(previous_messages, previousMessages, roomName);
+                    this.keepPrevMsgsLocal(previous_messages, previousMessages, roomName);
+                } else {
+                    console.log(previous_messages)
                 }
 
                 this.setExpectUsers(roomsExpectUsers, userName, friendName, roomName)
@@ -51,6 +48,7 @@ class NewRoomController {
         
     }
 
+    // Gera um nome único para a sala
     private roomNameGenerate(userName: string, friendName: string): string{
         const randomRoomNumber1 = Math.floor(Math.random() * 101); 
 
@@ -61,24 +59,30 @@ class NewRoomController {
         return roomName
     }
 
-    private async previousMsgs(userA: string, userB:string): Promise<msgsResponse[] | null>{
-        const body:msgsRequest = {userA, userB};
+    // Faz a requisição das previous messages do servidor M3
+    private async getPreviousMsgs(userA: string, userB:string): Promise<msgsResponse[] | null>{
+        const body = JSON.stringify({userA, userB});
         try {
-            const response = await fetch(`${this.URL_M3}/previousMsgs`, {
+            const response = await fetch(`${process.env.URL_M3}/previousMsgs`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(body)
+                body: body
             });  
-            const data: msgsResponse[] = await response.json();
+            if (!response.ok) {
+                throw new Error(`Falha na solicitação: ${response.statusText}`);
+            }  
             
-            return data || null;
+            const data: msgsResponse[] | null = await response.json();
+           
+            return data;
         } catch(error) {
             throw new Error("Error fetching previous messages:"+error);      
         }
     }
 
+    // Deixa os nickNames dos usuarios na sala de espera, para agilizar a entrega de mensagens. ||| NOTE: É NECESSÁRIO AINDA DEFINIR COMO REMOVER OS DADOS DOS 2 USUARIOS QUANDO OS MESMOS ESTIVEREM OFFLINE SIMULTANEAMENTE |||
     private setExpectUsers( roomsExpectUsers: Map<string, string[]>, userName:string, friendName: string, roomName: string ){
 
         // Adiciona o friedName na "lista de espera" para quando o usuario sair e entrar novamente as menssagens possam ser carregadas e reenviadas
@@ -100,6 +104,8 @@ class NewRoomController {
         _userList?.push(roomName);
     }
 
+
+    // Notifica os usuarios que uma nova sala foi criada e envia o endereço da mesma
     private usersNotificate(socketsUser: Socket[] | undefined, socketsFriend: Socket[] | undefined,  routeName: string, roomName: string, messages?: msgsResponse[]){
 
         if(socketsFriend){
@@ -142,11 +148,14 @@ class NewRoomController {
 
     }
 
-    private keepPrevMsgs(msgsList: msgsResponse[], previousMessages: Map<string, msgsResponse[]>, roomName: string){
+
+    // Armazena as previous menssagens vindas do servidor M3 na memória local
+    private keepPrevMsgsLocal(msgsList: msgsResponse[], previousMessages: Map<string, msgsResponse[]>, roomName: string){
         msgsList.forEach((e)=>{
             const dateInf = new Date(); 
             const data = dateInf.toISOString();
             const msgs: msgsResponse = {
+                _id: e._id,
                 fromUser: e.fromUser,
                 toUser: e.toUser,
                 msgs: e.msgs, 

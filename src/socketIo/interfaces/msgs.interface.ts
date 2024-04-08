@@ -1,4 +1,5 @@
 export interface msgsResponse {
+    _id: string;
     fromUser: string;
     toUser: string;
     msgs: string;
