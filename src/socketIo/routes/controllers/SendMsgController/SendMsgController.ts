@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { sendMsg, Message } from "../../../../../custom";
+import { msgsResponse, sendMsg } from "../../../interfaces/msgs.interface";
 
 /* 
     NOTE: Todas as mensagens enviadas do tipo user1 => user2 são direcionadas à um channel especifico criado a partir da rendomização de 2 numbers + soulName1 + soulName2
@@ -9,21 +9,21 @@ class SendMsgController {
     sendMsg(
         socket: Socket,
         routeName: string, 
-        previousMessages: Map<string, Message[]>
+        previousMessages: Map<string, msgsResponse[]>
     ){
         socket.on(routeName, async ({ content, to, sender, chatName, isChannel }: sendMsg)=>{ 
             if(!isChannel){
                 const dateInf = new Date(); 
                 const data = dateInf.toISOString();
-                const msgs: Message = {
-                    from: sender,
-                    content, 
-                    to,
-                    data
+                const msgs: msgsResponse = {
+                    fromUser: sender,
+                    toUser: to,
+                    msgs: content, 
+                    createdIn: data
                 }
                 const roomObj = previousMessages.get(to);
                 if(!roomObj){
-                    const roomObj: Message[] = [];
+                    const roomObj: msgsResponse[] = [];
                     previousMessages.set(to, roomObj);
                 }
                 roomObj?.push(msgs);
@@ -35,6 +35,7 @@ class SendMsgController {
     }
 }
 
+// ||| NOTE: Deve ser definido a seguinte ação: Quando não houver um usuário y (user1) e x (user2) deve-se apagar as previous messages desta sala e, é claro, o nome dela. |||
 const sendMsgController = new SendMsgController();
 
 export {sendMsgController};

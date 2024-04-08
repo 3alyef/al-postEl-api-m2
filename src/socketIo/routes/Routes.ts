@@ -1,12 +1,12 @@
 import { Socket } from "socket.io";
 import * as Controll from "./controllers/Controllers";
-import { Message } from "../../../custom";
+import { msgsResponse } from "../interfaces/msgs.interface";
 
 const router = ( 
     socket: Socket,
     userSocketMap:Map<string, Socket[]>,
     roomsExpectUsers: Map<string, string[]>,
-    previousMessages: Map<string, Message[]>
+    previousMessages: Map<string, msgsResponse[]>
     ) => { 
     
     Controll.searchUserController.searchUser( 
@@ -19,13 +19,15 @@ const router = (
         socket,
         "newRoom",  
         userSocketMap,
-        roomsExpectUsers
+        roomsExpectUsers,
+        previousMessages
     );
 
     Controll.sendMsgController.sendMsg(
         socket,
         "sendMsg",
-        previousMessages
+        previousMessages,
+        
     );
     
 }

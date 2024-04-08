@@ -17,13 +17,6 @@ export interface MessageUser {
     message: string 
 }
 
-export interface sendMsg {
-    content: string, 
-    to: string,
-    sender: string,
-    chatName: string,
-    isChannel: boolean
-}
 
 type Message = {
     from: string;

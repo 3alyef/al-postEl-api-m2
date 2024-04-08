@@ -2,13 +2,14 @@ import { Server as Io, Socket } from "socket.io";
 import { router as socketIoRoutes } from "./routes/Routes";
 import { Server as ServerHTTP } from 'http';
 import * as middlewares from "./middlewares/middlewares";
-import { DecodedData, ExpectUsers, Message } from "../../custom";
+import { DecodedData, ExpectUsers } from "../../custom";
+import { msgsResponse } from "./interfaces/msgs.interface";
 
 abstract class SocketIo{
     private socketIo: Io;
     private userSocketMap: Map<string, Socket[]>; // Rooms list on
 
-    public previousMessages: Map<string, Message[]>; // Msg List
+    public previousMessages: Map<string, msgsResponse[]>; // Msg List
 
     public roomsExpectUsers: Map<string, string[]>;
     constructor( server: ServerHTTP ){     
