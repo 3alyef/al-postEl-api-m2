@@ -1,7 +1,4 @@
 const jwt = require("jsonwebtoken");
-/*
-*/
-
 type DecodedToken<T> = T | null;
 
 class TokenValidate<T>{
@@ -14,6 +11,7 @@ class TokenValidate<T>{
     tokenValidate(token: string): {decoded: DecodedToken<T>, error: { message: string, status: number} | null }{
         try {
             const decoded = jwt.verify(token, this.tokenKey) as T;
+            console.log("veja o que aparece quando o token já está expirado"+ decoded)
             return { decoded, error: null };
         } catch (err) {
             const error = { message: 'Autenticação falhou', status: 401 };

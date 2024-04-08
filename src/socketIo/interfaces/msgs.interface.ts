@@ -1,8 +1,9 @@
 export interface msgsResponse {
-    _id: string;
+    _id?: string;
     fromUser: string;
     toUser: string;
-    msgs: string;
+    toChannel?: string;
+    msg: string;
     createdIn: string;
 }
 
@@ -12,9 +13,10 @@ export interface msgsRequest {
 }
 
 export interface sendMsg {
-    content: string, 
-    to: string,
-    sender: string,
-    chatName: string,
-    isChannel: boolean
+    fromUser: string;
+    toUser: string;
+    toRoom: string;
+    msg: string;
+    isGroup: string;
+    chatName: string;
 }

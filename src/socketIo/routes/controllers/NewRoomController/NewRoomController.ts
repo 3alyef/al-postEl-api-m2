@@ -116,7 +116,7 @@ class NewRoomController {
                 if(messages){
                     messages.forEach((e)=>{
                         socketElement.emit(routeName,
-                            {fromUser: e.fromUser, toUser: e.toUser, message: e.msgs, createdIn: e.createdIn})
+                            {fromUser: e.fromUser, toUser: e.toUser, message: e.msg, createdIn: e.createdIn})
                     })
                 } else {
                     socketElement.emit(routeName, `Nova sala: ${roomName}`);
@@ -136,7 +136,7 @@ class NewRoomController {
             if(messages){
                 messages.forEach((e)=>{
                     socketElement.emit(routeName,
-                        {fromUser: e.fromUser, toUser: e.toUser, message: e.msgs, createdIn: e.createdIn})
+                        {fromUser: e.fromUser, toUser: e.toUser, message: e.msg, createdIn: e.createdIn})
                 })
             } else {
                 socketElement.emit(routeName, `Nova sala: ${roomName}`);
@@ -158,7 +158,7 @@ class NewRoomController {
                 _id: e._id,
                 fromUser: e.fromUser,
                 toUser: e.toUser,
-                msgs: e.msgs, 
+                msg: e.msg, 
                 createdIn: data
             }
             const roomObj = previousMessages.get(roomName);

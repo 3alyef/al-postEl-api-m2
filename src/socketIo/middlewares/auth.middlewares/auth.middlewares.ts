@@ -1,5 +1,4 @@
 import { Socket } from "socket.io";
-const jwt = require("jsonwebtoken");
 import { TokenValidate } from "../../services/Services";
 import { ExtendedError } from "socket.io/dist/namespace";
 import { DecodedData, CustomError } from "../../../../custom";

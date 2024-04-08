@@ -11,27 +11,41 @@ class SendMsgController {
         routeName: string, 
         previousMessages: Map<string, msgsResponse[]>
     ){
-        socket.on(routeName, async ({ content, to, sender, chatName, isChannel }: sendMsg)=>{ 
-            if(!isChannel){
+        socket.on(routeName, async ({ fromUser, toUser, toRoom, msg, isGroup, chatName }: sendMsg)=>{ 
+            if(!isGroup){
                 const dateInf = new Date(); 
                 const data = dateInf.toISOString();
-                const msgs: msgsResponse = {
-                    fromUser: sender,
-                    toUser: to,
-                    msgs: content, 
+                const content: msgsResponse = {  
+                    fromUser,
+                    toUser,
+                    msg, 
                     createdIn: data
                 }
-                const roomObj = previousMessages.get(to);
+                
+                const roomObj = previousMessages.get(toRoom);
                 if(!roomObj){
                     const roomObj: msgsResponse[] = [];
-                    previousMessages.set(to, roomObj);
+                    previousMessages.set(toRoom, roomObj);
                 }
-                roomObj?.push(msgs);
+                roomObj?.push(content);
                 console.log(roomObj);
-                socket.to(to).emit("newMsg", content);  
+                socket.to(toRoom).emit("newMsg", msg);  
+                this.sendMessagesToM3(content)
             } 
                            
         })
+    }
+
+    private async sendMessagesToM3(content: msgsResponse){
+        const body = JSON.stringify(content);
+        const response = await fetch(`${process.env.URL_M3}/setNewMsg`, {
+            method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            body: body
+        })
+        console.log(response)
     }
 }
 
