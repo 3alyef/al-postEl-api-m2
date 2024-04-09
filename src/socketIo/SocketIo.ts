@@ -2,8 +2,9 @@ import { Server as Io, Socket } from "socket.io";
 import { router as socketIoRoutes } from "./routes/Routes";
 import { Server as ServerHTTP } from 'http';
 import * as middlewares from "./middlewares/middlewares";
-import { DecodedData, ExpectUsers } from "../../custom";
+import { ExpectUsers } from "../../custom";
 import { msgsResponse } from "./interfaces/msgs.interface";
+import { DecodedData } from "./interfaces/auth.interface";
 
 abstract class SocketIo{
     private socketIo: Io;
@@ -35,6 +36,8 @@ abstract class SocketIo{
         this.socketIo.use((socket, next)=>expectUsers(socket, next));
 
         this.socketIo.on("connection", (socket: Socket)=> {    
+
+            
 
 
             const decoded: DecodedData = socket.auth;

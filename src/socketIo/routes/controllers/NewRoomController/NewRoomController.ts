@@ -1,11 +1,10 @@
 import { Socket } from "socket.io";
-import { msgsRequest, msgsResponse } from '../../../interfaces/msgs.interface';
+import { msgsResponse } from '../../../interfaces/msgs.interface';
 
 // friendName is the same than userSoul, but is from user's friend.
 
 class NewRoomController {
     newRoom(socket: Socket, routeName: string, userSocketMap:Map<string, Socket[]>, roomsExpectUsers: Map<string, string[]>, previousMessages: Map<string, msgsResponse[]>){ 
-
         socket.on(routeName, async ({friendName}: {friendName: string})=>{
             const decoded = socket.auth;
             const userName = decoded.userSoul;
@@ -24,21 +23,19 @@ class NewRoomController {
 
                 const roomName: string = this.roomNameGenerate(userName, friendName);
 
-                console.log(roomName)
                 // Agora deve-se certificar se já há mensagens entre x (user1) e y (user2)
                 
                 const previous_messages: msgsResponse[] | null = await this.getPreviousMsgs(userName, friendName);
+
+                this.setExpectUsers(roomsExpectUsers, userName, friendName, roomName);
 
                 if(previous_messages){
                     this.usersNotificate(socketsFromUser, socketsFromFriend,  routeName, roomName, previous_messages);
                     this.keepPrevMsgsLocal(previous_messages, previousMessages, roomName);
                 } else {
-                    console.log(previous_messages)
-                }
-
-                this.setExpectUsers(roomsExpectUsers, userName, friendName, roomName)
-
-                this.usersNotificate(socketsFromUser, socketsFromFriend,  routeName, roomName);        
+                    console.log(previous_messages);
+                    this.usersNotificate(socketsFromUser, socketsFromFriend,  routeName, roomName); 
+                }            
                 
             } catch(error){
                 console.log(error)
@@ -112,20 +109,18 @@ class NewRoomController {
             // Inclui todas as instâncias de friendSocket
             socketsFriend.forEach((socketElement)=>{
             
-                // Enviará uma mensagem: "Connectado a uma nova sala nome: `randomNumber2 + friendName + El + userSoul + randomNumber2`"
                 if(messages){
                     messages.forEach((e)=>{
                         socketElement.emit(routeName,
                             {fromUser: e.fromUser, toUser: e.toUser, message: e.msg, createdIn: e.createdIn})
                     })
-                } else {
-                    socketElement.emit(routeName, `Nova sala: ${roomName}`);
-                    socketElement.join(roomName);
-                }
+                } 
+                socketElement.emit(routeName, `Nova sala: ${roomName}`);
+                socketElement.join(roomName);
+                
                        
             })
 
-            //console.log(io.sockets.adapter.rooms)
         } 
             
         // Inclui todas as instâncias de fromUser a roomName

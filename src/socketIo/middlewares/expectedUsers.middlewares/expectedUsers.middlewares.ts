@@ -1,14 +1,14 @@
 import { Socket } from "socket.io";
 import { ExtendedError } from "socket.io/dist/namespace";
 import SocketIo from "../../SocketIo";
-import { DecodedData } from "../../../../custom";
+import { DecodedData } from "../../interfaces/auth.interface";
 
 
 export function expectUsers(this: SocketIo, socket: Socket, next: (err?: ExtendedError | undefined) => void) {
     const decoded: DecodedData = socket.auth;
     const userSoul = decoded.userSoul;
     const rooms = this.roomsExpectUsers.get(userSoul);
-    
+    socket.emit('auth_error', "hey")
     if(rooms){
         rooms.forEach((room)=>{
             socket.join(room);

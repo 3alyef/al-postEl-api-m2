@@ -7,9 +7,6 @@ declare module 'socket.io' {
     }
 }
 
-export interface CustomError extends Error {
-    data?: any;
-}
 
 export interface MessageUser {
     found: boolean,
@@ -27,14 +24,7 @@ type Message = {
 
 type ExpectUsers = (this: SocketIo, socket: Socket, next: (err?: any) => void) => void;
 
-type DecodedData  = {
-    userId: string;
-    userSoul: string;
-    email: string;
-    iat: number;
-    exp: number;
 
-}
 
 type TokenPayload = {
     update: boolean;
