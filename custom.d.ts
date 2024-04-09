@@ -1,18 +1,13 @@
-import { Socket } from 'socket.io';
-import { DecodedData } from './types'; // Importe seus tipos aqui
+import { Socket } from 'socket.io'; // Importe seus tipos aqui
 
 declare module 'socket.io' {
     interface Socket {
-        auth?: DecodedData;
+        auth?: any;
     }
 }
 
 
-export interface MessageUser {
-    found: boolean,
-    userSoul: string | null, 
-    message: string 
-}
+
 
 
 type Message = {

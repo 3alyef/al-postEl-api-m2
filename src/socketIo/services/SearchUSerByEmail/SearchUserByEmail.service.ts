@@ -1,8 +1,5 @@
-interface Message {
-    found: boolean,
-    userSoul: string | null, 
-    message: string 
-}
+import { Message } from "../../interfaces/searchByEmail.interface";
+
 
 class SearchUserByEmail {
     private URL_M1;
@@ -38,4 +35,4 @@ class SearchUserByEmail {
 
 }
 
-export { SearchUserByEmail }
+export default SearchUserByEmail;

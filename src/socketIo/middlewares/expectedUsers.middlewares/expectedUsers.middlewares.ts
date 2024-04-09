@@ -2,13 +2,16 @@ import { Socket } from "socket.io";
 import { ExtendedError } from "socket.io/dist/namespace";
 import SocketIo from "../../SocketIo";
 import { DecodedData } from "../../interfaces/auth.interface";
+import { RestoreHistory } from "../../services/RestoreHistory/RestoreHistory.service";
 
 
-export function expectUsers(this: SocketIo, socket: Socket, next: (err?: ExtendedError | undefined) => void) {
+export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: ExtendedError | undefined) => void) {
     const decoded: DecodedData = socket.auth;
     const userSoul = decoded.userSoul;
     const rooms = this.roomsExpectUsers.get(userSoul);
-    socket.emit('auth_error', "hey")
+    if(!rooms){
+        await new RestoreHistory().initialize( userSoul, this.roomsExpectUsers, this.previousMessages );
+    }
     if(rooms){
         rooms.forEach((room)=>{
             socket.join(room);
@@ -20,6 +23,9 @@ export function expectUsers(this: SocketIo, socket: Socket, next: (err?: Extende
             })
         })
     }
+
+
+
 
     next(); 
 }

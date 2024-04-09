@@ -25,4 +25,4 @@ class TokenValidate<T>{
     }
 }
 
-export {TokenValidate}
+export default TokenValidate;

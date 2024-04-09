@@ -88,8 +88,9 @@ class NewRoomController {
 
         if(!_friendList){
             roomsExpectUsers.set(friendName, [roomName]);
+        } else {
+            _friendList?.push(roomName);
         }
-        _friendList?.push(roomName);
 
         // Adiciona também o fromUser na lista
 
@@ -97,8 +98,10 @@ class NewRoomController {
 
         if(!_userList){
             roomsExpectUsers.set(userName, [roomName]);
+        } else {
+            _userList?.push(roomName);
         }
-        _userList?.push(roomName);
+        
     }
 
 
@@ -157,11 +160,15 @@ class NewRoomController {
                 createdIn: data
             }
             const roomObj = previousMessages.get(roomName);
-            if(!roomObj){
-                const roomObj: msgsResponse[] = [];
-                previousMessages.set(roomName, roomObj);
+
+            if (!roomObj) {
+                const newRoomObj: msgsResponse[] = []; 
+                newRoomObj.push(msgs); 
+                previousMessages.set(roomName, newRoomObj); 
+            } else {
+                roomObj.push(msgs); 
             }
-            roomObj?.push(msgs);
+
         })
     }
     

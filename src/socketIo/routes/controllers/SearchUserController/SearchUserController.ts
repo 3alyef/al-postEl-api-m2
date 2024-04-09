@@ -1,6 +1,6 @@
 import { Socket, Server } from "socket.io";
-import { SearchUserByEmail } from "../../../services/Services";
-import { MessageUser } from "../../../../../custom";
+import { SearchUser } from "../../../services/Services";
+
 
 
 class SearchUserController{
@@ -11,40 +11,16 @@ class SearchUserController{
             try {
                 const decoded = socket.auth;
                 
-                console.log(decoded)
-                if(decoded.email === email){
-                    socket.emit(routeName, "O email procurado não pode ser igual ao email de origem." )
-                    throw new Error("O email procurado não pode ser igual ao email de origem.");           
+               
+
+                if(decoded){
+                    if(decoded.email === email){
+                        socket.emit(routeName, "O email procurado não pode ser igual ao email de origem." )
+                        throw new Error("O email procurado não pode ser igual ao email de origem.");           
+                    }
+                    await new SearchUser().initialize(email,  userSocketMap, routeName, decoded);
                 }
-
-                const content: MessageUser = await new SearchUserByEmail().initialize( email );
-
-                const friendName = content.userSoul;
                 
-                if(content.found){  
-                    const sockets = userSocketMap.get(decoded.userSoul);
-                    if(sockets){
-                        sockets.forEach((socketElement) => {
-                            // Envia a mensagem para todos os /'nicknames" que detenham o mesmo soulName
-                            socketElement.emit(routeName ,`${friendName}`);
-                            
-                        });
-                    }            
-                    
-                } else {
-
-                    // sockets is the same than => [[{}],[{}],[{}]]
-                    const sockets = userSocketMap.get(decoded.userSoul);
-                    if(sockets){
-                        sockets.forEach((socketElement) => {
-                            // Envia a mensagem para todos os "nicknames" que detenham o mesmo soulName
-                            socketElement.emit(routeName, `Usuário não encontrado`);  
-                            
-                        });
-                    }   
-                                               
-                    throw new Error("Usuário não encontrado");
-                }
                 
             } catch(error){
                 console.log(error)            

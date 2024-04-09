@@ -1,4 +1,6 @@
-import { SearchUserByEmail } from "./Login/SearchUserByEmail";
-import { TokenValidate } from "./TokenValidate/TokenValidate";
-import { EncryptJWT } from "./EncryptJWT/EncryptJWT";
-export { SearchUserByEmail, TokenValidate, EncryptJWT };
+import SearchUserByEmail from "./SearchUSerByEmail/SearchUserByEmail.service";
+import SearchUser from "./SearchUser/SearchUser.service";
+import TokenValidate from "./TokenValidate/TokenValidate.service";
+
+
+export { SearchUser, SearchUserByEmail, TokenValidate };
