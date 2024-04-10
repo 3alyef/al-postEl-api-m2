@@ -1,5 +1,6 @@
 import { Socket } from "socket.io";
 import { msgsResponse, sendMsg } from "../../../interfaces/msgs.interface";
+import { SendMsg } from "../../../services/Services";
 
 /* 
     NOTE: Todas as mensagens enviadas do tipo user1 => user2 são direcionadas à um channel especifico criado a partir da rendomização de 2 numbers + soulName1 + soulName2
@@ -13,40 +14,13 @@ class SendMsgController {
     ){
         socket.on(routeName, async ({ fromUser, toUser, toRoom, message, isGroup, chatName }: sendMsg)=>{ 
             if(!isGroup){
-                const dateInf = new Date(); 
-                const data = dateInf.toISOString();
-                const content: msgsResponse = {  
-                    fromUser,
-                    toUser,
-                    message, 
-                    createdIn: data
-                }
-                
-                const roomObj = previousMessages.get(toRoom);
-                if(!roomObj){
-                    const roomObj: msgsResponse[] = [];
-                    previousMessages.set(toRoom, roomObj);
-                }
-                roomObj?.push(content);
-                console.log(roomObj);
-                socket.to(toRoom).emit("newMsg", message);  
-                this.sendMessagesToM3(content)
+                await new SendMsg().initialize(socket, routeName, previousMessages, fromUser, toUser, toRoom, message)
             } 
                            
         })
     }
 
-    private async sendMessagesToM3(content: msgsResponse){
-        const body = JSON.stringify(content);
-        const response = await fetch(`${process.env.URL_M3}/setNewMsg`, {
-            method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            body: body
-        })
-        console.log(response)
-    }
+    
 }
 
 // ||| NOTE: Deve ser definido a seguinte ação: Quando não houver um usuário y (user1) e x (user2) deve-se apagar as previous messages desta sala e, é claro, o nome dela. |||

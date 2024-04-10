@@ -23,24 +23,33 @@ class RestoreHistory {
         try {
             const networkList: networksDB[] | null = await this.getNetworkList(userSoul);
             if(networkList){
+                console.log("NetworkLis: ", networkList)
                 for(const net of networkList){
                     const msgs = await this.getMessages(net);
+                    console.log("Dentro de try msgs=> "+msgs)
                     const room = this.roomNameGenerate(net.user, net.friend, roomsExpectUsers)
-                    
+                    roomsExpectUsers.set(userSoul, [room]); 
+   
                     if(msgs){
+                        const newRoomObj: msgsResponse[] = []; 
                         for(const msg of msgs){
-                            roomsExpectUsers.set(userSoul, [room]);
-                            const msgs: msgsResponse = {
+                            
+                            // Linka o usuario com sua respectiva sala de acordo com a networkList
+                            console.log("HINE",roomsExpectUsers.get(userSoul))
+
+                            const msgsT: msgsResponse = {
                                     _id: msg._id,
                                     fromUser: msg.fromUser,
                                     toUser: msg.toUser,
                                     message: msg.message, 
                                     createdIn: msg.createdIn
                                 }
-                            const newRoomObj: msgsResponse[] = []; 
-                            newRoomObj.push(msgs); 
-                            previousMessages.set(room, newRoomObj);
+                            
+                            newRoomObj.push(msgsT); 
+                            console.log("Aqui está msg: ", msgsT)
                         }
+                        
+                        previousMessages.set(room, newRoomObj);
                     } else {
                         const _userList = roomsExpectUsers.get(net.user);
                 
@@ -69,17 +78,9 @@ class RestoreHistory {
             // Pegar todas as salas de friend e user. E conferir se existe uma sala igual entre user e friend se não existir criar uma sala e retornar ela, se já existir retornar a mesma sala
 
             // Verifique se já existe uma sala entre os dois usuários
-            const userRooms = roomsExpectUsers.get(user);
+            //console.log("user"+ user, "friend"+ friend)
             const friendRooms = roomsExpectUsers.get(friend);
-        
-            if (userRooms && friendRooms) {
-                // Verifique se há uma sala comum entre os usuários nas salas do usuário
-                const commonRoomUser = userRooms.find(room => room.includes(user) && room.includes(friend));
-                if (commonRoomUser) {
-                    // Se já existir uma sala entre os dois usuários nas salas do user, retorne essa sala
-                    return commonRoomUser;
-                }
-    
+            if (friendRooms) {
                 // Verifique se há uma sala comum entre os usuários nas salas do friend
                 const commonRoomFriend = friendRooms.find(room => room.includes(user) && room.includes(friend));
                 if (commonRoomFriend) {
@@ -145,6 +146,7 @@ class RestoreHistory {
             if ('error' in data) {
                 throw new Error(data.error);
             } else {
+                console.log("Data: "+data)
                 return data;
             }
         }catch(error){

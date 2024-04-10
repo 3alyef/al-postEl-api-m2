@@ -9,9 +9,7 @@ class SearchUserController{
             // o usuario vai procurar um "friend" pelo email, / Enviando uma requisição para M1 para buscar pelo userSoul correspondente a esse email /   
             
             try {
-                const decoded = socket.auth;
-                
-               
+                const decoded = socket.auth;           
 
                 if(decoded){
                     if(decoded.email === email){

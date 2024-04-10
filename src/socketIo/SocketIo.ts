@@ -41,7 +41,7 @@ abstract class SocketIo{
 
 
             const decoded: DecodedData = socket.auth;
-            console.log("new user")
+            // console.log("new user")
             let socketsList: Socket[] | undefined = this.userSocketMap.get(decoded.userSoul);
 
             if(!socketsList){

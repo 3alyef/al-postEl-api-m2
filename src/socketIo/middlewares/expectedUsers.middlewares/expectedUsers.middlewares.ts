@@ -9,6 +9,7 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
     const decoded: DecodedData = socket.auth;
     const userSoul = decoded.userSoul;
     let rooms = this.roomsExpectUsers.get(userSoul);
+    
     if(!rooms){
         await new RestoreHistory().initialize( userSoul, this.roomsExpectUsers, this.previousMessages );
     }
