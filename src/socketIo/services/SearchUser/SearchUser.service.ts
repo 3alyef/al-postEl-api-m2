@@ -1,16 +1,21 @@
 import { Socket } from "socket.io";
-import { SearchUserByEmail } from "../Services";
+import { AddToNetworkList, SearchUserByEmail } from "../Services";
 import { MessageUserResponse } from "../../interfaces/searchByEmail.interface";
+import { DecodedData } from "../../interfaces/auth.interface";
 
 class SearchUser {
-    public async initialize(email: string, userSocketMap:Map<string, Socket[]>, routeName: string, decoded: any){
+    public async initialize(email: string, userSocketMap:Map<string, Socket[]>, routeName: string, decoded: DecodedData){
         const content: MessageUserResponse = await new SearchUserByEmail().initialize( email );
-
 
         const friendName = content.userSoul;
                 
         if(content.found){  
             const sockets = userSocketMap.get(decoded.userSoul);
+            // TODO: Agora deve-se adicionar à lista de network user e friend
+            if(friendName){
+                new AddToNetworkList().initialize(decoded.userSoul, friendName);
+            }
+            
             if(sockets){
                 sockets.forEach((socketElement) => {
                     // Envia a mensagem para todos os /'nicknames" que detenham o mesmo soulName

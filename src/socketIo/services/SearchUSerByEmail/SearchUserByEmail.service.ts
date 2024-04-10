@@ -7,7 +7,7 @@ class SearchUserByEmail {
         this.URL_M1 = process.env.ACCESS_ALLOW_ORIGIN || "need M1";
     }
 
-    public async initialize( email: string ): Promise< Message >{
+    public async initialize( email: string ): Promise<Message>{
         const body = JSON.stringify({email})
 
         try {

@@ -34,7 +34,7 @@ class RestoreHistory {
                                     _id: msg._id,
                                     fromUser: msg.fromUser,
                                     toUser: msg.toUser,
-                                    msg: msg.message, 
+                                    message: msg.message, 
                                     createdIn: msg.createdIn
                                 }
                             const newRoomObj: msgsResponse[] = []; 
@@ -59,7 +59,6 @@ class RestoreHistory {
             return;
         }
     }
-
     private roomNameGenerate(user: string, friend: string, roomsExpectUsers: Map<string, string[]>): string{
         try {
             const randomRoomNumber1 = Math.floor(Math.random() * 101); 
@@ -77,11 +76,11 @@ class RestoreHistory {
                 // Verifique se há uma sala comum entre os usuários nas salas do usuário
                 const commonRoomUser = userRooms.find(room => room.includes(user) && room.includes(friend));
                 if (commonRoomUser) {
-                    // Se já existir uma sala entre os dois usuários nas salas do usuário, retorne essa sala
+                    // Se já existir uma sala entre os dois usuários nas salas do user, retorne essa sala
                     return commonRoomUser;
                 }
     
-                // Verifique se há uma sala comum entre os usuários nas salas do amigo
+                // Verifique se há uma sala comum entre os usuários nas salas do friend
                 const commonRoomFriend = friendRooms.find(room => room.includes(user) && room.includes(friend));
                 if (commonRoomFriend) {
                     // Se já existir uma sala entre os dois usuários nas salas do amigo, retorne essa sala
@@ -118,6 +117,7 @@ class RestoreHistory {
             if ('error' in data) {
                 throw new Error(data.error);
             } else {
+                console.log("Aqui está o network: "+ data)
                 return data;
             }
             
@@ -125,8 +125,6 @@ class RestoreHistory {
             throw new Error("Erro ao solicitar a networkList: " + error);
         }
     }
-    
-    
     private async getMessages(network: networksDB): Promise<msgsDB[] | null>{
         try {
             const body = JSON.stringify({ userA: network.user, userB: network.friend })

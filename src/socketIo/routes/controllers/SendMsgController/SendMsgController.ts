@@ -11,14 +11,14 @@ class SendMsgController {
         routeName: string, 
         previousMessages: Map<string, msgsResponse[]>
     ){
-        socket.on(routeName, async ({ fromUser, toUser, toRoom, msg, isGroup, chatName }: sendMsg)=>{ 
+        socket.on(routeName, async ({ fromUser, toUser, toRoom, message, isGroup, chatName }: sendMsg)=>{ 
             if(!isGroup){
                 const dateInf = new Date(); 
                 const data = dateInf.toISOString();
                 const content: msgsResponse = {  
                     fromUser,
                     toUser,
-                    msg, 
+                    message, 
                     createdIn: data
                 }
                 
@@ -29,7 +29,7 @@ class SendMsgController {
                 }
                 roomObj?.push(content);
                 console.log(roomObj);
-                socket.to(toRoom).emit("newMsg", msg);  
+                socket.to(toRoom).emit("newMsg", message);  
                 this.sendMessagesToM3(content)
             } 
                            

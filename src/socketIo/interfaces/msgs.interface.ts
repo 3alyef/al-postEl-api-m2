@@ -3,7 +3,7 @@ export interface msgsResponse {
     fromUser: string;
     toUser: string;
     toChannel?: string;
-    msg: string;
+    message: string;
     createdIn: string;
 }
 
@@ -16,7 +16,7 @@ export interface sendMsg {
     fromUser: string;
     toUser: string;
     toRoom: string;
-    msg: string;
+    message: string;
     isGroup: string;
     chatName: string;
 }
