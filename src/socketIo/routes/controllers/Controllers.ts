@@ -1,5 +1,5 @@
 import { searchUserController } from "./SearchUserController/SearchUserController";
-import { newRoomController } from "./NewRoomController/NewRoomController";
+import { createConnectionController } from "./CreateConnectionController/CreateConnectionController";
 import { sendMsgController } from "./SendMsgController/SendMsgController";
 
-export { searchUserController, newRoomController, sendMsgController };
+export { searchUserController, createConnectionController, sendMsgController };

@@ -21,7 +21,7 @@ class SearchUserController{
                 
                 
             } catch(error){
-                console.log(error)            
+                console.error(error)            
             }
 
             // Se tudo ocorrer bem, (usuário encontrado) o userSoul é enviado de volta para o user1, se ele quiser iniciar uma conversa com o usuario2 (o buscado) ele vai enviar de volta o soulName para a criação da sala. (se já existir a sala ele só reetorna para a sala já criada...)

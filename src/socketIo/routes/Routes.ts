@@ -15,9 +15,9 @@ const router = (
         userSocketMap
     );
 
-    Controll.newRoomController.newRoom( 
+    Controll.createConnectionController.newConnection( 
         socket,
-        "newRoom",  
+        "connectFriend",  
         userSocketMap,
         roomsExpectUsers,
         previousMessages

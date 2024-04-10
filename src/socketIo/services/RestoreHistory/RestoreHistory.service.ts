@@ -1,5 +1,6 @@
 import { msgsResponse } from "../../interfaces/msgs.interface";
 import { msgsDB, networksDB } from "../../interfaces/networkGetPrevious.interface";
+import { roomNameGenerate } from "../Services";
 
 class RestoreHistory {
     public async initialize(userSoul: string, roomsExpectUsers: Map<string, string[]>, previousMessages: Map<string, msgsResponse[]>) {
@@ -27,15 +28,15 @@ class RestoreHistory {
                 for(const net of networkList){
                     const msgs = await this.getMessages(net);
                     console.log("Dentro de try msgs=> "+msgs)
-                    const room = this.roomNameGenerate(net.user, net.friend, roomsExpectUsers)
+                    const room = roomNameGenerate(net.user, net.friend, roomsExpectUsers)
                     roomsExpectUsers.set(userSoul, [room]); 
-   
+                    
                     if(msgs){
                         const newRoomObj: msgsResponse[] = []; 
                         for(const msg of msgs){
                             
                             // Linka o usuario com sua respectiva sala de acordo com a networkList
-                            console.log("HINE",roomsExpectUsers.get(userSoul))
+                            //console.log("HINE",roomsExpectUsers.get(userSoul))
 
                             const msgsT: msgsResponse = {
                                     _id: msg._id,
@@ -46,7 +47,6 @@ class RestoreHistory {
                                 }
                             
                             newRoomObj.push(msgsT); 
-                            console.log("Aqui está msg: ", msgsT)
                         }
                         
                         previousMessages.set(room, newRoomObj);
@@ -68,32 +68,7 @@ class RestoreHistory {
             return;
         }
     }
-    private roomNameGenerate(user: string, friend: string, roomsExpectUsers: Map<string, string[]>): string{
-        try {
-            const randomRoomNumber1 = Math.floor(Math.random() * 101); 
-
-            const randomRoomNumber2 = Math.floor(Math.random() * 101); 
-
-            const roomName = `${randomRoomNumber1}${friend}El${user}${randomRoomNumber2}`;
-            // Pegar todas as salas de friend e user. E conferir se existe uma sala igual entre user e friend se não existir criar uma sala e retornar ela, se já existir retornar a mesma sala
-
-            // Verifique se já existe uma sala entre os dois usuários
-            //console.log("user"+ user, "friend"+ friend)
-            const friendRooms = roomsExpectUsers.get(friend);
-            if (friendRooms) {
-                // Verifique se há uma sala comum entre os usuários nas salas do friend
-                const commonRoomFriend = friendRooms.find(room => room.includes(user) && room.includes(friend));
-                if (commonRoomFriend) {
-                    // Se já existir uma sala entre os dois usuários nas salas do amigo, retorne essa sala
-                    return commonRoomFriend;
-                } 
-            } 
-            
-            return roomName;
-        } catch(error) {
-            throw new Error("Falha ao gerar roomName: "+ error);
-        }
-    }
+    
     private async getNetworkList(userSoul: string): Promise<networksDB[] | null>{
         try{
             const body = JSON.stringify({user: userSoul});
