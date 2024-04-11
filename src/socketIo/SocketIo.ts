@@ -5,20 +5,23 @@ import * as middlewares from "./middlewares/middlewares";
 import { ExpectUsers } from "../../custom";
 import { msgsResponse } from "./interfaces/msgs.interface";
 import { DecodedData } from "./interfaces/auth.interface";
+import { msgsGroupDB } from "./interfaces/group.interface";
 
 abstract class SocketIo{
     private socketIo: Io;
     private userSocketMap: Map<string, Socket[]>; // Rooms list on
 
     public previousMessages: Map<string, msgsResponse[]>; // Msg List
-
+    public previousGroupMessages: Map<string, msgsGroupDB[]>
     public roomsExpectUsers: Map<string, string[]>;
 
     public groupsExpectUsers: Map<string, string[]>;
+    public groupsAdmin: Map<string, string[]>
     constructor( server: ServerHTTP ){     
+        this.previousGroupMessages = new Map<string, msgsGroupDB[]>();
         this.roomsExpectUsers = new Map<string, string[]>();
         this.userSocketMap = new Map<string, Socket[]>();
-        
+        this.groupsAdmin = new Map<string, string[]>();
         this.previousMessages = new Map<string, msgsResponse[]>();
         this.groupsExpectUsers = new Map<string, string[]>()
         this.socketIo = new Io( server, {
@@ -69,7 +72,7 @@ abstract class SocketIo{
 
             //console.log(decoded);
         
-            socketIoRoutes( socket, this.userSocketMap, this.roomsExpectUsers, this.previousMessages, this.groupsExpectUsers ); 
+            socketIoRoutes( socket, this.userSocketMap, this.roomsExpectUsers, this.previousMessages, this.groupsExpectUsers, this.groupsAdmin, this.previousGroupMessages ); 
     
             this.socketIo.of("/").adapter.on("create-room", (room: string) => {
                 console.log(`room ${room} was created`);

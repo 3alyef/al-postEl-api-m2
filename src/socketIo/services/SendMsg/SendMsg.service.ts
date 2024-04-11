@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 import { msgsResponse } from '../../interfaces/msgs.interface';
 class SendMsg {
-    public async initialize(socket: Socket, routeName: string, previousMessages: Map<string, msgsResponse[]>, fromUser: string, toUser: string, toRoom: string, message: string){
+    public async initialize(socket: Socket, previousMessages: Map<string, msgsResponse[]>, fromUser: string, toUser: string, toRoom: string, message: string){
         const dateInf = new Date(); 
         const data = dateInf.toISOString();
         const content: msgsResponse = {  

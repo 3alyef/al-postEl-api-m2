@@ -24,11 +24,12 @@ class RestoreHistory {
         try {
             const networkList: networksDB[] | null = await this.getNetworkList(userSoul);
             if(networkList){
-                console.log("NetworkLis: ", networkList)
+                //console.log("NetworkLis: ", networkList)
                 for(const net of networkList){
                     const msgs = await this.getMessages(net);
-                    console.log("Dentro de try msgs=> "+msgs)
-                    const room = roomNameGenerate(net.user, net.friend, roomsExpectUsers)
+                    //console.log("Dentro de try msgs=> "+msgs)
+                    const room = roomNameGenerate(net.user, net.friend, roomsExpectUsers);
+                    
                     roomsExpectUsers.set(userSoul, [room]); 
                     
                     if(msgs){
@@ -93,7 +94,7 @@ class RestoreHistory {
             if ('error' in data) {
                 throw new Error(data.error);
             } else {
-                console.log("Aqui está o network: "+ data)
+                console.log("Aqui está o network: ", data)
                 return data;
             }
             

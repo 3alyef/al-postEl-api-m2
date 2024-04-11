@@ -7,4 +7,8 @@ import { roomNameGenerate } from "./RoomNameGenerate/RoomNameGenerate.service";
 
 import CreateGroup from "./CreateGroup/CreateGroup.service";
 
-export { SearchUser, SearchUserByEmail, AddToNetworkList, TokenValidate, SendMsg, roomNameGenerate, CreateGroup };
+import { localResgistrer } from "./LocalGroupRegistrer/LocalGroupRegistrer.service";
+
+import { RestoreGroup } from "./RestoreGroup/RestoreGroup.service";
+import SendGroupMsg from "./SendGroupMsg.service";
+export { SearchUser, SearchUserByEmail, AddToNetworkList, TokenValidate, SendMsg, roomNameGenerate, CreateGroup, localResgistrer, RestoreGroup, SendGroupMsg };

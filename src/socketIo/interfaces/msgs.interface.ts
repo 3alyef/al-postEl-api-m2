@@ -15,8 +15,9 @@ export interface msgsRequest {
 export interface sendMsg {
     fromUser: string;
     toUser: string;
-    toRoom: string;
+    toRoom?: string;
     message: string;
     isGroup: string;
     chatName: string;
+    toGroup?: string
 }

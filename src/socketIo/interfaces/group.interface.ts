@@ -12,3 +12,20 @@ export interface newGroupResponse {
     __v: number
 
 }
+
+export interface groupDB {
+    _id: string;
+    fromUser: string;
+    group: string;
+    createdIn: string;
+}
+
+
+
+export interface msgsGroupDB {
+    _id?: string;
+    fromUser: string;
+    toGroup: string;
+    message: string;
+    createdIn: string;
+}

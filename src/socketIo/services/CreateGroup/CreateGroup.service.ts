@@ -1,9 +1,9 @@
 import { Socket } from "socket.io";
 import { newGroup, newGroupResponse } from "../../interfaces/group.interface";
 import { DecodedData } from "../../interfaces/auth.interface";
-
+import { localResgistrer } from "../Services";
 class CreateGroup{
-    public async initialize(socket: Socket, {groupName, groupParticipants}: newGroup, groupsExpectUsers: Map<string, string[]>){
+    public async initialize(socket: Socket, {groupName, groupParticipants}: newGroup, groupsExpectUsers: Map<string, string[]>, groupsAdmin: Map<string, string[]>, userSocketMap:Map<string, Socket[]>){
         try {
             const decoded: DecodedData = socket.auth;
 
@@ -17,8 +17,30 @@ class CreateGroup{
                 groupAdministratorParticipants: [userSoul]
             }
             const resp: newGroupResponse = await this.createNewGroup(group);
+            const groupId = resp._id;
             
-            await this.localResgistrer(resp, groupsExpectUsers);
+            
+            resp.groupAdministratorParticipants.forEach((el)=>{
+                //
+                const group = groupsAdmin.get(groupId);
+                if(!group){
+                    const group: string[] = []
+                    groupsAdmin.set(groupId, group)
+                }
+                group?.push(el);
+                //
+                localResgistrer(el, groupId, groupsExpectUsers, userSocketMap, true)
+            })
+
+            resp.groupParticipants.forEach((el)=>{
+                
+                if(!resp.groupAdministratorParticipants.includes(el)){
+                  
+                    localResgistrer(el, groupId, groupsExpectUsers, userSocketMap, false)
+                }       
+            })
+            
+            //await localResgistrer(resp, groupsExpectUsers);
             return
 
         } catch( error ){
@@ -58,9 +80,7 @@ class CreateGroup{
         }
     }
 
-    private async localResgistrer(resp: newGroupResponse, groupsExpectUsers: Map<string, string[]>){
-        
-    }
+    
 }
 
 export default CreateGroup;

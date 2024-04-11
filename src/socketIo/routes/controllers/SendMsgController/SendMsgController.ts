@@ -1,6 +1,7 @@
 import { Socket } from "socket.io";
 import { msgsResponse, sendMsg } from "../../../interfaces/msgs.interface";
-import { SendMsg } from "../../../services/Services";
+import { SendGroupMsg, SendMsg } from "../../../services/Services";
+import { msgsGroupDB } from "../../../interfaces/group.interface";
 
 /* 
     NOTE: Todas as mensagens enviadas do tipo user1 => user2 são direcionadas à um channel especifico criado a partir da rendomização de 2 numbers + soulName1 + soulName2
@@ -10,12 +11,15 @@ class SendMsgController {
     sendMsg(
         socket: Socket,
         routeName: string, 
-        previousMessages: Map<string, msgsResponse[]>
+        previousMessages: Map<string, msgsResponse[]>,
+        previousGroupMessages: Map<string, msgsGroupDB[]>
     ){
-        socket.on(routeName, async ({ fromUser, toUser, toRoom, message, isGroup, chatName }: sendMsg)=>{ 
-            if(!isGroup){
-                await new SendMsg().initialize(socket, routeName, previousMessages, fromUser, toUser, toRoom, message)
-            } 
+        socket.on(routeName, async ({ fromUser, toUser, toRoom, message, isGroup, chatName, toGroup }: sendMsg)=>{ 
+            if(!isGroup && toRoom){
+                await new SendMsg().initialize(socket,previousMessages, fromUser, toUser, toRoom, message)
+            } else if(!isGroup && toGroup){
+                await new SendGroupMsg().initialize(socket, previousGroupMessages, fromUser, toGroup, message)
+            }
                            
         })
     }
