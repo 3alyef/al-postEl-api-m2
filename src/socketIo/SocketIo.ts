@@ -13,12 +13,14 @@ abstract class SocketIo{
     public previousMessages: Map<string, msgsResponse[]>; // Msg List
 
     public roomsExpectUsers: Map<string, string[]>;
+
+    public groupsExpectUsers: Map<string, string[]>;
     constructor( server: ServerHTTP ){     
         this.roomsExpectUsers = new Map<string, string[]>();
         this.userSocketMap = new Map<string, Socket[]>();
         
-        this.previousMessages = new Map();
-        
+        this.previousMessages = new Map<string, msgsResponse[]>();
+        this.groupsExpectUsers = new Map<string, string[]>()
         this.socketIo = new Io( server, {
             cors: {
                 origin: "*", 
@@ -67,7 +69,7 @@ abstract class SocketIo{
 
             //console.log(decoded);
         
-            socketIoRoutes( socket, this.userSocketMap, this.roomsExpectUsers, this.previousMessages ); 
+            socketIoRoutes( socket, this.userSocketMap, this.roomsExpectUsers, this.previousMessages, this.groupsExpectUsers ); 
     
             this.socketIo.of("/").adapter.on("create-room", (room: string) => {
                 console.log(`room ${room} was created`);

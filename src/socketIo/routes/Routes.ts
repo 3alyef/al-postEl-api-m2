@@ -6,7 +6,8 @@ const router = (
     socket: Socket,
     userSocketMap:Map<string, Socket[]>,
     roomsExpectUsers: Map<string, string[]>,
-    previousMessages: Map<string, msgsResponse[]>
+    previousMessages: Map<string, msgsResponse[]>,
+    groupsExpectUsers: Map<string, string[]>
     ) => { 
     
     Controll.searchUserController.searchUser( 
@@ -33,7 +34,7 @@ const router = (
     Controll.createNewGroupController.newGroup(
         socket,
         "newGroup",
-        roomsExpectUsers
+        groupsExpectUsers
     );
     
 }
