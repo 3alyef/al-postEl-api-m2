@@ -29,6 +29,12 @@ const router = (
         previousMessages,
         
     );
+
+    Controll.createNewGroupController.newGroup(
+        socket,
+        "newGroup",
+        roomsExpectUsers
+    );
     
 }
 
