@@ -1,11 +1,12 @@
 import { Socket } from "socket.io";
+import { newGroupResponse } from "../../interfaces/group.interface";
 
-export async function localResgistrer(userSoul: string, groupId: string, groupsExpectUsers: Map<string, string[]>, userSocketMap:Map<string, Socket[]>, isAdmin: boolean ){
+export async function localResgistrer(userSoul: string, resp: newGroupResponse, groupId: string, groupsExpectUsers: Map<string, newGroupResponse[]>, userSocketMap:Map<string, Socket[]>, isAdmin: boolean ){
     const socketUser = userSocketMap.get(userSoul);
     const isUserInGroup = groupsExpectUsers.get(userSoul)
  
-    if(isUserInGroup){
-        if(!isUserInGroup.includes(groupId)){
+    if(isUserInGroup){//includes(groupId)
+        if(!isUserInGroup.some(obj => obj._id.includes(groupId))){
             if(socketUser){
                 
                 socketUser.forEach((socketElement) => {
@@ -24,11 +25,11 @@ export async function localResgistrer(userSoul: string, groupId: string, groupsE
                 });
                 
             } 
-            isUserInGroup.push(groupId)
+            isUserInGroup.push(resp)
           
         }
     } else {
-        groupsExpectUsers.set(userSoul, [groupId])
+        groupsExpectUsers.set(userSoul, [resp])
      
     }
     

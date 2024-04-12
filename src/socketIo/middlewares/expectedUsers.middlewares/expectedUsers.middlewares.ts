@@ -19,19 +19,20 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
     usersGroup = this.groupsExpectUsers.get(userSoul);
 
     if(usersGroup){
-        usersGroup.forEach((groupId)=>{
-            socket.join(groupId);
-            console.log("grupo",groupId)
+        console.log("existe")
+        usersGroup.forEach((group)=>{
+            socket.join(group._id);
+            console.log("grupo",group._id)
 
-            const groupAdmin = this.groupsAdmin.get(groupId);
+            const groupAdmin = this.groupsAdmin.get(group._id);
             if(groupAdmin?.includes(userSoul)){
                 
-                socket.emit("updateGroup", {group: groupId, isAdmin: true})       
+                socket.emit("updateGroup", {group: group._id, isAdmin: true, groupName: group.groupName})       
             } else {
-                socket.emit("updateGroup", {group: groupId, isAdmin: false})  
+                socket.emit("updateGroup", {group: group._id, isAdmin: false, groupName: group.groupName})  
             }
 
-            const msgs = this.previousGroupMessages.get(groupId)
+            const msgs = this.previousGroupMessages.get(group._id)
             msgs?.forEach((msg)=>{
                 console.log("previous messages", msg)
                 socket.emit("previousGroupMsgs", msg)

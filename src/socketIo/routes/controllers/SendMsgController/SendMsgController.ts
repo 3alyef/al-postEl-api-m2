@@ -17,7 +17,7 @@ class SendMsgController {
         socket.on(routeName, async ({ fromUser, toUser, toRoom, message, isGroup, chatName, toGroup }: sendMsg)=>{ 
             if(!isGroup && toRoom){
                 await new SendMsg().initialize(socket,previousMessages, fromUser, toUser, toRoom, message)
-            } else if(!isGroup && toGroup){
+            } else if(isGroup && toGroup){
                 await new SendGroupMsg().initialize(socket, previousGroupMessages, fromUser, toGroup, message)
             }
                            

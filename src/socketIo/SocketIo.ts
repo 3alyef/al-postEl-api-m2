@@ -5,7 +5,7 @@ import * as middlewares from "./middlewares/middlewares";
 import { ExpectUsers } from "../../custom";
 import { msgsResponse } from "./interfaces/msgs.interface";
 import { DecodedData } from "./interfaces/auth.interface";
-import { msgsGroupDB } from "./interfaces/group.interface";
+import { msgsGroupDB, newGroupResponse } from "./interfaces/group.interface";
 
 abstract class SocketIo{
     private socketIo: Io;
@@ -14,8 +14,8 @@ abstract class SocketIo{
     public previousMessages: Map<string, msgsResponse[]>; // Msg List
     public previousGroupMessages: Map<string, msgsGroupDB[]>
     public roomsExpectUsers: Map<string, string[]>;
-
-    public groupsExpectUsers: Map<string, string[]>;
+    
+    public groupsExpectUsers: Map<string, newGroupResponse[]>;
     public groupsAdmin: Map<string, string[]>
     constructor( server: ServerHTTP ){     
         this.previousGroupMessages = new Map<string, msgsGroupDB[]>();
@@ -23,7 +23,7 @@ abstract class SocketIo{
         this.userSocketMap = new Map<string, Socket[]>();
         this.groupsAdmin = new Map<string, string[]>();
         this.previousMessages = new Map<string, msgsResponse[]>();
-        this.groupsExpectUsers = new Map<string, string[]>()
+        this.groupsExpectUsers = new Map<string, newGroupResponse[]>()
         this.socketIo = new Io( server, {
             cors: {
                 origin: "*", 

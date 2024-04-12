@@ -51,15 +51,16 @@ class RestoreHistory {
                         }
                         
                         previousMessages.set(room, newRoomObj);
-                    } else {
-                        const _userList = roomsExpectUsers.get(net.user);
-                
+                    } 
+                    
+                    /*else {
+                        const _userList = roomsExpectUsers.get(net.user);               // Hine! <====
                         if(!_userList){
                             roomsExpectUsers.set(net.user, [room]);
                         } else {
                             _userList?.push(room);
                         }
-                    }
+                    }*/
                 }
                 
             }

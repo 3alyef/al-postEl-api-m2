@@ -3,7 +3,7 @@ import { newGroup, newGroupResponse } from "../../interfaces/group.interface";
 import { DecodedData } from "../../interfaces/auth.interface";
 import { localResgistrer } from "../Services";
 class CreateGroup{
-    public async initialize(socket: Socket, {groupName, groupParticipants}: newGroup, groupsExpectUsers: Map<string, string[]>, groupsAdmin: Map<string, string[]>, userSocketMap:Map<string, Socket[]>){
+    public async initialize(socket: Socket, {groupName, groupParticipants}: newGroup, groupsExpectUsers: Map<string, newGroupResponse[]>, groupsAdmin: Map<string, string[]>, userSocketMap:Map<string, Socket[]>){
         try {
             const decoded: DecodedData = socket.auth;
 
@@ -29,14 +29,14 @@ class CreateGroup{
                 }
                 group?.push(el);
                 //
-                localResgistrer(el, groupId, groupsExpectUsers, userSocketMap, true)
+                localResgistrer(el, resp, groupId, groupsExpectUsers, userSocketMap, true)
             })
 
             resp.groupParticipants.forEach((el)=>{
                 
                 if(!resp.groupAdministratorParticipants.includes(el)){
                   
-                    localResgistrer(el, groupId, groupsExpectUsers, userSocketMap, false)
+                    localResgistrer(el, resp, groupId, groupsExpectUsers, userSocketMap, false)
                 }       
             })
             

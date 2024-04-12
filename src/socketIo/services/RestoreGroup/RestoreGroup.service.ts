@@ -3,49 +3,62 @@ import { msgsResponse } from "../../interfaces/msgs.interface";
 import { msgsDB, networksDB } from "../../interfaces/networkGetPrevious.interface";
 
 class RestoreGroup {
-    public async initialize(userSoul: string, groupsExpectUsers: Map<string, string[]>, groupsAdmin = new Map<string, string[]>(), previousGroupMessages: Map<string, msgsGroupDB[]>) {
+    public async initialize(userSoul: string, groupsExpectUsers: Map<string, newGroupResponse[]>, groupsAdmin = new Map<string, string[]>(), previousGroupMessages: Map<string, msgsGroupDB[]>) {
 
         // Primeiro get todos os names groups and after depositar esses names no groupsExpectUsers. Depois disso, pegar todas as mensagens e depositar em previousMessages.
         
         try {
             const groups: newGroupResponse[] | null = await this.getGroupList(userSoul);
             if(groups){
+                //console.log("GRUPO")
                 for(const group of groups){
-                    const groupName = group._id
+                    
+                    const groupId = group._id
+                    
+            
                     for(const admins of group.groupAdministratorParticipants){
-                        let groupAdmins = groupsAdmin.get(groupName);
+                        let groupAdmins = groupsAdmin.get(groupId);
                         if(!groupAdmins){
                             groupAdmins = []
-                            groupsAdmin.set(groupName, groupAdmins)
+                            groupsAdmin.set(groupId, groupAdmins)
                         }
                         groupAdmins.push(admins);
+                        //console.log("GRUPO ADMIN", groupName, admins)
                     }
 
+                    // HERE -----------------
                     for(const user of group.groupParticipants){
-                        let groupUsers = groupsExpectUsers.get(groupName)
+                        let groupUsers = groupsExpectUsers.get(user)
                         if(!groupUsers){
                             groupUsers = [];
-                            groupsExpectUsers.set(groupName, groupUsers)
+                            groupsExpectUsers.set(user, groupUsers)
                         }
-                        groupUsers.push(user)
+                        groupUsers.push(group);
+                        console.log("Grupo EXPECT", groupUsers)
                     }
                     const msgs: msgsGroupDB[] | null = await this.getMessages(group)
                     if(msgs){
-                        for(const msg of msgs) {
-                            
-                            
-                            let _msgList = previousGroupMessages.get(groupName);
+                        for(const msg of msgs) {    
+                            let _msgList = previousGroupMessages.get(groupId);
                 
                             if(!_msgList){
                                 _msgList = []
-                                previousGroupMessages.set(groupName, _msgList);
+                                previousGroupMessages.set(groupId, _msgList);
                             } 
                             _msgList.push(msg);
                             
                         }
-                    } else {
-
-                    }
+                    } 
+                    
+                    
+                    /*else {
+                        const _userList = roomsExpectUsers.get(net.user);
+                
+                        if(!_userList){
+                            roomsExpectUsers.set(net.user, [room]);
+                        } else {
+                            _userList?.push(room);
+                    }*/
                     
                 }
 
@@ -108,8 +121,9 @@ class RestoreGroup {
                 throw new Error(`Falha na solicitação: ${response.statusText}`);
             } 
             const data: msgsGroupDB[] | { error: string }= await response.json();
-
+            console.log("mensagem", data)
             if ('error' in data) {
+               
                 throw new Error(data.error);
             } else {
                 console.log("Data: "+data)
