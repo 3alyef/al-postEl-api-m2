@@ -18,7 +18,7 @@ class SendGroupMsg {
         }
         roomObj?.push(content);
         console.log(roomObj);
-        socket.to(toGroup).emit("newMsg", message);  
+        socket.to(toGroup).emit("newMsg", content);  
         this.sendMessagesToM3(content)
     }
 
