@@ -10,5 +10,5 @@ import CreateGroup from "./CreateGroup/CreateGroup.service";
 import { localResgistrer } from "./LocalGroupRegistrer/LocalGroupRegistrer.service";
 
 import { RestoreGroup } from "./RestoreGroup/RestoreGroup.service";
-import SendGroupMsg from "./SendGroupMsg.service";
+import SendGroupMsg from "./SendGroupMsg/SendGroupMsg.service";
 export { SearchUser, SearchUserByEmail, AddToNetworkList, TokenValidate, SendMsg, roomNameGenerate, CreateGroup, localResgistrer, RestoreGroup, SendGroupMsg };

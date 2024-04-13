@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { msgsGroupDB } from '../interfaces/group.interface';
+import { msgsGroupDB } from '../../interfaces/group.interface';
 class SendGroupMsg {
     public async initialize(socket: Socket, previousGroupMessages: Map<string, msgsGroupDB[]>, fromUser: string, toGroup: string, message: string){
         const dateInf = new Date(); 

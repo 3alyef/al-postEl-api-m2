@@ -16,7 +16,7 @@ class CreateConnectionController {
                     // TODO: Agora deve-se adicionar à lista de network user e friend
                     
                     new AddToNetworkList().initialize(decoded.userSoul, friendName);
-                
+                    //console.log(sockets_user=== sockets)
 
                     const room = roomNameGenerate(decoded.userSoul, friendName, roomsExpectUsers);
                     const _userList = roomsExpectUsers.get(decoded.userSoul);
@@ -40,7 +40,7 @@ class CreateConnectionController {
                         sockets_user.forEach((socketElement) => {
                             socketElement.join(room);
                             // Envia a mensagem para todos os /'nicknames" que detenham o mesmo soulName
-                            socketElement.emit(routeName ,`${friendName}`);
+                            //socketElement.emit(routeName ,`${friendName}`);
                             socket.emit("updateAll", `Você foi adicionado na sala: ${room}`)
                             
                     });
@@ -49,7 +49,7 @@ class CreateConnectionController {
                         sockets_friend.forEach((socketElement) => {
                             // Envia a mensagem para todos os /'nicknames" que detenham o mesmo soulName
                             socketElement.join(room);
-                            socketElement.emit(routeName ,`${friendName}`);
+                            //socketElement.emit(routeName ,`${friendName}`);
                             socket.emit("updateAll", `Você foi adicionado na sala: ${room}`)
                             
                     });
