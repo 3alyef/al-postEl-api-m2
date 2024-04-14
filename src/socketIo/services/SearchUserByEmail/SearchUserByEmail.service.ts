@@ -24,7 +24,8 @@ class SearchUserByEmail {
             } else if(response.status === 401){
                 return { found: false, userSoul: null, message: "user not found" }
             }
-
+            console.log("RESPONSE: ",response);
+            console.log("JSON: ", await response.json())
             return await response.json();
         } catch (error) {
             console.error('Erro ao conectar com M1: ', error);
