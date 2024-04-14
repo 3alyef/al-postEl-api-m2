@@ -29,9 +29,14 @@ class RestoreHistory {
                     const msgs = await this.getMessages(net);
                     //console.log("Dentro de try msgs=> "+msgs)
                     const room = roomNameGenerate(net.user, net.friend, roomsExpectUsers);
-                    
-                    roomsExpectUsers.set(userSoul, [room]); 
-                    
+              
+                    let rooms = roomsExpectUsers.get(userSoul);
+                    if(!rooms){
+                        rooms = [];
+                        roomsExpectUsers.set(userSoul, rooms);
+                    }
+                    rooms.push(room);
+
                     if(msgs){
                         const newRoomObj: msgsResponse[] = []; 
                         for(const msg of msgs){
@@ -46,10 +51,10 @@ class RestoreHistory {
                                     message: msg.message, 
                                     createdIn: msg.createdIn
                                 }
-                            
+                            console.log(msgsT)
                             newRoomObj.push(msgsT); 
                         }
-                        
+                        //console.log("Sala: "+room, newRoomObj)
                         previousMessages.set(room, newRoomObj);
                     } 
                     
@@ -87,7 +92,7 @@ class RestoreHistory {
             } 
     
             const data: networksDB[] | { error: string } | null = await response.json();
-    
+            console.log("hine", data)
             if (!data) {
                 return null; // Retorna null se não houver dados
             }

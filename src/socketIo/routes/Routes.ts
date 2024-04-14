@@ -42,6 +42,12 @@ const router = (
         userSocketMap,
         
     );
+
+    Controll.unregisterController.unregister(
+        socket,
+        "unregister",
+        
+    );
     
 }
 

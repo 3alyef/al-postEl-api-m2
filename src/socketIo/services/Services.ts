@@ -11,4 +11,6 @@ import { localResgistrer } from "./LocalGroupRegistrer/LocalGroupRegistrer.servi
 
 import { RestoreGroup } from "./RestoreGroup/RestoreGroup.service";
 import SendGroupMsg from "./SendGroupMsg/SendGroupMsg.service";
-export { SearchUser, SearchUserByEmail, AddToNetworkList, TokenValidate, SendMsg, roomNameGenerate, CreateGroup, localResgistrer, RestoreGroup, SendGroupMsg };
+
+import { encryptCrypto } from "./EncryptCrypto/EncryptCrypto.service";
+export { SearchUser, SearchUserByEmail, AddToNetworkList, TokenValidate, SendMsg, roomNameGenerate, CreateGroup, localResgistrer, RestoreGroup, SendGroupMsg, encryptCrypto };
