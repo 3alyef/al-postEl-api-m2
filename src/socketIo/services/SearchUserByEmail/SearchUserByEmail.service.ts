@@ -4,7 +4,7 @@ import { Message } from "../../interfaces/searchByEmail.interface";
 class SearchUserByEmail {
     private URL_M1;
     constructor(){
-        this.URL_M1 = process.env.ACCESS_ALLOW_ORIGIN || "need M1";
+        this.URL_M1 = process.env.URL_M1 || "need M1";
     }
 
     public async initialize( email: string ): Promise<Message>{
