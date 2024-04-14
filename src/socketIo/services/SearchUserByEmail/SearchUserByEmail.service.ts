@@ -4,9 +4,9 @@ import { Message } from "../../interfaces/searchByEmail.interface";
 class SearchUserByEmail {
 
     public async initialize( email: string ): Promise<Message>{
-        const body = JSON.stringify({email})
 
         try {
+            const body = JSON.stringify({email})
             const response = await fetch(`${process.env.URL_M1}/searchUser`, {
                 method: 'POST',
                 headers: {
@@ -15,13 +15,11 @@ class SearchUserByEmail {
                 body: body
             });
 
-            if (response.status === 500) {
-                throw new Error(`status ${ response.status }`);
-            } else if(response.status === 401){
-                return { found: false, userSoul: null, message: "user not found" }
-            }
-            console.log("RESPONSE: ",response);
-            console.log("JSON: ", await response.json())
+            if (!response.ok) {
+
+                throw new Error();
+            }  
+     
             return await response.json();
         } catch (error) {
             console.error('Erro ao conectar com M1: ', error);
