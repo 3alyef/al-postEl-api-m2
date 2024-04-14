@@ -2,16 +2,12 @@ import { Message } from "../../interfaces/searchByEmail.interface";
 
 
 class SearchUserByEmail {
-    private URL_M1;
-    constructor(){
-        this.URL_M1 = process.env.URL_M1 || "need M1";
-    }
 
     public async initialize( email: string ): Promise<Message>{
         const body = JSON.stringify({email})
 
         try {
-            const response = await fetch(`${this.URL_M1}/searchUser`, {
+            const response = await fetch(`${process.env.URL_M1}/searchUser`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

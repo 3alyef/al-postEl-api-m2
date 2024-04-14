@@ -26,11 +26,11 @@ class SendMsg {
         const body = JSON.stringify(content);
         const response = await fetch(`${process.env.URL_M3}/setNewMsg`, {
             method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: body
-        })
+        });
         console.log(response)
     }
 }
