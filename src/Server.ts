@@ -19,7 +19,7 @@ class Server extends SocketIo {
         super( server );
         this.server = server;
         this.app = app;  
-        this.ALLOW = process.env.ACCESS_ALLOW_ORIGIN || "http://localhost:8282";    
+        this.ALLOW = process.env.URL_M1 || "http://localhost:8282";    
         this.jsonParse();
         this.setupCors();
         this.routes(); 

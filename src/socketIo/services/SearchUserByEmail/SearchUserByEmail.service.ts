@@ -27,7 +27,7 @@ class SearchUserByEmail {
 
             return await response.json();
         } catch (error) {
-            console.error('Erro ao conectar com M2: ', error);
+            console.error('Erro ao conectar com M1: ', error);
             return { found: false, userSoul: null, message: "internal server error" };
         }
     
