@@ -19,21 +19,23 @@ class CreateConnectionController {
                     //console.log(sockets_user=== sockets)
 
                     const room = roomNameGenerate(decoded.userSoul, friendName, roomsExpectUsers);
-                    const _userList = roomsExpectUsers.get(decoded.userSoul);
+                    let _userList = roomsExpectUsers.get(decoded.userSoul);
                 
                     if(!_userList){
-                        roomsExpectUsers.set(decoded.userSoul, [room]);
-                    } else {
-                        _userList?.push(room);
+                        _userList = []
+                        roomsExpectUsers.set(decoded.userSoul, _userList);
                     }
+                    _userList?.push(room);
+                    
 
-                    const _friendList = roomsExpectUsers.get(friendName);
+                    let _friendList = roomsExpectUsers.get(friendName);
                 
                     if(!_friendList){
-                        roomsExpectUsers.set(friendName, [room]);
-                    } else {
-                        _friendList?.push(room);
-                    }                    
+                        _friendList = []
+                        roomsExpectUsers.set(friendName, _friendList);
+                    } 
+                    _friendList?.push(room);
+                                      
                 
                 
                     if(sockets_user){

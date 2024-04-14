@@ -40,7 +40,6 @@ class CreateGroup{
                 }       
             })
             
-            //await localResgistrer(resp, groupsExpectUsers);
             return
 
         } catch( error ){
