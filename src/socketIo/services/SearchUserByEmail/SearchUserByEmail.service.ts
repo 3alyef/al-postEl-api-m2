@@ -1,9 +1,9 @@
-import { Message } from "../../interfaces/searchByEmail.interface";
+import { Message, MessageUserResponse } from "../../interfaces/searchByEmail.interface";
 
 
 class SearchUserByEmail {
 
-    public async initialize( email: string ): Promise<Message>{
+    public async initialize( email: string ): Promise<MessageUserResponse>{
 
         try {
             const body = JSON.stringify({email})
@@ -16,14 +16,14 @@ class SearchUserByEmail {
             });
 
             if (!response.ok) {
-
+                //console.log("HINEEEEE")
                 throw new Error();
             }  
      
             return await response.json();
         } catch (error) {
             console.error('Erro ao conectar com M1: ', error);
-            return { found: false, userSoul: null, message: "internal server error" };
+            return { found: false, dataUser: {userImageData: {lastUpdateIn: null, userImage: null}, userSoul: null}, message: "internal server error" };
         }
     
     }

@@ -10,7 +10,7 @@ class SearchUserController{
             
             try {
                 const decoded = socket.auth;           
-
+                console.log(email)
                 if(decoded){
                     if(decoded.email === email){
                         socket.emit(routeName, "O email procurado não pode ser igual ao email de origem." )
