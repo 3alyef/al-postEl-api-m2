@@ -6,6 +6,7 @@ import { DecodedData } from "../../interfaces/auth.interface"
 export function verifyJWT (socket: Socket, next: (err?: ExtendedError | undefined) => void){
     const token: string = socket.handshake.headers.authorization || ""; 
     const {decoded, error} = new TokenValidate<DecodedData>().tokenValidate(token);
+    console.log(decoded)
     
     if(error){ 
         // Se o token for válido o user tem acesso as outras salas se não a conexão é encerrada

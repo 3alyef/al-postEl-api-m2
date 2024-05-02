@@ -7,14 +7,14 @@ class SearchUser {
     public async initialize(email: string, userSocketMap:Map<string, Socket[]>, routeName: string, decoded: DecodedData){
         
         const content: MessageUserResponse = await new SearchUserByEmail().initialize( email );
-        console.log(email)
+        console.log(email, content)
         if(content.found){  
             const sockets = userSocketMap.get(decoded.userSoul);
             if(sockets){
                 sockets.forEach((socketElement) => {
                     // Envia a mensagem para todos os "nicknames" que detenham o mesmo soulName
                     console.log(content.dataUser)
-                    socketElement.emit(routeName, content.dataUser);  
+                    socketElement.emit(routeName, {...content.dataUser, email});  
                     
                 });
             }         

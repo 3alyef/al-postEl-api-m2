@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { requestEncrypt } from "../../interfaces/request.interface";
+import { costumName, requestEncrypt } from "../../interfaces/request.interface";
 import { requestDecrypt } from "../../interfaces/requestDecrypt.interface";
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
@@ -17,11 +17,11 @@ class Connect {
   
     public async initialize(req: Request, res: Response ) {
         try {
-            const { idC, emailC, soulNameC }: requestEncrypt = req.body;
+            const { idC, emailC, soulNameC, costumNameC }: requestEncrypt = req.body;
             console.log(req.body)
-            const { id, email, soulName } = this.getDecryptKeys(idC, emailC, soulNameC, this.SECURE, this.iv); // Send to socket.io and M3
+            const { id, email, soulName, costumName } = this.getDecryptKeys(idC, emailC, soulNameC, costumNameC, this.SECURE, this.iv); // Send to socket.io and M3
 
-            const token = this.TokenGenerator( id, soulName, email ); // Generates the token
+            const token = this.TokenGenerator( id, soulName, email, costumName ); // Generates the token
 
             return res.status(200).json({ auth: true, token, email }).end();
         } catch(error) {
@@ -30,12 +30,20 @@ class Connect {
         }
     }
 
-    private getDecryptKeys( idC: string, emailC: string, soulNameC: string, KEY: string, iv: Buffer ): requestDecrypt {
+    private getDecryptKeys( idC: string, emailC: string, soulNameC: string, costumNameC: costumName, KEY: string, iv: Buffer ): requestDecrypt {
         try {
             const id = this.decryptMessage(idC, KEY, iv);
             const soulName = this.decryptMessage(soulNameC, KEY, iv);
             const email = this.decryptMessage(emailC, KEY, iv);
-            return { id , email , soulName }
+
+            let costumName:costumName = {custom_name: undefined, lastUpdateIn: undefined}
+            if(costumNameC.custom_name && costumNameC.lastUpdateIn){
+                const custom_name = this.decryptMessage(costumNameC.custom_name, KEY, iv)
+                const lastUpdateIn = this.decryptMessage(costumNameC.lastUpdateIn, KEY, iv)
+                costumName = {custom_name, lastUpdateIn}
+            }
+            
+            return { id , email , soulName, costumName}
         } catch(error){
             throw new Error("Error decrypting data from M1: "+error)
         }  
@@ -52,10 +60,10 @@ class Connect {
         }   
     }
 
-    private TokenGenerator( userId: string, userSoul: string, email:string ): string {
+    private TokenGenerator( userId: string, userSoul: string, email:string, costumName:costumName  ): string {
         try{
             // 1800 => 30min  30 => 0.5min
-            const token = jwt.sign( { userId, userSoul, email }, this.tokenKey, { expiresIn: 7200 })
+            const token = jwt.sign( { userId, userSoul, email, costumName }, this.tokenKey, { expiresIn: 7200 })
 
             return token;
         } catch(error){

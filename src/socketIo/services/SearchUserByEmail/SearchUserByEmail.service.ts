@@ -23,7 +23,18 @@ class SearchUserByEmail {
             return await response.json();
         } catch (error) {
             console.error('Erro ao conectar com M1: ', error);
-            return { found: false, dataUser: {first_name: null,userImageData: {lastUpdateIn: null, userImage: null}, userSoul: null}, message: "internal server error" };
+            return { 
+                found: false, 
+                dataUser: 
+                {first_name: null, 
+                userImageData: 
+                {lastUpdateIn: null, userImage: null}, 
+                userSoul: null, 
+                costumName: 
+                {custom_name:undefined, lastUpdateIn: undefined}
+                },  
+                message: "internal server error" 
+            };
         }
     
     }

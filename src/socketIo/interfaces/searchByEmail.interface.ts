@@ -1,6 +1,9 @@
+import { costumName } from "../../express/interfaces/request.interface";
+
 export interface MessageUserResponse {
     found: boolean;
-    dataUser: {first_name: string | null, userSoul: string | null;userImageData: imageResp};
+    dataUser: 
+    {costumName: costumName, first_name: string | null, userSoul: string | null, userImageData: imageResp};
     message: string 
 }
 
