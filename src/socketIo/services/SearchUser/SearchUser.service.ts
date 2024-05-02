@@ -5,6 +5,7 @@ import { DecodedData } from "../../interfaces/auth.interface";
 
 class SearchUser {
     public async initialize(email: string, userSocketMap:Map<string, Socket[]>, routeName: string, decoded: DecodedData){
+        
         const content: MessageUserResponse = await new SearchUserByEmail().initialize( email );
         console.log(email)
         if(content.found){  

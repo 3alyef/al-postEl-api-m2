@@ -13,7 +13,7 @@ class SearchUserController{
                 console.log(email)
                 if(decoded){
                     if(decoded.email === email){
-                        socket.emit(routeName, "O email procurado não pode ser igual ao email de origem." )
+                        socket.emit(`${routeName}Error`, "O email procurado não pode ser igual ao email de origem." )
                         throw new Error("O email procurado não pode ser igual ao email de origem.");           
                     }
                     await new SearchUser().initialize(email,  userSocketMap, routeName, decoded);
