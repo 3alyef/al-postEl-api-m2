@@ -43,7 +43,7 @@ class CreateConnectionController {
                             socketElement.join(room);
                             // Envia a mensagem para todos os /'nicknames" que detenham o mesmo soulName
                             //socketElement.emit(routeName ,`${friendName}`);
-                            socket.emit("updateAll", `Você foi adicionado na sala: ${room}`)
+                            socket.emit("updateAll", {message: "add_room", content:room})
                             
                     });
 
@@ -52,7 +52,7 @@ class CreateConnectionController {
                             // Envia a mensagem para todos os /'nicknames" que detenham o mesmo soulName
                             socketElement.join(room);
                             //socketElement.emit(routeName ,`${friendName}`);
-                            socket.emit("updateAll", `Você foi adicionado na sala: ${room}`)
+                            socket.emit("updateAll", {message: "add_room", content: room})
                             
                     });
                     
@@ -61,6 +61,7 @@ class CreateConnectionController {
                 }
             } catch(error){
                 console.error("Erro ao criar conexão: "+ error)
+                socket.emit(`${routeName}Error`, `Erro ao criar conexão: ${error}`)
             } 
 
         })

@@ -7,7 +7,7 @@ class SearchUserByEmail {
 
         try {
             const body = JSON.stringify({email})
-            const response = await fetch(`${process.env.URL_M1}/searchUser`, {
+            const response = await fetch(`${process.env.URL_M1}/searchUserByEmail`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -26,13 +26,14 @@ class SearchUserByEmail {
             return { 
                 found: false, 
                 dataUser: 
-                {first_name: null, 
+                [{first_name: null, 
                 userImageData: 
                 {lastUpdateIn: null, userImage: null}, 
                 userSoul: null, 
                 costumName: 
-                {custom_name:undefined, lastUpdateIn: undefined}
-                },  
+                {custom_name:undefined, lastUpdateIn: undefined},
+                email: null
+                }],  
                 message: "internal server error" 
             };
         }

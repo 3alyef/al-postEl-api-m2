@@ -4,7 +4,7 @@ export type DecodedData  = {
     userId: string;
     userSoul: string;
     email: string;
-    costumNameC: costumName;
+    costumName: costumName;
     iat: number;
     exp: number;
 

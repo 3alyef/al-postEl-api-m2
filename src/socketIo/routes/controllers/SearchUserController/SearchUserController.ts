@@ -1,5 +1,6 @@
 import { Socket, Server } from "socket.io";
 import { SearchUser } from "../../../services/Services";
+import { DecodedData } from "../../../interfaces/auth.interface";
 
 
 
@@ -9,7 +10,7 @@ class SearchUserController{
             // o usuario vai procurar um "friend" pelo email, / Enviando uma requisição para M1 para buscar pelo userSoul correspondente a esse email /   
             
             try {
-                const decoded = socket.auth;           
+                const decoded: DecodedData = socket.auth;           
                 console.log(userDataMethod)
                 if(userDataMethod.includes("@")){
                     if(decoded){
@@ -20,7 +21,13 @@ class SearchUserController{
                         await new SearchUser().initialize(userDataMethod,  userSocketMap, routeName, decoded);
                     }
                 } else {
-                    
+                    if(decoded){
+                        if(decoded.costumName.custom_name === userDataMethod){
+                            socket.emit(`${routeName}Error`, "O custom name procurado não pode ser igual ao custom name de origem." )
+                            throw new Error("O custom name procurado não pode ser igual ao custom name de origem.");           
+                        }
+                        await new SearchUser().initialize(userDataMethod,  userSocketMap, routeName, decoded, false);
+                    }
                 }
                 
                 

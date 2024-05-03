@@ -3,7 +3,7 @@ import { costumName } from "../../express/interfaces/request.interface";
 export interface MessageUserResponse {
     found: boolean;
     dataUser: 
-    {costumName: costumName, first_name: string | null, userSoul: string | null, userImageData: imageResp};
+    {costumName: costumName, email: string | null, first_name: string | null, userSoul: string | null, userImageData: imageResp}[];
     message: string 
 }
 

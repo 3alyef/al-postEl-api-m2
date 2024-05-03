@@ -14,7 +14,7 @@ const router = (
     
     Controll.searchUserController.searchUser( 
         socket, 
-        "searchByEmail",
+        "searchUser",
         userSocketMap
     );
 
