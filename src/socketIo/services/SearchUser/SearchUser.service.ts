@@ -13,7 +13,7 @@ class SearchUser {
         }
         
         console.log(data, content)
-        if(content.found){  
+        if(content.found === true){  
             const sockets = userSocketMap.get(decoded.userSoul);
             if(sockets){
                 sockets.forEach((socketElement) => {
@@ -31,7 +31,7 @@ class SearchUser {
             if(sockets){
                 sockets.forEach((socketElement) => {
                     // Envia a mensagem para todos os "nicknames" que detenham o mesmo soulName
-                    socketElement.emit(routeName, `Usuário não encontrado, ${process.env.URL_M1}, ${process.env.URL_M3}`);  
+                    socketElement.emit(routeName, `Usuário não encontrado`);  
                     
                 });
             }   

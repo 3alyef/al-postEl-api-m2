@@ -1,4 +1,3 @@
-import { NonNullExpression } from "typescript";
 import { MessageUserResponse } from "../../interfaces/searchByEmail.interface";
 
 
@@ -17,7 +16,6 @@ class SearchUserByCustomName {
             });
 
             if (!response.ok) {
-                //console.log("HINEEEEE")
                 throw new Error();
             }  
      
