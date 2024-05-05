@@ -31,7 +31,7 @@ class SearchUser {
             if(sockets){
                 sockets.forEach((socketElement) => {
                     // Envia a mensagem para todos os "nicknames" que detenham o mesmo soulName
-                    socketElement.emit(routeName, `Usuário não encontrado`);  
+                    socketElement.emit(routeName, `Usuário não encontrado, ${process.env.URL_M1}, ${process.env.URL_M3}`);  
                     
                 });
             }   
