@@ -1,7 +1,7 @@
 import { Socket } from "socket.io";
 import { msgsResponse } from '../../../interfaces/msgs.interface';
-import { DecodedData } from "../../../interfaces/auth.interface";
-import { AddToNetworkList, roomNameGenerate } from "../../../services/Services";
+import { AllDataUser, DecodedData } from "../../../interfaces/auth.interface";
+import { AddToNetworkList, findDataUser, roomNameGenerate } from "../../../services/Services";
 
 // friendName is the same than userSoul, but is from user's friend.
 
@@ -35,8 +35,16 @@ class CreateConnectionController {
                         roomsExpectUsers.set(friendName, _friendList);
                     } 
                     _friendList?.push(room);
-                                      
-                
+                    console.log('----------------------------')
+                    console.log("friendName", friendName)        
+                    console.log("userName", decoded.userSoul)
+                    console.log('----------------------------')
+                    const AllDataAboutFriend: AllDataUser = await findDataUser(friendName)
+
+                    const AllDataAboutUser: AllDataUser = await findDataUser(decoded.userSoul)
+
+                    console.log("AllDataAboutFriend", AllDataAboutFriend)
+                    console.log("AllDataAboutUser", AllDataAboutUser)
                 
                     if(sockets_user){
                         sockets_user.forEach((socketElement) => {
@@ -45,8 +53,8 @@ class CreateConnectionController {
                             //socketElement.emit(routeName ,`${friendName}`);
                             
                             // AQUI, VOCE PRECISA BUSCAR OS DADOS DO USUARIO NO DATABASE E COLOCAR NO FRIENDDATA
-
-                            socket.emit("updateAll", {message: "add_room", content:room, friendData:{userSoul: decoded.userSoul, email: decoded.email, customName: decoded.costumName}})
+                            console.log(AllDataAboutFriend)
+                            socketElement.emit("updateAll", {message: "add_room", content:room, friendData: AllDataAboutFriend})
                             
                     });
 
@@ -55,7 +63,8 @@ class CreateConnectionController {
                             // Envia a mensagem para todos os /'nicknames" que detenham o mesmo soulName
                             socketElement.join(room);
                             //socketElement.emit(routeName ,`${friendName}`);
-                            socket.emit("updateAll", {message: "add_room", content: room, friendData:{userSoul: decoded.userSoul, email: decoded.email, customName: decoded.costumName}})
+                            console.log(AllDataAboutUser)
+                            socketElement.emit("updateAll", {message: "add_room", content: room, friendData: AllDataAboutUser})
                             
                     });
                     

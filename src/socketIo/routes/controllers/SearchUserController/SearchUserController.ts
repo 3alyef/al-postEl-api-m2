@@ -20,7 +20,7 @@ class SearchUserController{
                     }
                 } else {
                     if(decoded){
-                        if(decoded.costumName.custom_name === userDataMethod){
+                        if(decoded.costumName.costum_name === userDataMethod){
                             socket.emit(`${routeName}Error`, "O custom name procurado não pode ser igual ao custom name de origem." )
                             throw new Error("O custom name procurado não pode ser igual ao custom name de origem.");           
                         }

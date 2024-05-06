@@ -31,7 +31,7 @@ class SearchUserByEmail {
                 {lastUpdateIn: null, userImage: null}, 
                 userSoul: null, 
                 costumName: 
-                {custom_name:undefined, lastUpdateIn: undefined},
+                {costum_name:undefined, lastUpdateIn: undefined},
                 email: null
                 }],  
                 message: "internal server error" 

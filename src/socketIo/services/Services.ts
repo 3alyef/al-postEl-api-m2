@@ -15,4 +15,7 @@ import SearchUserByCustomName from "./SearchUserByCustomName/SearchUserByCustomN
 import { encryptCrypto } from "./EncryptCrypto/EncryptCrypto.service";
 
 import { searchUserMethodsM1 } from "./SearchUserMethods/SearchUserMethodsM1.service";
-export { SearchUser, SearchUserByEmail, AddToNetworkList, TokenValidate, SendMsg, roomNameGenerate, CreateGroup, localResgistrer, RestoreGroup, SendGroupMsg, encryptCrypto, SearchUserByCustomName, searchUserMethodsM1 };
+
+import {findDataUser} from "./FindDataUser/FindDataUser.service"
+
+export { SearchUser, SearchUserByEmail, AddToNetworkList, TokenValidate, SendMsg, roomNameGenerate, CreateGroup, localResgistrer, RestoreGroup, SendGroupMsg, encryptCrypto, SearchUserByCustomName, searchUserMethodsM1, findDataUser };

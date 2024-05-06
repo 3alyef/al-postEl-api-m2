@@ -3,10 +3,10 @@ import { MessageUserResponse } from "../../interfaces/searchByEmail.interface";
 
 class SearchUserByCustomName {
 
-    public async initialize( customName: string ): Promise<MessageUserResponse>{
+    public async initialize( costumName: string ): Promise<MessageUserResponse>{
 
         try {
-            const body = JSON.stringify({customName})
+            const body = JSON.stringify({costumName})
             const response = await fetch(`${process.env.URL_M1}/searchUserByCostumName`, {
                 method: 'POST',
                 headers: {
@@ -31,7 +31,7 @@ class SearchUserByCustomName {
                     {lastUpdateIn: null, userImage: null}, 
                     userSoul: null, 
                     costumName: 
-                    {custom_name:undefined, lastUpdateIn: undefined},
+                    {costum_name:undefined, lastUpdateIn: undefined},
                     email: null
                 }],  
                 message: "internal server error" 

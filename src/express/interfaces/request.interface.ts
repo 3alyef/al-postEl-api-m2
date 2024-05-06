@@ -6,6 +6,6 @@ export interface requestEncrypt {
 }
 
 export interface costumName {
-    custom_name: string | undefined;
+    costum_name: string | undefined;
     lastUpdateIn: string | undefined
 }
