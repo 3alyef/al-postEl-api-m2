@@ -3,6 +3,7 @@ import { dataUserModel, userModel } from "../../db/models/Models";
 const crypto = require('crypto');
 import { validateCredentials } from "../Services";
 import { CustomError } from "../../interfaces/common.interface";
+const jwt = require("jsonwebtoken");
 interface User {
     _id: string;
     soulName: string;
@@ -13,13 +14,11 @@ export interface costumName {
     lastUpdateIn: string | undefined
 }
 class Login {
-    private KEY: string;
-    private iv: Buffer;
     private URL_M2: string;
+    private tokenKey: string;
     constructor(){
         this.URL_M2 = process.env.URL_M2 || "need M2 URL"
-        this.KEY = process.env.KEY || "test";
-        this.iv = Buffer.alloc(16); // 256-bit key (32 bytes)    
+        this.tokenKey = process.env.TOKEN_KEY || "token key";  
     }
 
     public async initialize(req: Request, res: Response) {
@@ -29,25 +28,13 @@ class Login {
             const user: User | null = await this.findUser( email, password );
             
             if(user){             
-                const costumName:costumName | null = await findCostumName(user.soulName)
-                let costumNC;
-                let costumNLUPC;
-                let costumNameC: costumName = {custom_name: undefined, lastUpdateIn: undefined};
-                if(costumName && costumName.custom_name && costumName.lastUpdateIn){
-                    costumNC = this.encryptMessage((costumName.custom_name).toString(), this.KEY, this.iv);
+                const costumNameContain:costumName | {custom_name: undefined, lastUpdateIn: undefined} = await findCostumName(user.soulName)
 
-                    costumNLUPC = this.encryptMessage((costumName.lastUpdateIn).toString(), this.KEY, this.iv);
-                    costumNameC = {custom_name: costumNC, lastUpdateIn: costumNLUPC}
-                }
-                const idC = this.encryptMessage((user._id).toString(), this.KEY, this.iv);
-                const soulNameC = this.encryptMessage(user.soulName, this.KEY, this.iv);
-                const emailC = this.encryptMessage(email, this.KEY, this.iv);
-              
-                const m2_res = await this.getToken( idC, soulNameC, emailC, costumNameC );
-                if("message" in m2_res){
-                    throw {status: 500, message: m2_res.message}
+                const token = this.TokenGenerator( user._id, user.soulName, email, costumNameContain );
+                if(token){
+                    res.status(200).json({ auth: true, token: token , URL_M2: this.URL_M2 });
                 } else {
-                    res.status(200).json({ auth: m2_res.auth, token: m2_res.token , URL_M2: this.URL_M2 });
+                    throw {status: 500, message: "Erro ao gerar token"}
                 }
                 
             } else {
@@ -72,47 +59,23 @@ class Login {
         } else {
             // Returns null if no user is found
             return null;
-        }
-                
+        }         
       
-    } // validates email and password credentials in the database
+    }  
 
-    private encryptMessage(message: string, key: string, iv: Buffer): string {
-        const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
-        let encrypted = cipher.update(message, 'utf8', 'hex');
-        encrypted += cipher.final('hex');
-        if(!encrypted){
-            throw {message: "Error encrypting data.", status: 500}
-        }
-        return encrypted;
-    
-    } 
+    private TokenGenerator( userId: string, userSoul: string, email:string, costumName:costumName  ): string {
+        try{
+            // 1800 => 30min  30 => 0.5min
+            const token = jwt.sign( { userId, userSoul, email, costumName }, this.tokenKey, { expiresIn: 7200 })
 
-    private async getToken(idC: string, soulNameC: string, emailC: string, costumNameC: costumName): Promise<{ auth: boolean, token: string} | {message: string}> {
-        try {
-            const body = JSON.stringify({ idC, soulNameC, emailC, costumNameC });
-            console.log(body)
-            const response = await fetch(`${this.URL_M2}/connect`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: body
-            });
-            // console.log(response)
-            if (!response.ok) {
-                throw {message: response.statusText}
-            }  
-            return await response.json();
-        } catch (error) {
-            const err = error as CustomError
-            console.error('Error connecting to M2:', err.message);
-            return { message: err.message }
-        }
-    }    
+            return token;
+        } catch(error){
+            throw new Error("Error generating token: "+ error);
+        }  
+    }
 }
 
-export async function findCostumName(soulName: string): Promise<costumName | null>{
+export async function findCostumName(soulName: string): Promise<costumName | {custom_name: undefined, lastUpdateIn: undefined}>{
     const userCustom: costumName | null = await dataUserModel.findOne({ soulName }, 'custom_name lastUpdateIn');
 
     if (userCustom) {
@@ -121,7 +84,7 @@ export async function findCostumName(soulName: string): Promise<costumName | nul
         return { custom_name: userCustom.custom_name, lastUpdateIn: userCustom.lastUpdateIn };
     } else {
         // Returns null if no user is found
-        return null;
+        return {custom_name: undefined, lastUpdateIn: undefined};
     }
 }
 export { Login };

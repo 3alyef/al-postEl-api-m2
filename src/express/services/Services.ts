@@ -1,4 +1,3 @@
-import { Connect } from "./Connect/Connect.service";
 import { Login } from "./Login/Login.service";
 import { Register } from "./Register/Registrer.service";
 import { SearchByEmail } from "./SearchByEmail/SeachByEmail.service";
@@ -8,4 +7,4 @@ import { EmailLogin } from "./EmailLogin/EmailLogin.service";
 import { TokenGenerate } from "./TokenGenerate/TokenGenerate.service";
 import { changeProfilePhoto } from "./ChangeProfilePhoto/ChangeProfilePhoto.service";
 import { SearchByCostumName } from "./SearchByCostumName/SearchByCostumName.service";
-export { Connect, Login, Register, SearchByEmail, Unregister, validateCredentials, EmailLogin, TokenGenerate, changeProfilePhoto, SearchByCostumName };
+export { Login, Register, SearchByEmail, Unregister, validateCredentials, EmailLogin, TokenGenerate, changeProfilePhoto, SearchByCostumName };

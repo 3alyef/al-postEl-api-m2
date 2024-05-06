@@ -46,7 +46,7 @@ export class EmailLogin {
         }
     }
 
-    private async searchEmail(email: string): Promise< userLoginEmail | null> {   
+    private async searchEmail(email: string): Promise<userLoginEmail | null> {   
         const user: userLoginEmail | null = await userModel.findOne({ email: email }, 'email soulName');
         if (user) {
            

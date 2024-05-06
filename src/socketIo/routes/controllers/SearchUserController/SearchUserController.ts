@@ -1,4 +1,4 @@
-import { Socket, Server } from "socket.io";
+import { Socket } from "socket.io";
 import { SearchUser } from "../../../services/Services";
 import { DecodedData } from "../../../interfaces/auth.interface";
 

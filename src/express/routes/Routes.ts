@@ -9,16 +9,18 @@ router.get("/", (req: Request, res: Response)=>{
     console.log('Usuário novo...')
     res.send("Hello! Welcome to Al-PostEl M2!")
 })
-router.post("/connect", Controll.connectCollection.postConnect)
-
 // M1
 
 router.post('/login/email', Controll.loginController.postEmail)
 router.post('/login', Controll.loginController.postLogin);
 router.post('/register', Controll.registerController.postRegister);
+
+
+
 router.post('/unregister', unregisterMiddleware, Controll.unregisterController.postUnregister);
-router.post('/searchUserByEmail', Controll.searchUserController.postSearchUserByEmail);
-router.post('/searchUserByCostumName', Controll.searchUserController.postSearchByCostumName);
+
+
+
 router.post('/addPhoto', verifyAccount, upload.single("imagem"),
 Controll.changePhoto.postChangePhoto);
 

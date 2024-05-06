@@ -2,14 +2,17 @@ import { Socket } from "socket.io";
 import { AddToNetworkList, SearchUserByCustomName, SearchUserByEmail } from "../Services";
 import { MessageUserResponse } from "../../interfaces/searchByEmail.interface";
 import { DecodedData } from "../../interfaces/auth.interface";
+import { searchUserController } from "../../../express/routes/controllers/Controllers";
+import { AllDataUser } from "../../../express/routes/controllers/SearchUserController/SearchUserController";
+
 
 class SearchUser {
-    public async initialize(data: string, userSocketMap:Map<string, Socket[]>, routeName: string, decoded: DecodedData, _isCN?:boolean){
-        let content: MessageUserResponse;
-        if(_isCN){
-            content = await new SearchUserByCustomName().initialize( data );
+    public async initialize(data: string, userSocketMap:Map<string, Socket[]>, routeName: string, decoded: DecodedData, _isCustomName?:boolean){
+        let content: AllDataUser;
+        if(_isCustomName){
+            content = await searchUserController.postSearchByCostumName( data )
         } else {
-            content = await new SearchUserByEmail().initialize( data );
+            content = await searchUserController.postSearchUserByEmail( data )
         }
         
         console.log(data, content)

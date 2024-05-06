@@ -1,35 +1,47 @@
-import { Request, Response } from "express";
 import { SearchByCostumName, SearchByEmail } from "../../../services/Services";
 import { imageResp } from "../../../services/SearchByEmail/SeachByEmail.service";
 import { costumName } from "../../../services/Login/Login.service";
 
+interface DataUser {
+    first_name: string;
+    userSoul: string;
+    userImageData: imageResp;
+    costumName: costumName;
+    email?: string
+}
 
+export interface AllDataUser {
+    status: number;
+    found: boolean;
+    dataUser: DataUser[] | null;
+    message: string
+}
 
 class SearchUserController{
-    async postSearchUserByEmail(req: Request, res: Response){
-        const {email} = req.body;
+    async postSearchUserByEmail(email: string): 
+    Promise<AllDataUser>{
 
         // TODO: Busque pelo userSoul na DB atráves do email
 
         try {
-            const dataUser:{first_name: string, userSoul: string, userImageData: imageResp, costumName: costumName} | null = await new SearchByEmail().initialize(email);
+            const dataUser: DataUser | null = await new SearchByEmail().initialize(email);
 
             if(dataUser){
                 console.log("FOUND: ", dataUser)
-                res.status(200).json({ found: true, dataUser: [{...dataUser, email}], message: "found" }).end();
+                return { status: 200, found: true, dataUser: [{...dataUser, email}], message: "found" }
             } else {
                 console.log("NOT FOUND")
-                res.status(404).json({ found: false, dataUser: null, message: "not found" }).end();
+                return { status: 404, found: false, dataUser: null, message: "not found" }
 
             } 
         } catch(error){
             console.error('Erro durante a pesquisa por email:', error);
-            res.status(500).send({ found: false, message: "internal server error" }).end();
+            return { status: 500, found: false, dataUser: null, message: "internal server error" }
         }
     }
 
-    async postSearchByCostumName(req: Request, res: Response) {
-        const {customName} = req.body;
+    async postSearchByCostumName(customName: string): 
+    Promise<AllDataUser> {
 
         // TODO: Busque pelo userSoul na DB atráves do email
 
@@ -38,15 +50,15 @@ class SearchUserController{
 
             if(dataUser){
                 console.log("FOUND: ", dataUser)
-                res.status(200).json({ found: true, dataUser, message: "found" }).end();
+                return { status: 200, found: true, dataUser, message: "found" }
             } else {
                 console.log("NOT FOUND")
-                res.status(404).json({ found: false, dataUser: null, message: "not found" }).end();
+                return { status: 404, found: false, dataUser: null, message: "not found" }
 
             } 
         } catch(error){
             console.error('Erro durante a pesquisa por email:', error);
-            res.status(500).send({ found: false, message: "internal server error" }).end();
+            return { status: 500, found: false, dataUser: null, message: "internal server error" }
         }
     }
 }
