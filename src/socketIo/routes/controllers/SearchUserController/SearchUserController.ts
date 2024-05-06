@@ -2,8 +2,6 @@ import { Socket } from "socket.io";
 import { SearchUser } from "../../../services/Services";
 import { DecodedData } from "../../../interfaces/auth.interface";
 
-
-
 class SearchUserController{
     searchUser( socket: Socket, routeName: string, userSocketMap:Map<string, Socket[]>){
         socket.on(routeName, async ({ userDataMethod }: { userDataMethod: string })=>{
@@ -28,9 +26,7 @@ class SearchUserController{
                         }
                         await new SearchUser().initialize(userDataMethod,  userSocketMap, routeName, decoded, false);
                     }
-                }
-                
-                
+                }     
                 
             } catch(error){
                 console.error(error)            

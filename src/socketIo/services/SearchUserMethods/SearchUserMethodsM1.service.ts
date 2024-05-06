@@ -1,6 +1,6 @@
-import { SearchByCostumName, SearchByEmail } from "../../../services/Services";
-import { imageResp } from "../../../services/SearchByEmail/SeachByEmail.service";
-import { costumName } from "../../../services/Login/Login.service";
+import { SearchByCostumName, SearchByEmail } from "../../../express/services/Services";
+import { imageResp } from "../../../express/services/SearchByEmail/SeachByEmail.service";
+import { costumName } from "../../../express/services/Login/Login.service";
 
 interface DataUser {
     first_name: string;
@@ -63,5 +63,5 @@ class SearchUserController{
     }
 }
 
-const searchUserController = new SearchUserController();
-export { searchUserController }
+const searchUserMethodsM1 = new SearchUserController();
+export { searchUserMethodsM1 }

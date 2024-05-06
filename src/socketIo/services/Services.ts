@@ -13,4 +13,6 @@ import { RestoreGroup } from "./RestoreGroup/RestoreGroup.service";
 import SendGroupMsg from "./SendGroupMsg/SendGroupMsg.service";
 import SearchUserByCustomName from "./SearchUserByCustomName/SearchUserByCustomName.service";
 import { encryptCrypto } from "./EncryptCrypto/EncryptCrypto.service";
-export { SearchUser, SearchUserByEmail, AddToNetworkList, TokenValidate, SendMsg, roomNameGenerate, CreateGroup, localResgistrer, RestoreGroup, SendGroupMsg, encryptCrypto, SearchUserByCustomName };
+
+import { searchUserMethodsM1 } from "./SearchUserMethods/SearchUserMethodsM1.service";
+export { SearchUser, SearchUserByEmail, AddToNetworkList, TokenValidate, SendMsg, roomNameGenerate, CreateGroup, localResgistrer, RestoreGroup, SendGroupMsg, encryptCrypto, SearchUserByCustomName, searchUserMethodsM1 };
