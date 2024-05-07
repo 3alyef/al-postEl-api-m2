@@ -50,7 +50,7 @@ class SearchByEmail {
             const user: { soulName: string, first_name: string } | null = await userModel.findOne({ email }, 'soulName first_name');
     
             if (!user) {
-                return {message: "usuário não encontrado na base de dados"}; // Retorna null se o usuário não for encontrado
+                return {message: "Usuário não encontrado na base de dados"}; // Retorna null se o usuário não for encontrado
             }
     
             // Retorna um objeto contendo o soulName do usuário
