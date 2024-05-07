@@ -24,16 +24,20 @@ class SearchUserController{
         // TODO: Busque pelo userSoul na DB atráves do email
 
         try {
-            const dataUser: DataUser | null = await new SearchByEmail().initialize(email);
+            const dataUser: DataUser | {message: string} | null = await new SearchByEmail().initialize(email);
 
-            if(dataUser){
+            if( dataUser && 'first_name' in dataUser ){
                 console.log("FOUND: ", dataUser)
                 return { status: 200, found: true, dataUser: [{...dataUser, email}], message: "found" }
+            }
+
+            if( dataUser && 'message' in dataUser){
+                console.log("NOT FOUND")
+                return { status: 404, found: false, dataUser: null, message: dataUser.message }
             } else {
                 console.log("NOT FOUND")
                 return { status: 404, found: false, dataUser: null, message: "not found" }
-
-            } 
+            }
         } catch(error){
             console.error('Erro durante a pesquisa por email:', error);
             return { status: 500, found: false, dataUser: null, message: "internal server error" }
