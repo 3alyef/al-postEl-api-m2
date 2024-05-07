@@ -8,7 +8,7 @@ export async function findDataUser(userSoul: string): Promise<AllDataUser> {
         const mainDataUser = await findMainDataUser(userSoul);
         const mainDataCostumName = await findCostumName(userSoul);
         const mainDataImage = await findMainDataImage(userSoul);
-        
+
         return {costumName: mainDataCostumName, email: mainDataUser.email, first_name: mainDataUser.first_name, last_name: mainDataUser.last_name, imageData: mainDataImage, userSoul}
     } catch (error) {
         console.log(error)
@@ -51,7 +51,7 @@ async function findMainDataImage(soulName: string): Promise<{userImage: string |
         if(!mainDataImage) {
             throw Error("error ao buscar main data user")
         }
-
+        console.log(mainDataImage)
         return {userImage: mainDataImage.userImage, lastUpdateIn: mainDataImage.lastUpdateIn}
     } catch (error) {
         console.log(error)
