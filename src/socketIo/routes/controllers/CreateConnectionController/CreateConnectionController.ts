@@ -6,7 +6,7 @@ import { AddToNetworkList, findDataUser, roomNameGenerate } from "../../../servi
 // friendName is the same than userSoul, but is from user's friend.
 
 class CreateConnectionController {
-    newConnection(socket: Socket, routeName: string, userSocketMap:Map<string, Socket[]>, roomsExpectUsers: Map<string, string[]>, previousMessages: Map<string, msgsResponse[]>){ 
+    newConnection(socket: Socket, routeName: string, userSocketMap:Map<string, Socket[]>, roomsExpectUsers: Map<string, string[]>, previousMessages: Map<string, msgsResponse[]>, roomsProps: Map<string, AllDataUser[]>){ 
         socket.on(routeName, async ({friendName}: {friendName: string})=>{
             try {
                 const decoded: DecodedData = socket.auth;
@@ -35,14 +35,22 @@ class CreateConnectionController {
                         roomsExpectUsers.set(friendName, _friendList);
                     } 
                     _friendList?.push(room);
-                    console.log('----------------------------')
+                    /*console.log('----------------------------')
                     console.log("friendName", friendName)        
                     console.log("userName", decoded.userSoul)
-                    console.log('----------------------------')
+                    console.log('----------------------------')*/
                     const AllDataAboutFriend: AllDataUser = await findDataUser(friendName)
-
+                
                     const AllDataAboutUser: AllDataUser = await findDataUser(decoded.userSoul)
 
+                    // ROOM PROPS
+                    if(!roomsProps.has(room)) {
+                        roomsProps.set(room, []);
+                    }
+
+                    roomsProps.get(room)?.push(AllDataAboutFriend);
+                    roomsProps.get(room)?.push(AllDataAboutUser);
+                    //
                     console.log("AllDataAboutFriend", AllDataAboutFriend)
                     console.log("AllDataAboutUser", AllDataAboutUser)
                 

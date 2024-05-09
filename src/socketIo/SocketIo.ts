@@ -4,7 +4,7 @@ import { Server as ServerHTTP } from 'http';
 import * as middlewares from "./middlewares/middlewares";
 import { ExpectUsers } from "../../custom";
 import { msgsResponse } from "./interfaces/msgs.interface";
-import { DecodedData } from "./interfaces/auth.interface";
+import { AllDataUser, DecodedData } from "./interfaces/auth.interface";
 import { msgsGroupDB, newGroupResponse } from "./interfaces/group.interface";
 
 abstract class SocketIo{
@@ -14,12 +14,13 @@ abstract class SocketIo{
     public previousMessages: Map<string, msgsResponse[]>; // Msg List
     public previousGroupMessages: Map<string, msgsGroupDB[]>
     public roomsExpectUsers: Map<string, string[]>;
-    
+    public roomsProps: Map<string, AllDataUser[]>;
     public groupsExpectUsers: Map<string, newGroupResponse[]>;
     public groupsAdmin: Map<string, string[]>
     constructor( server: ServerHTTP ){     
         this.previousGroupMessages = new Map<string, msgsGroupDB[]>();
         this.roomsExpectUsers = new Map<string, string[]>();
+        this.roomsProps = new Map<string, AllDataUser[]>()
         this.userSocketMap = new Map<string, Socket[]>();
         this.groupsAdmin = new Map<string, string[]>();
         this.previousMessages = new Map<string, msgsResponse[]>();
@@ -41,10 +42,6 @@ abstract class SocketIo{
         this.socketIo.use((socket, next)=>expectUsers(socket, next));
 
         this.socketIo.on("connection", (socket: Socket)=> {    
-
-            
-
-
             const decoded: DecodedData = socket.auth;
             // console.log("new user")
             let socketsList: Socket[] | undefined = this.userSocketMap.get(decoded.userSoul);
@@ -55,6 +52,7 @@ abstract class SocketIo{
             }
             socketsList.push(socket); 
 
+            socket.emit("updateSoul", {soulName: decoded.userSoul})
             socket.on('disconnect', () => {
                 // Remove a entrada do mapeamento quando o usuário se desconect
                 const index = socketsList.indexOf(socket); // Procura o index do socket que está saindo
@@ -72,7 +70,7 @@ abstract class SocketIo{
 
             //console.log(decoded);
         
-            socketIoRoutes( socket, this.userSocketMap, this.roomsExpectUsers, this.previousMessages, this.groupsExpectUsers, this.groupsAdmin, this.previousGroupMessages ); 
+            socketIoRoutes( socket, this.userSocketMap, this.roomsExpectUsers, this.previousMessages, this.groupsExpectUsers, this.groupsAdmin, this.previousGroupMessages, this.roomsProps ); 
     
             this.socketIo.of("/").adapter.on("create-room", (room: string) => {
                 console.log(`room ${room} was created`);

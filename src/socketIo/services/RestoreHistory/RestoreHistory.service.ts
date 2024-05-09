@@ -1,26 +1,11 @@
+import { AllDataUser } from "../../interfaces/auth.interface";
 import { msgsResponse } from "../../interfaces/msgs.interface";
 import { msgsDB, networksDB } from "../../interfaces/networkGetPrevious.interface";
-import { roomNameGenerate } from "../Services";
+import { findDataUser, roomNameGenerate } from "../Services";
 
 class RestoreHistory {
-    public async initialize(userSoul: string, roomsExpectUsers: Map<string, string[]>, previousMessages: Map<string, msgsResponse[]>) {
-        /* TODO: (1) - Buscar a lista de network usando o userSoul; (2) - Enviar a lista de network de volta pedindo as mensagens correspondentes; (3) - Pegar as mensagens correspondentes e:
+    public async initialize(userSoul: string, roomsExpectUsers: Map<string, string[]>, previousMessages: Map<string, msgsResponse[]>, roomsProps: Map<string, AllDataUser[]>) {
 
-        roomsExpectUsers.set(userSoul, [roomName]);
-        const msgs: msgsResponse = {
-                _id: e._id,
-                fromUser: e.fromUser,
-                toUser: e.toUser,
-                msg: e.msg, 
-                createdIn: data
-            }
-        const newRoomObj: msgsResponse[] = []; 
-        newRoomObj.push(msgs); 
-        previousMessages.set(roomName, newRoomObj); 
-
-        // Deve-se Criar roomName
-
-        */
         try {
             const networkList: networksDB[] | null = await this.getNetworkList(userSoul);
             if(networkList){
@@ -29,7 +14,19 @@ class RestoreHistory {
                     const msgs = await this.getMessages(net);
                     //console.log("Dentro de try msgs=> "+msgs)
                     const room = roomNameGenerate(net.user, net.friend, roomsExpectUsers);
-              
+
+                    // ROOM PROPS
+                    const AllDataAboutFriend: AllDataUser = await findDataUser(net.friend)
+                
+                    const AllDataAboutUser: AllDataUser = await findDataUser(net.user)
+                    if(!roomsProps.has(room)) {
+                        roomsProps.set(room, []);
+                    }
+
+                    roomsProps.get(room)?.push(AllDataAboutFriend);
+                    roomsProps.get(room)?.push(AllDataAboutUser);
+                    //
+                    
                     let rooms = roomsExpectUsers.get(userSoul);
                     if(!rooms){
                         rooms = [];

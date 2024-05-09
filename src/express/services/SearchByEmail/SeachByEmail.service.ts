@@ -7,7 +7,7 @@ export interface imageResp {
     userImage: string | undefined; 
     lastUpdateIn: string | undefined
 }
-
+ 
 class SearchByEmail {
     public async initialize(email: string): Promise<{userSoul: string, first_name: string, costumName: costumName, userImageData: imageResp} | {message: string} | null>{
         try {

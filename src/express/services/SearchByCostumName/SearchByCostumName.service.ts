@@ -20,12 +20,14 @@ interface dataToReturn {
     email: string
 }
 class SearchByCostumName {
-    public async initialize(costumName: string): Promise<dataToReturn[] | null>{
+    public async initialize(costumName: string): Promise<dataToReturn[] | {message: string} | null>{
         try {
-            const userData: User[] | null = await this.findUserByCN(costumName);
-
-            if (!userData) return null;
+            const userData: User[] | {message: string} = await this.findUserByCN(costumName);
            
+            if('message' in userData){
+                return {message: userData.message}
+            }
+            
             //let dataToReturn: dataToReturn[] = [];
             const dataToReturn: dataToReturn[] = await Promise.all(userData.map(async (el) => {
                 const costumNameArray: costumName = { custom_name: el.custom_name, lastUpdateIn: el.lastUpdateIn };
@@ -42,7 +44,8 @@ class SearchByCostumName {
                 };
             }));
 
-            return dataToReturn ? dataToReturn : null
+            
+            return null
             
         } catch (error) {     
             console.error('Erro durante a inicialização da pesquisa por email:', error);
@@ -50,7 +53,7 @@ class SearchByCostumName {
         }
     }
 
-    private async findUserByCN(customName: string): Promise<User[] | null> {
+    private async findUserByCN(customName: string, retry: boolean = true): Promise<User[] | {message: string}> {
         try {
             // Usando uma expressão regular para buscar custom_name que contenha customName
             const regex = new RegExp(`.*${customName}.*`, 'i');
@@ -65,13 +68,20 @@ class SearchByCostumName {
 
             // Verificando se encontrou algum usuário
             if (formattedUsers.length === 0) {
-                return null;
+                return {message: "Usuário não encontrado na base de dados, method: Custom name"};
             }
 
             return formattedUsers;
         } catch (error) {
-            console.error('Erro ao encontrar usuário:', error);
-            throw new Error('Ocorreu um erro ao encontrar o usuário.');
+            if (retry) {
+                // Se ocorrer um erro, e retry for verdadeiro, tenta novamente
+                console.error('Erro ao encontrar usuário:', error);
+                return this.findUserByCN(customName, false); // Tenta novamente sem repetir
+            } else {
+                const err = error as { message: string };
+                console.error('Erro ao encontrar usuário após tentativas:', error);
+                return { message: err.message };
+            }
         }
     }
     

@@ -19,7 +19,7 @@ export interface AllDataUser {
 
 class SearchUserController{
     async postSearchUserByEmail(email: string): 
-    Promise<AllDataUser>{
+    Promise<AllDataUser>{ 
 
         // TODO: Busque pelo userSoul na DB atráves do email
 
@@ -50,16 +50,20 @@ class SearchUserController{
         // TODO: Busque pelo userSoul na DB atráves do email
 
         try {
-            const dataUser:{first_name: string, userSoul: string, userImageData: imageResp, costumName: costumName, email: string}[] | null = await new SearchByCostumName().initialize(customName);
+            const dataUser:{first_name: string, userSoul: string, userImageData: imageResp, costumName: costumName, email: string}[] | {message: string} | null = await new SearchByCostumName().initialize(customName);
 
-            if(dataUser){
+            if( dataUser && !('message' in dataUser)){
                 console.log("FOUND: ", dataUser)
                 return { status: 200, found: true, dataUser, message: "found" }
+            }
+
+            if( dataUser && 'message' in dataUser){
+                console.log("NOT FOUND")
+                return { status: 404, found: false, dataUser: null, message: dataUser.message }
             } else {
                 console.log("NOT FOUND")
                 return { status: 404, found: false, dataUser: null, message: "not found" }
-
-            } 
+            }
         } catch(error){
             console.error('Erro durante a pesquisa por email:', error);
             return { status: 500, found: false, dataUser: null, message: "internal server error" }

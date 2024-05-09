@@ -2,6 +2,7 @@ import { Socket } from "socket.io";
 import * as Controll from "./controllers/Controllers";
 import { msgsResponse } from "../interfaces/msgs.interface";
 import { msgsGroupDB, newGroupResponse } from "../interfaces/group.interface";
+import { AllDataUser } from "../interfaces/auth.interface";
 
 const router = ( 
     socket: Socket,
@@ -9,9 +10,10 @@ const router = (
     roomsExpectUsers: Map<string, string[]>,
     previousMessages: Map<string, msgsResponse[]>,
     groupsExpectUsers: Map<string, newGroupResponse[]>,
-    groupsAdmin: Map<string, string[]>, previousGroupMessages: Map<string, msgsGroupDB[]>
+    groupsAdmin: Map<string, string[]>, previousGroupMessages: Map<string, msgsGroupDB[]>,
+    roomsProps: Map<string, AllDataUser[]>
     ) => { 
-    
+   
     Controll.searchUserController.searchUser( 
         socket, 
         "searchUser",
@@ -23,7 +25,8 @@ const router = (
         "connectFriend",  
         userSocketMap,
         roomsExpectUsers,
-        previousMessages
+        previousMessages,
+        roomsProps
     );
 
     Controll.sendMsgController.sendMsg(
