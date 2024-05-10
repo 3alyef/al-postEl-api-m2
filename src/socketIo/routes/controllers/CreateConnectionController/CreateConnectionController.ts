@@ -17,6 +17,7 @@ class CreateConnectionController {
                     
                     new AddToNetworkList().initialize(decoded.userSoul, friendName);
                     //console.log(sockets_user=== sockets)
+                    
 
                     const room = roomNameGenerate(decoded.userSoul, friendName, roomsExpectUsers);
                     let _userList = roomsExpectUsers.get(decoded.userSoul);
@@ -43,6 +44,9 @@ class CreateConnectionController {
                 
                     const AllDataAboutUser: AllDataUser = await findDataUser(decoded.userSoul)
 
+
+                    
+
                     // ROOM PROPS
                     if(!roomsProps.has(room)) {
                         roomsProps.set(room, []);
@@ -51,8 +55,7 @@ class CreateConnectionController {
                     roomsProps.get(room)?.push(AllDataAboutFriend);
                     roomsProps.get(room)?.push(AllDataAboutUser);
                     //
-                    console.log("AllDataAboutFriend", AllDataAboutFriend)
-                    console.log("AllDataAboutUser", AllDataAboutUser)
+                    
                 
                     if(sockets_user){
                         sockets_user.forEach((socketElement) => {
@@ -61,7 +64,7 @@ class CreateConnectionController {
                             //socketElement.emit(routeName ,`${friendName}`);
                             
                             // AQUI, VOCE PRECISA BUSCAR OS DADOS DO USUARIO NO DATABASE E COLOCAR NO FRIENDDATA
-                            console.log(AllDataAboutFriend)
+                            //console.log('AllDataAboutFriend',AllDataAboutFriend)
                             socketElement.emit("updateAll", {message: "add_room", content:room, friendData: AllDataAboutFriend})
                             
                     });

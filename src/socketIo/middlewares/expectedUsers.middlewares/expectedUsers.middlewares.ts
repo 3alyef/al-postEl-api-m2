@@ -54,11 +54,12 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
             this.roomsProps.get(room)?.push(AllDataAboutFriend);
             this.roomsProps.get(room)?.push(AllDataAboutUser);*/
             const roomDatas = this.roomsProps.get(room)
-            const friendData = roomDatas?.filter(el => el.userSoul != userSoul)
+            const friendData = roomDatas?.filter(el => el.userSoul != userSoul)[0]
 
             socket.join(room);
-            console.log("room", room);
-            console.log("data room friend", friendData)
+            //console.log("room", room);
+            //console.log("data room friend", friendData)
+            console.log("friendData", friendData)
             socket.emit("updateAll", {message: "add_room", 
                 content: room, friendData, userSoul})
             const msgs = this.previousMessages.get(room)

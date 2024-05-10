@@ -26,7 +26,7 @@ async function findCostumName(soulName: string): Promise<costumName> {
         const lastUpdateIn = dataCostum.lastUpdateIn;
         return { costum_name, lastUpdateIn }
     } catch (erro) {
-        console.log(erro)
+        //console.log(erro)
         return {costum_name: undefined, lastUpdateIn: undefined}
     }
 }
@@ -40,7 +40,7 @@ async function findMainDataUser(soulName: string): Promise<{email: string | unde
 
         return {email: mainDataUser.email, first_name: mainDataUser.first_name, last_name: mainDataUser.last_name}
     } catch (error) {
-        console.log(error)
+        //console.log(error)
         return { email: undefined, first_name: undefined, last_name: undefined}
     }
 }
@@ -54,7 +54,7 @@ async function findMainDataImage(soulName: string): Promise<{userImage: string |
         console.log(mainDataImage)
         return {userImage: mainDataImage.userImage, lastUpdateIn: mainDataImage.lastUpdateIn}
     } catch (error) {
-        console.log(error)
+        //console.log(error)
         return { userImage: undefined, lastUpdateIn: undefined }
     }
 }
