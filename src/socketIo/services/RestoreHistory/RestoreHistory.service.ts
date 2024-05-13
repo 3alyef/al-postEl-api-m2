@@ -25,7 +25,7 @@ class RestoreHistory {
 
                     roomsProps.get(room)?.push(AllDataAboutFriend);
                     roomsProps.get(room)?.push(AllDataAboutUser);
-                    //
+                   
                     
                     let rooms = roomsExpectUsers.get(userSoul);
                     if(!rooms){

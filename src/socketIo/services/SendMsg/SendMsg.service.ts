@@ -1,14 +1,14 @@
 import { Socket } from 'socket.io';
 import { msgsResponse } from '../../interfaces/msgs.interface';
 class SendMsg {
-    public async initialize(socket: Socket, previousMessages: Map<string, msgsResponse[]>, fromUser: string, toUser: string, toRoom: string, message: string){
+    public async initialize(socket: Socket, previousMessages: Map<string, msgsResponse[]>, fromUser: string, toUser: string, toRoom: string, message: string, createdIn: string){
         const dateInf = new Date(); 
         const data = dateInf.toISOString();
         const content: msgsResponse = {  
             fromUser,
             toUser,
             message, 
-            createdIn: data
+            createdIn
         }
         
         const roomObj = previousMessages.get(toRoom);
@@ -17,9 +17,11 @@ class SendMsg {
             previousMessages.set(toRoom, roomObj);
         }
         roomObj?.push(content);
-        console.log(roomObj);
-        socket.to(toRoom).emit("newMsg", content);  
+        console.log('roomObj', roomObj);
+        //console.log(toRoom)
         this.sendMessagesToM3(content)
+        socket.to(toRoom).emit("newMsg", {messageData: content, room:toRoom});  
+        
     }
 
     private async sendMessagesToM3(content: msgsResponse){

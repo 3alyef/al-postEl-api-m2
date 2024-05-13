@@ -41,31 +41,26 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
         })
         
     }
-    //this.groupsExpectUsers.set(userSoul, [])
     if(!rooms){
         await new RestoreHistory().initialize( userSoul, this.roomsExpectUsers, this.previousMessages, this.roomsProps );
     }
     rooms = this.roomsExpectUsers.get(userSoul);
     if(rooms){
         rooms.forEach((room)=>{
-            /*if(!this.roomsProps.has(room)) {
-                this.roomsProps.set(room, []);
-            }
-            this.roomsProps.get(room)?.push(AllDataAboutFriend);
-            this.roomsProps.get(room)?.push(AllDataAboutUser);*/
             const roomDatas = this.roomsProps.get(room)
             const friendData = roomDatas?.filter(el => el.userSoul != userSoul)[0]
 
             socket.join(room);
             //console.log("room", room);
             //console.log("data room friend", friendData)
-            console.log("friendData", friendData)
+            //console.log("friendData", friendData)
             socket.emit("updateAll", {message: "add_room", 
                 content: room, friendData, userSoul})
             const msgs = this.previousMessages.get(room)
+            console.log('msgs', msgs)
             msgs?.forEach((e)=>{
-                console.log('previous messages: '+e)
-                socket.emit("previousMsgs", e)
+                console.log('previous messages: ',e)
+                socket.emit("previousMsgs", {messageData: e, room })
             })
         })
     }

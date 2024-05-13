@@ -19,5 +19,6 @@ export interface sendMsg {
     message: string;
     isGroup: string;
     chatName: string;
-    toGroup?: string
+    toGroup?: string;
+    createdIn: string
 }
