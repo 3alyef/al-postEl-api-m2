@@ -19,7 +19,7 @@ class SendMsg {
         roomObj?.push(content);
         console.log('roomObj', roomObj);
         //console.log(toRoom)
-        this.sendMessagesToM3(content)
+        await this.sendMessagesToM3(content)
         socket.to(toRoom).emit("newMsg", {messageData: content, room:toRoom});  
         
     }

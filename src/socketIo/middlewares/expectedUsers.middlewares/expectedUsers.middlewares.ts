@@ -55,13 +55,20 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
             //console.log("data room friend", friendData)
             //console.log("friendData", friendData)
             socket.emit("updateAll", {message: "add_room", 
-                content: room, friendData, userSoul})
-            const msgs = this.previousMessages.get(room)
+                content: room, friendData, userSoul});
+            const msgs = this.previousMessages.get(room);
+
             console.log('msgs', msgs)
-            msgs?.forEach((e)=>{
-                console.log('previous messages: ',e)
-                socket.emit("previousMsgs", {messageData: e, room })
-            })
+            if(msgs){
+                const msgsOrdenate = [...msgs].sort((a, b) => 
+                    new Date(a.createdIn).getTime() - new Date(b.createdIn).getTime()
+                );
+                msgsOrdenate.forEach((e)=>{
+                    console.log('previous messages: ',e)
+                    socket.emit("previousMsgs", {messageData: e, room })
+                })
+            }
+            
         })
     }
 
