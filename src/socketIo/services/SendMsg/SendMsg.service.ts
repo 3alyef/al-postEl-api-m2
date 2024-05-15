@@ -6,6 +6,7 @@ class SendMsg {
         const data = dateInf.toISOString();
         const content: msgsResponse = {  
             fromUser,
+            isDeletedToFrom: false,
             toUser,
             message, 
             createdIn
@@ -17,8 +18,6 @@ class SendMsg {
             previousMessages.set(toRoom, roomObj);
         }
         roomObj?.push(content);
-        console.log('roomObj', roomObj);
-        //console.log(toRoom)
         await this.sendMessagesToM3(content)
         socket.to(toRoom).emit("newMsg", {messageData: content, room:toRoom});  
         

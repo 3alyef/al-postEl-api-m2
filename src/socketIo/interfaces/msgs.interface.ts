@@ -1,6 +1,7 @@
 export interface msgsResponse {
     _id?: string;
     fromUser: string;
+    isDeletedToFrom: boolean;
     toUser: string;
     toChannel?: string;
     message: string;

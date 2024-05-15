@@ -44,6 +44,7 @@ class RestoreHistory {
                             const msgsT: msgsResponse = {
                                     _id: msg._id,
                                     fromUser: msg.fromUser,
+                                    isDeletedToFrom: msg.isDeletedToFrom,
                                     toUser: msg.toUser,
                                     message: msg.message, 
                                     createdIn: msg.createdIn
@@ -54,15 +55,6 @@ class RestoreHistory {
                         //console.log("Sala: "+room, newRoomObj)
                         previousMessages.set(room, newRoomObj);
                     } 
-                    
-                    /*else {
-                        const _userList = roomsExpectUsers.get(net.user);               // Hine! <====
-                        if(!_userList){
-                            roomsExpectUsers.set(net.user, [room]);
-                        } else {
-                            _userList?.push(room);
-                        }
-                    }*/
                 }
                 
             }

@@ -49,17 +49,6 @@ class RestoreGroup {
                             
                         }
                     } 
-                    
-                    
-                    /*else {
-                        const _userList = roomsExpectUsers.get(net.user);
-                
-                        if(!_userList){
-                            roomsExpectUsers.set(net.user, [room]);
-                        } else {
-                            _userList?.push(room);
-                    }*/
-                    
                 }
 
                  
