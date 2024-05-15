@@ -14,12 +14,12 @@ class SendMsgController {
         previousMessages: Map<string, msgsResponse[]>,
         previousGroupMessages: Map<string, msgsGroupDB[]>
     ){
-        socket.on(routeName, async ({ fromUser, toUser, toRoom, message, isGroup, chatName, toGroup, createdIn }: sendMsg)=>{ 
+        socket.on(routeName, async ({ fromUser, isDeletedToFrom, toUser, toRoom, message, isGroup, chatName, toGroup, createdIn }: sendMsg)=>{ 
             if(!isGroup && toRoom){
                 
-                await new SendMsg().initialize(socket,previousMessages, fromUser, toUser, toRoom, message, createdIn)
+                await new SendMsg().initialize(socket,previousMessages, fromUser, isDeletedToFrom, toUser, toRoom, message, createdIn)
             } else if(isGroup && toGroup){
-                await new SendGroupMsg().initialize(socket, previousGroupMessages, fromUser, toGroup, message, createdIn)
+                await new SendGroupMsg().initialize(socket, previousGroupMessages, fromUser, isDeletedToFrom, toGroup, message, createdIn)
             }
                            
         })

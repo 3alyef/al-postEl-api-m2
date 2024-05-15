@@ -1,10 +1,10 @@
 import { Socket } from 'socket.io';
 import { msgsGroupDB } from '../../interfaces/group.interface';
 class SendGroupMsg {
-    public async initialize(socket: Socket, previousGroupMessages: Map<string, msgsGroupDB[]>, fromUser: string, toGroup: string, message: string, createdIn: string){
+    public async initialize(socket: Socket, previousGroupMessages: Map<string, msgsGroupDB[]>, fromUser: string, isDeletedToFrom: boolean, toGroup: string, message: string, createdIn: string){
         const content: msgsGroupDB = {  
             fromUser,
-            isDeletedToFrom: false,
+            isDeletedToFrom,
             message,
             toGroup,
             createdIn

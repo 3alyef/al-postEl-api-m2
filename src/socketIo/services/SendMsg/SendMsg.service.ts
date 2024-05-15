@@ -1,12 +1,12 @@
 import { Socket } from 'socket.io';
 import { msgsResponse } from '../../interfaces/msgs.interface';
 class SendMsg {
-    public async initialize(socket: Socket, previousMessages: Map<string, msgsResponse[]>, fromUser: string, toUser: string, toRoom: string, message: string, createdIn: string){
+    public async initialize(socket: Socket, previousMessages: Map<string, msgsResponse[]>, fromUser: string, isDeletedToFrom: boolean, toUser: string, toRoom: string, message: string, createdIn: string){
         const dateInf = new Date(); 
         const data = dateInf.toISOString();
         const content: msgsResponse = {  
             fromUser,
-            isDeletedToFrom: false,
+            isDeletedToFrom,
             toUser,
             message, 
             createdIn

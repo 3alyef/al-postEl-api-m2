@@ -15,6 +15,7 @@ export interface msgsRequest {
 
 export interface sendMsg {
     fromUser: string;
+    isDeletedToFrom: boolean;
     toUser: string;
     toRoom?: string;
     message: string;
