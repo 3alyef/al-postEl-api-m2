@@ -15,9 +15,8 @@ class SendMsgController {
         previousMessages: Map<string, msgsResponse[]>,
         previousGroupMessages: Map<string, msgsGroupDB[]>
     ){
-        socket.on(routeName, async ({fromUser, deletedTo, toUser, toRoom, message, isGroup, chatName, toGroup }: sendMsg)=>{ 
-            const dateInf = new Date(); 
-            const createdIn = dateInf.toISOString();
+        socket.on(routeName, async ({fromUser, deletedTo, toUser, toRoom, message, isGroup, chatName, toGroup, createdIn }: sendMsg)=>{ 
+            
             if(!isGroup && toRoom){
                 
                 await new SendMsg().initialize(io, socket,previousMessages, fromUser, deletedTo, toUser, toRoom, message, createdIn)
@@ -30,8 +29,6 @@ class SendMsgController {
 
     
 }
-
-// ||| NOTE: Deve ser definido a seguinte ação: Quando não houver um usuário y (user1) e x (user2) deve-se apagar as previous messages desta sala e, é claro, o nome dela. |||
 const sendMsgController = new SendMsgController();
 
 export {sendMsgController};

@@ -20,7 +20,7 @@ abstract class SocketIo{
     constructor( server: ServerHTTP ){     
         this.previousGroupMessages = new Map<string, msgsGroupDB[]>();
         this.roomsExpectUsers = new Map<string, string[]>();
-        this.roomsProps = new Map<string, AllDataUser[]>()
+        this.roomsProps = new Map<string, AllDataUser[]>();
         this.userSocketMap = new Map<string, Socket[]>();
         this.groupsAdmin = new Map<string, string[]>();
         this.previousMessages = new Map<string, msgsResponse[]>();
@@ -43,6 +43,7 @@ abstract class SocketIo{
 
         this.socketIo.on("connection", (socket: Socket)=> {    
             const decoded: DecodedData = socket.auth;
+            
             // console.log("new user")
             let socketsList: Socket[] | undefined = this.userSocketMap.get(decoded.userSoul);
 
@@ -54,21 +55,9 @@ abstract class SocketIo{
 
             socket.emit("updateSoul", {soulName: decoded.userSoul})
             socket.on('disconnect', () => {
-                // Remove a entrada do mapeamento quando o usuário se desconect
-                const index = socketsList.indexOf(socket); // Procura o index do socket que está saindo
-                if (index !== -1) { // !== -1 quer dizer que existe
-                    socketsList.splice(index, 1);
-                    console.log('Socket removido do array de sockets.');
-                }
-
-                // Se não houver mais sockets associados ao soulName, remova o soulName do mapeamento
-                if (socketsList.length === 0) {
-                    this.userSocketMap.delete(decoded.userSoul);
-                    console.log(`SoulName: ${decoded.userSoul} removido do mapeamento.`);
-                }
+                this.handleDisconnect(decoded, socketsList, socket)
             });
 
-            //console.log(decoded);
         
             socketIoRoutes( this.socketIo, socket, this.userSocketMap, this.roomsExpectUsers, this.previousMessages, this.groupsExpectUsers, this.groupsAdmin, this.previousGroupMessages, this.roomsProps ); 
     
@@ -80,18 +69,42 @@ abstract class SocketIo{
         
     }
 
+    private handleDisconnect(decoded:DecodedData, socketsList: Socket[], socket: Socket){
+        const userSoul: string = decoded.userSoul
+        // Remove a entrada do mapeamento quando o usuário se desconect
+        const index = socketsList.indexOf(socket); // Procura o index do socket que está saindo
+        if (index !== -1) { // !== -1 quer dizer que existe
+            socketsList.splice(index, 1);
+            console.log('Socket removido do array de sockets.');
+        }
+
+        // Se não houver mais sockets associados ao soulName, remova o soulName do mapeamento
+        if (socketsList.length === 0) {
+            this.userSocketMap.delete(decoded.userSoul);
+            console.log(`SoulName: ${decoded.userSoul} removido do mapeamento.`);
+        }
+
+        const roomsUser = this.roomsExpectUsers.get(userSoul)
+        this.roomsExpectUsers.delete(userSoul)
+        if(roomsUser){
+            this.roomsExpectUsers.forEach((value, key, map)=>{
+                roomsUser.forEach((roomUser)=>{
+                    const equalRooms = value.filter(room => room === roomUser)
+                    if(equalRooms){
+                        console.log('ainda existe ainda um membro online')
+                    } else {
+                        this.previousMessages.delete(roomUser)
+                        this.roomsProps.delete(roomUser)
+                    }
+                })
+                
+            })
+        }
+        
+
+    }
+
 }
 
 
 export default SocketIo;
-
-/* O userRoomMap será responsável por guardar as informações da sala, será mais ou menos assim:
-    ==> [roomName1=>[[userSoul1],[userSoul2]], roomName2=>[[userSoul1],[userSoul2]]]; Assim só ingressa na sala quem tem o mesmo userSoul já pre preenchido
-*/
-
-/*
-        const msgs = this.socketIo.of("/msgs")
-
-        msgs.on("connection", ()=>{
-
-        })*/

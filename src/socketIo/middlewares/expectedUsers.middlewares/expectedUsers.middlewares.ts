@@ -10,7 +10,7 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
     const decoded: DecodedData = socket.auth;
     const userSoul = decoded.userSoul;
 
-    let rooms = this.roomsExpectUsers.get(userSoul);
+    
     let usersGroup = this.groupsExpectUsers.get(userSoul);
     if(!usersGroup){
         await new RestoreGroup().initialize( userSoul, this.groupsExpectUsers, this.groupsAdmin, this.previousGroupMessages );
@@ -41,8 +41,10 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
         })
         
     }
-    if(!rooms){
+    let rooms: string[] | undefined;
+    if(!this.roomsExpectUsers.has(userSoul)){
         await new RestoreHistory().initialize( userSoul, this.roomsExpectUsers, this.previousMessages, this.roomsProps );
+        
     }
     rooms = this.roomsExpectUsers.get(userSoul);
     if(rooms){
