@@ -58,7 +58,8 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
 
             //console.log('antes de if msgs mensagem Array:', msgs)
             if(msgs){
-                console.log('mensagem Array:', msgs)
+                console.log('mensagem Array:')
+                console.log(msgs)
                 socket.emit("previousMsgs", {messageData: msgs, room })
                 /*msgs.forEach((e)=>{
                     console.log('previous messages: ',e)
