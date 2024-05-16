@@ -56,7 +56,7 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
                 content: room, friendData, userSoul});
             const msgs = this.previousMessages.get(room);
 
-            
+            //console.log('antes de if msgs mensagem Array:', msgs)
             if(msgs){
                 console.log('mensagem Array:', msgs)
                 socket.emit("previousMsgs", {messageData: msgs, room })
@@ -68,9 +68,5 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
             
         })
     }
-
-
-
-
     next(); 
 }
