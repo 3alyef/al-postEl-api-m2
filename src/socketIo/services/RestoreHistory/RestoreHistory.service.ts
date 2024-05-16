@@ -9,7 +9,7 @@ class RestoreHistory {
         try {
             const networkList: networksDB[] | null = await this.getNetworkList(userSoul);
             if(networkList){
-                //console.log("NetworkLis: ", networkList)
+               
                 for(const net of networkList){
                     const msgs = await this.getMessages(net);
                     //console.log("Dentro de try msgs=> "+msgs)
@@ -36,22 +36,18 @@ class RestoreHistory {
 
                     if(msgs){
                         const newRoomObj: msgsResponse[] = []; 
-                        for(const msg of msgs){
-                            
-                            // Linka o usuario com sua respectiva sala de acordo com a networkList
-                            //console.log("HINE",roomsExpectUsers.get(userSoul))
-
+                        msgs.forEach((msg)=>{
                             const msgsT: msgsResponse = {
-                                    _id: msg._id,
-                                    fromUser: msg.fromUser,
-                                    deletedTo: msg.deletedTo,
-                                    toUser: msg.toUser,
-                                    message: msg.message, 
-                                    createdIn: msg.createdIn
-                                }
-                            console.log(msgsT)
+                                _id: msg._id,
+                                fromUser: msg.fromUser,
+                                deletedTo: msg.deletedTo,
+                                toUser: msg.toUser,
+                                message: msg.message, 
+                                createdIn: msg.createdIn
+                            }
+                            
                             newRoomObj.push(msgsT); 
-                        }
+                        })
                         //console.log("Sala: "+room, newRoomObj)
                         previousMessages.set(room, newRoomObj);
                     } 
@@ -117,7 +113,7 @@ class RestoreHistory {
             if ('error' in data) {
                 throw new Error(data.error);
             } else {
-                console.log("Data: "+data)
+                //console.log("Data: "+data)
                 return data;
             }
         }catch(error){

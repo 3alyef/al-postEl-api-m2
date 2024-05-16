@@ -51,16 +51,15 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
             const friendData = roomDatas?.filter(el => el.userSoul != userSoul)[0]
 
             socket.join(room);
-            //console.log("room", room);
-            //console.log("data room friend", friendData)
-            //console.log("friendData", friendData)
+            
             socket.emit("updateAll", {message: "add_room", 
                 content: room, friendData, userSoul});
             const msgs = this.previousMessages.get(room);
 
-            console.log('mensagem Array:')
-            console.log(msgs)
+            
             if(msgs){
+                console.log('mensagem Array:')
+                console.log(msgs)
                 msgs.forEach((e)=>{
                     console.log('previous messages: ',e)
                     socket.emit("previousMsgs", {messageData: e, room })
