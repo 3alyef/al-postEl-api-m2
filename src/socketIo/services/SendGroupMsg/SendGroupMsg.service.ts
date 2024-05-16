@@ -1,7 +1,7 @@
-import { Socket } from 'socket.io';
+import { Server as Io, Socket } from "socket.io";
 import { msgsGroupDB } from '../../interfaces/group.interface';
 class SendGroupMsg {
-    public async initialize(socket: Socket, previousGroupMessages: Map<string, msgsGroupDB[]>, fromUser: string, deletedTo: "none" | "justFrom" | "all", toGroup: string, message: string, createdIn: string){
+    public async initialize(io: Io, socket: Socket, previousGroupMessages: Map<string, msgsGroupDB[]>, fromUser: string, deletedTo: "none" | "justFrom" | "all", toGroup: string, message: string, createdIn: string){
         const content: msgsGroupDB = {  
             fromUser,
             deletedTo,
@@ -17,7 +17,7 @@ class SendGroupMsg {
         }
         roomObj?.push(content);
         console.log(roomObj);
-        socket.to(toGroup).emit("newMsg", {messageData: content, room:toGroup});  
+        io.to(toGroup).emit("newMsg", {messageData: content, room:toGroup});  
         this.sendMessagesToM3(content)
     }
 

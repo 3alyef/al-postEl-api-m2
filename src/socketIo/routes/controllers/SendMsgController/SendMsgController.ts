@@ -1,4 +1,4 @@
-import { Socket } from "socket.io";
+import { Server as Io, Socket } from "socket.io";
 import { msgsResponse, sendMsg } from "../../../interfaces/msgs.interface";
 import { SendGroupMsg, SendMsg } from "../../../services/Services";
 import { msgsGroupDB } from "../../../interfaces/group.interface";
@@ -9,17 +9,20 @@ import { msgsGroupDB } from "../../../interfaces/group.interface";
 
 class SendMsgController {
     sendMsg(
+        io:Io,
         socket: Socket,
         routeName: string, 
         previousMessages: Map<string, msgsResponse[]>,
         previousGroupMessages: Map<string, msgsGroupDB[]>
     ){
-        socket.on(routeName, async ({ fromUser, deletedTo, toUser, toRoom, message, isGroup, chatName, toGroup, createdIn }: sendMsg)=>{ 
+        socket.on(routeName, async ({fromUser, deletedTo, toUser, toRoom, message, isGroup, chatName, toGroup }: sendMsg)=>{ 
+            const dateInf = new Date(); 
+            const createdIn = dateInf.toISOString();
             if(!isGroup && toRoom){
                 
-                await new SendMsg().initialize(socket,previousMessages, fromUser, deletedTo, toUser, toRoom, message, createdIn)
+                await new SendMsg().initialize(io, socket,previousMessages, fromUser, deletedTo, toUser, toRoom, message, createdIn)
             } else if(isGroup && toGroup){
-                await new SendGroupMsg().initialize(socket, previousGroupMessages, fromUser, deletedTo, toGroup, message, createdIn)
+                await new SendGroupMsg().initialize(io, socket, previousGroupMessages, fromUser, deletedTo, toGroup, message, createdIn)
             }
                            
         })

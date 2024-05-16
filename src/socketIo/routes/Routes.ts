@@ -1,10 +1,11 @@
-import { Socket } from "socket.io";
+import { Server as Io, Socket } from "socket.io";
 import * as Controll from "./controllers/Controllers";
 import { msgsResponse } from "../interfaces/msgs.interface";
 import { msgsGroupDB, newGroupResponse } from "../interfaces/group.interface";
 import { AllDataUser } from "../interfaces/auth.interface";
 
 const router = ( 
+    io: Io,
     socket: Socket,
     userSocketMap:Map<string, Socket[]>,
     roomsExpectUsers: Map<string, string[]>,
@@ -30,6 +31,7 @@ const router = (
     );
 
     Controll.sendMsgController.sendMsg(
+        io,
         socket,
         "sendMsg",
         previousMessages,
