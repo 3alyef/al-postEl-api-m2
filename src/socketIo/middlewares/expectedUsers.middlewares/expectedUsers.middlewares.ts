@@ -58,7 +58,8 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
                 content: room, friendData, userSoul});
             const msgs = this.previousMessages.get(room);
 
-            console.log('msgs', msgs)
+            console.log('mensagem Array:')
+            console.log(msgs)
             if(msgs){
                 msgs.forEach((e)=>{
                     console.log('previous messages: ',e)
