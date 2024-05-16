@@ -8,7 +8,7 @@ export interface networksDB {
 export interface msgsDB {
     _id: string;
     fromUser: string;
-    isDeletedToFrom: boolean;
+    deletedTo: "none" | "justFrom" | "all";
     toUser: string;
     message: string;
     createdIn: string;

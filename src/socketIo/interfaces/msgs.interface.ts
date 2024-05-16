@@ -1,7 +1,7 @@
 export interface msgsResponse {
     _id?: string;
     fromUser: string;
-    isDeletedToFrom: boolean;
+    deletedTo: "none" | "justFrom" | "all";
     toUser: string;
     toChannel?: string;
     message: string;
@@ -15,7 +15,7 @@ export interface msgsRequest {
 
 export interface sendMsg {
     fromUser: string;
-    isDeletedToFrom: boolean;
+    deletedTo: "none" | "justFrom" | "all";
     toUser: string;
     toRoom?: string;
     message: string;

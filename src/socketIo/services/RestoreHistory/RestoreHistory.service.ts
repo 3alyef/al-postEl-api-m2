@@ -44,7 +44,7 @@ class RestoreHistory {
                             const msgsT: msgsResponse = {
                                     _id: msg._id,
                                     fromUser: msg.fromUser,
-                                    isDeletedToFrom: msg.isDeletedToFrom,
+                                    deletedTo: msg.deletedTo,
                                     toUser: msg.toUser,
                                     message: msg.message, 
                                     createdIn: msg.createdIn

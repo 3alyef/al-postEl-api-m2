@@ -25,7 +25,7 @@ export interface groupDB {
 export interface msgsGroupDB {
     _id?: string;
     fromUser: string;
-    isDeletedToFrom: boolean;
+    deletedTo: "none" | "justFrom" | "all";
     toGroup: string;
     message: string;
     createdIn: string;
