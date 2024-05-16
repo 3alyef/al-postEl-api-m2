@@ -60,10 +60,7 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
 
             console.log('msgs', msgs)
             if(msgs){
-                const msgsOrdenate = [...msgs].sort((a, b) => 
-                    new Date(a.createdIn).getTime() - new Date(b.createdIn).getTime()
-                );
-                msgsOrdenate.forEach((e)=>{
+                msgs.forEach((e)=>{
                     console.log('previous messages: ',e)
                     socket.emit("previousMsgs", {messageData: e, room })
                 })
