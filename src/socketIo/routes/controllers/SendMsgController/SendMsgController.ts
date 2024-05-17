@@ -7,6 +7,13 @@ import { msgsGroupDB } from "../../../interfaces/group.interface";
     NOTE: Todas as mensagens enviadas do tipo user1 => user2 são direcionadas à um channel especifico criado a partir da rendomização de 2 numbers + soulName1 + soulName2
 */
 
+export interface msgStatus {
+    fromUser: string;
+    room: string;
+    createdIn: string;
+    viewStatus: "onServer" | "delivered" | "seen";
+}
+
 class SendMsgController {
     sendMsg(
         io:Io,
@@ -25,6 +32,52 @@ class SendMsgController {
             }
                            
         })
+    }
+
+    msgSeenUpdate(
+        io:Io,
+        socket: Socket,
+        routeName: string, 
+        previousMessages: Map<string, msgsResponse[]>,
+        userSocketMap:Map<string, Socket[]>,
+    ){
+        socket.on(routeName, async ({fromUser, room, viewStatus, createdIn }: msgStatus)=>{
+            const msgs = previousMessages.get(room);
+            if(msgs){
+                const updatedMsgs = msgs.map((msg) => {
+                    if (msg.createdIn === createdIn) {
+                        return { ...msg, viewStatus };
+                    }
+                    return msg;
+                });
+                previousMessages.set(room, updatedMsgs);
+                await this.msgUpdateMsg({createdIn, viewStatus})
+                const userFromSockets = userSocketMap.get(fromUser)
+                if(userFromSockets){
+                    userFromSockets.forEach((socket: Socket)=>{
+                        socket.emit('userSocketMap', {fromUser, room, createdIn, viewStatus})
+                    })
+                }
+            }
+
+
+        })
+    }
+
+    private async msgUpdateMsg({createdIn, viewStatus}: {createdIn: string, viewStatus: string}){
+        try {
+            const body = JSON.stringify({viewStatus, createdIn});
+            const response = await fetch(`${process.env.URL_M3}/statusMsgUpdate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: body
+            });
+            console.log('atualizacao msg', response)
+        } catch(erro){
+            console.log(erro)
+        }
     }
 
     

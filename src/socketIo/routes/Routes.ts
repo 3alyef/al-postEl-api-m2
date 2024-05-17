@@ -38,6 +38,14 @@ const router = (
         previousGroupMessages
         
     );
+    Controll.sendMsgController.msgSeenUpdate(
+        io,
+        socket,
+        "msgSeenUpdate",
+        previousMessages,
+        userSocketMap
+        
+    );
 
     Controll.createNewGroupController.newGroup(
         socket,
@@ -53,6 +61,8 @@ const router = (
         "unregister",
         
     );
+
+    
     
 }
 
