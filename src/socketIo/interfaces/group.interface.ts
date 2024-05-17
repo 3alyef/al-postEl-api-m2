@@ -26,6 +26,7 @@ export interface msgsGroupDB {
     _id?: string;
     fromUser: string;
     deletedTo: "none" | "justFrom" | "all";
+    viewStatus: "onServer" | "delivered" | "seen";
     toGroup: string;
     message: string;
     createdIn: string;

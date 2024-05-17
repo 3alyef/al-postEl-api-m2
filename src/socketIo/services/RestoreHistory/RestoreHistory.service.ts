@@ -41,6 +41,7 @@ class RestoreHistory {
                                 _id: msg._id,
                                 fromUser: msg.fromUser,
                                 deletedTo: msg.deletedTo,
+                                viewStatus: msg.viewStatus,
                                 toUser: msg.toUser,
                                 message: msg.message, 
                                 createdIn: msg.createdIn

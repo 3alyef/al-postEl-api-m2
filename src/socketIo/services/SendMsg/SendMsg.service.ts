@@ -7,6 +7,7 @@ class SendMsg {
         const content: msgsResponse = {  
             fromUser,
             deletedTo,
+            viewStatus: "delivered",
             toUser,
             message, 
             createdIn
@@ -18,9 +19,13 @@ class SendMsg {
             previousMessages.set(toRoom, roomObj);
         }
         roomObj?.push(content);
+
+        socket.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "onServer"})
+
         await this.sendMessagesToM3(content)
         socket.to(toRoom).emit("newMsg", {messageData: content, room:toRoom});  
-        //io.to(toRoom).emit("newMsg", {messageData: content, room:toRoom});  
+        
+        socket.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "delivered"})
         
     }
 

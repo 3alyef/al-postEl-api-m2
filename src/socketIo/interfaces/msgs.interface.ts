@@ -2,6 +2,7 @@ export interface msgsResponse {
     _id?: string;
     fromUser: string;
     deletedTo: "none" | "justFrom" | "all";
+    viewStatus: "onServer" | "delivered" | "seen";
     toUser: string;
     toChannel?: string;
     message: string;
@@ -16,6 +17,7 @@ export interface msgsRequest {
 export interface sendMsg {
     fromUser: string;
     deletedTo: "none" | "justFrom" | "all";
+    viewStatus: "onServer" | "delivered" | "seen";
     toUser: string;
     toRoom?: string;
     message: string;
