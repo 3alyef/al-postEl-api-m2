@@ -9,6 +9,7 @@ import { msgsGroupDB } from "../../../interfaces/group.interface";
 
 export interface msgStatus {
     fromUser: string;
+    toUser: string;
     room: string;
     createdIn: string;
     viewStatus: "onServer" | "delivered" | "seen";
@@ -41,8 +42,10 @@ class SendMsgController {
         previousMessages: Map<string, msgsResponse[]>,
         userSocketMap:Map<string, Socket[]>,
     ){
-        socket.on(routeName, async ({fromUser, room, viewStatus, createdIn }: msgStatus)=>{
+        socket.on(routeName, async ({fromUser, toUser, room, viewStatus, createdIn }: msgStatus)=>{
             const msgs = previousMessages.get(room);
+            console.log('msgSeenUpdate', {fromUser, toUser, room, viewStatus, createdIn });
+            
             if(msgs){
                 const updatedMsgs = msgs.map((msg) => {
                     if (msg.createdIn === createdIn) {
@@ -51,11 +54,11 @@ class SendMsgController {
                     return msg;
                 });
                 previousMessages.set(room, updatedMsgs);
-                await this.msgUpdateMsg({createdIn, viewStatus})
+                await this.msgUpdateMsg({fromUser, toUser, createdIn, viewStatus})
                 const userFromSockets = userSocketMap.get(fromUser)
                 if(userFromSockets){
                     userFromSockets.forEach((socket: Socket)=>{
-                        socket.emit('userSocketMap', {fromUser, room, createdIn, viewStatus})
+                        socket.emit('msgStatus', {fromUser, room, createdIn, viewStatus})
                     })
                 }
             }
@@ -64,9 +67,9 @@ class SendMsgController {
         })
     }
 
-    private async msgUpdateMsg({createdIn, viewStatus}: {createdIn: string, viewStatus: string}){
+    private async msgUpdateMsg({fromUser, toUser, createdIn, viewStatus}: {fromUser: string, toUser: string, createdIn: string, viewStatus: string}){
         try {
-            const body = JSON.stringify({viewStatus, createdIn});
+            const body = JSON.stringify({fromUser, toUser, viewStatus, createdIn});
             const response = await fetch(`${process.env.URL_M3}/statusMsgUpdate`, {
                 method: 'POST',
                 headers: {
