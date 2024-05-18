@@ -55,14 +55,19 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
             socket.join(room);
 
             socket.emit("updateAll", {message: "add_room", 
-                content: room, friendData, userSoul});
+                content: room, friendData});
             const msgs = this.previousMessages.get(room);
-
-    
+            //console.log('previousMessages', this.previousMessages)
+            
             if(msgs){
-                console.log('mensagem Array:')
-                console.log(msgs)
-                socket.emit("previousMsgs", {messageData: msgs, room }) 
+                
+                console.log('msgs=>>>',msgs)
+                let msgCase = msgs[0]?.fromUser
+                if(!msgCase || msgCase === userSoul){
+                    msgCase = msgs[0]?.toUser
+                }
+                //console.log('msgCase:', msgCase, userSoul)
+                socket.emit("previousMsgs", {messageData: msgs, room, msgCase }) 
             }
             
         })

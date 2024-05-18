@@ -1,7 +1,7 @@
 import { Server as Io, Socket } from "socket.io";
 import { msgsResponse } from '../../interfaces/msgs.interface';
 class SendMsg {
-    public async initialize(io: Io, socket: Socket, previousMessages: Map<string, msgsResponse[]>, fromUser: string, deletedTo: "none" | "justFrom" | "all", toUser: string, toRoom: string, message: string, createdIn: string){
+    public async initialize(io: Io, socket: Socket, previousMessages: Map<string, msgsResponse[]>, fromUser: string, deletedTo: "none" | "justFrom" | "all", toUser: string, toRoom: string, message: string, createdIn: string){ 
         //const dateInf = new Date(); 
         //const data = dateInf.toISOString();
         const content: msgsResponse = {  
@@ -20,12 +20,12 @@ class SendMsg {
         }
         roomObj?.push(content);
 
-        socket.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "onServer"})
+        socket.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "onServer", toUser})
 
         await this.sendMessagesToM3(content)
         socket.to(toRoom).emit("newMsg", {messageData: content, room:toRoom});  
         
-        socket.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "delivered"})
+        socket.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "delivered", toUser})
         
     }
 

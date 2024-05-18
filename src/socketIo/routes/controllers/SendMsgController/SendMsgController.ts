@@ -58,7 +58,7 @@ class SendMsgController {
                 const userFromSockets = userSocketMap.get(fromUser)
                 if(userFromSockets){
                     userFromSockets.forEach((socket: Socket)=>{
-                        socket.emit('msgStatus', {fromUser, room, createdIn, viewStatus})
+                        socket.emit('msgStatus', {fromUser, room, createdIn, viewStatus, toUser})
                     })
                 }
             }

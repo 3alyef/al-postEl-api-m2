@@ -20,6 +20,7 @@ export function verifyJWT (socket: Socket, next: (err?: ExtendedError | undefine
 
     } else {
         socket.auth = decoded
+        socket.emit('updateSoul', {soulName: decoded?.userSoul})
         next();
     }
-}
+} 
