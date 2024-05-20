@@ -36,16 +36,9 @@ class CreateConnectionController {
                         roomsExpectUsers.set(friendName, _friendList);
                     } 
                     _friendList?.push(room);
-                    /*console.log('----------------------------')
-                    console.log("friendName", friendName)        
-                    console.log("userName", decoded.userSoul)
-                    console.log('----------------------------')*/
                     const AllDataAboutFriend: AllDataUser = await findDataUser(friendName)
                 
-                    const AllDataAboutUser: AllDataUser = await findDataUser(decoded.userSoul)
-
-
-                    
+                    const AllDataAboutUser: AllDataUser = await findDataUser(decoded.userSoul);
 
                     // ROOM PROPS
                     if(!roomsProps.has(room)) {
@@ -77,9 +70,10 @@ class CreateConnectionController {
                             console.log(AllDataAboutUser)
                             socketElement.emit("updateAll", {message: "add_room", content: room, friendData: AllDataAboutUser})
                             
-                    });
+                        });
                     
-                    }     
+                    }   
+                    socket.emit('connectFriendSucess', 'sucess')  
                 }
                 }
             } catch(error){
