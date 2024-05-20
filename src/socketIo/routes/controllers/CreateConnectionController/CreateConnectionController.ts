@@ -60,21 +60,23 @@ class CreateConnectionController {
                             //console.log('AllDataAboutFriend',AllDataAboutFriend)
                             socketElement.emit("updateAll", {message: "add_room", content:room, friendData: AllDataAboutFriend})
                             
-                    });
-
+                            
+                        });
+                        socket.emit('connectFriendSucess', {friendData: AllDataAboutFriend}) 
+                    }
                     if(sockets_friend){
                         sockets_friend.forEach((socketElement) => {
                             // Envia a mensagem para todos os /'nicknames" que detenham o mesmo soulName
                             socketElement.join(room);
                             //socketElement.emit(routeName ,`${friendName}`);
-                            console.log(AllDataAboutUser)
+                            //console.log(AllDataAboutUser)
                             socketElement.emit("updateAll", {message: "add_room", content: room, friendData: AllDataAboutUser})
-                            
+                        
                         });
-                    
+                
                     }   
-                    socket.emit('connectFriendSucess', 'sucess')  
-                }
+                     
+                    
                 }
             } catch(error){
                 console.error("Erro ao criar conexão: "+ error)
