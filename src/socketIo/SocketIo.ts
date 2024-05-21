@@ -9,7 +9,7 @@ import { msgsGroupDB, newGroupResponse } from "./interfaces/group.interface";
 
 abstract class SocketIo{
     private socketIo: Io;
-    private userSocketMap: Map<string, Socket[]>; // Rooms list on
+    public userSocketMap: Map<string, Socket[]>; // Rooms list on
 
     public previousMessages: Map<string, msgsResponse[]>; // Msg List
     public previousGroupMessages: Map<string, msgsGroupDB[]>
@@ -55,7 +55,9 @@ abstract class SocketIo{
 
             socket.emit("updateSoul", {soulName: decoded.userSoul})
             socket.on('disconnect', () => {
+                this.sendStatusOnline(decoded.userSoul)
                 this.handleDisconnect(decoded, socketsList, socket)
+
             });
 
         
@@ -67,6 +69,28 @@ abstract class SocketIo{
             
         }) 
         
+    }
+
+    private sendStatusOnline(userSoul: string){
+        let rooms = this.roomsExpectUsers.get(userSoul);
+        if(rooms){
+            rooms.forEach((room)=>{
+                const roomDatas = this.roomsProps.get(room)
+                const friendData = roomDatas?.filter(el => el.userSoul != userSoul)[0];
+                
+                
+                // Atualiza o status do user Online to the friends
+                if(friendData){
+                    const _isFriendOnline = this.userSocketMap.get(friendData.userSoul);
+                    if(_isFriendOnline && _isFriendOnline.length > 0){
+                        _isFriendOnline.forEach((socketFriend)=>{
+                            socketFriend.emit("updateFriendsOnline", {userSoul: userSoul, online: false})
+                        })
+                    }
+                }
+                
+            })
+        }
     }
 
     private handleDisconnect(decoded:DecodedData, socketsList: Socket[], socket: Socket){

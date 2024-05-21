@@ -50,18 +50,20 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
     if(rooms){
         rooms.forEach((room)=>{
             const roomDatas = this.roomsProps.get(room)
-            const friendData = roomDatas?.filter(el => el.userSoul != userSoul)[0]
+            const friendData = roomDatas?.filter(el => el.userSoul != userSoul)[0];
+            
+            
 
             socket.join(room);
 
-            socket.emit("updateAll", {message: "add_room", 
-                content: room, friendData});
+            socket.emit("updateAll", {message: "add_room", content: room, friendData});
+
             const msgs = this.previousMessages.get(room);
             //console.log('previousMessages', this.previousMessages)
             
             if(msgs){
                 
-                console.log('msgs=>>>',msgs)
+                //console.log('msgs=>>>',msgs)
                 let msgCase = msgs[0]?.fromUser
                 if(!msgCase || msgCase === userSoul){
                     msgCase = msgs[0]?.toUser
@@ -69,6 +71,24 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
                 //console.log('msgCase:', msgCase, userSoul)
                 socket.emit("previousMsgs", {messageData: msgs, room, msgCase }) 
             }
+
+
+            // Atualiza o status dos friends Online para o user
+            if(friendData){
+                const _isFriendOnline = this.userSocketMap.get(friendData.userSoul);
+                if(_isFriendOnline && _isFriendOnline.length > 0){
+                    console.log('friendIsOnline')
+                    console.log('friendData.userSoul', friendData.userSoul)
+                    socket.emit("updateFriendsOnline", {userSoul: friendData.userSoul, online: true});
+
+                    // Atualiza o status do user Online to the friends
+                    _isFriendOnline.forEach((socketFriend)=>{
+                        socketFriend.emit("updateFriendsOnline", {userSoul: userSoul, online: true})
+                    })
+                }
+            }
+
+            
             
         })
     }
