@@ -83,6 +83,24 @@ class SendMsgController {
         }
     }
 
+    public async setTypingState(
+        io:Io,
+        socket: Socket,
+        routeName: string, 
+        previousMessages: Map<string, msgsResponse[]>,
+        userSocketMap:Map<string, Socket[]>,
+    ) {
+        socket.on(routeName, ({state, userSoulFrom, userSoulTo}:{state: boolean, userSoulFrom: string, userSoulTo: string})=>{
+            const socketsFriend = userSocketMap.get(userSoulTo);
+            console.log({state, userSoulFrom, userSoulTo})
+            if(socketsFriend){
+                socketsFriend.forEach((socket: Socket)=>{
+                    socket.emit('setTypingState', {state, userSoulFrom})
+                })
+            }
+        })
+    }
+
     
 }
 const sendMsgController = new SendMsgController();

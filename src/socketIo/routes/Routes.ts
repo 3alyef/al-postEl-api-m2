@@ -46,6 +46,13 @@ const router = (
         userSocketMap
         
     );
+    Controll.sendMsgController.setTypingState(
+        io,
+        socket,
+        "setTypingState",
+        previousMessages,
+        userSocketMap
+    )
 
     Controll.createNewGroupController.newGroup(
         socket,

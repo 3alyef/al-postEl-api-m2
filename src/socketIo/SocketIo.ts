@@ -87,18 +87,30 @@ abstract class SocketIo{
         const roomsUser = this.roomsExpectUsers.get(userSoul)
         this.roomsExpectUsers.delete(userSoul)
         if(roomsUser){
-            this.roomsExpectUsers.forEach((value, key, map)=>{
-                roomsUser.forEach((roomUser)=>{
-                    const equalRooms = value.filter(room => room === roomUser)
-                    if(equalRooms){
-                        console.log('ainda existe ainda um membro online')
-                    } else {
-                        this.previousMessages.delete(roomUser)
-                        this.roomsProps.delete(roomUser)
-                    }
+            if(this.roomsExpectUsers.size > 0){
+                this.roomsExpectUsers.forEach((value, key, map)=>{
+                    roomsUser.forEach((roomUser)=>{
+                        const equalRooms = value.filter(room => room === roomUser)
+                        if(equalRooms.length > 0){
+                            console.log('ainda existe ainda um membro online')
+                        } else {
+                            //console.log('previousMessagesBEFORE', this.previousMessages)
+                            this.previousMessages.delete(roomUser)
+                            this.roomsProps.delete(roomUser)
+                            //console.log('previousMessagesAFTER', this.previousMessages)
+                        }
+                    })
+                    
                 })
-                
-            })
+            } else {
+                roomsUser.forEach((roomUser)=>{
+                    //console.log('previousMessagesBEFORE', this.previousMessages)
+                    this.previousMessages.delete(roomUser)
+                    this.roomsProps.delete(roomUser)
+                    //console.log('previousMessagesAFTER', this.previousMessages)
+                })
+            }
+            
         }
         
 
