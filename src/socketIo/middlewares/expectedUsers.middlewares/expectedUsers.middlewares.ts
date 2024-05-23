@@ -51,9 +51,6 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
         rooms.forEach((room)=>{
             const roomDatas = this.roomsProps.get(room)
             const friendData = roomDatas?.filter(el => el.userSoul != userSoul)[0];
-            
-            
-
             socket.join(room);
 
             socket.emit("updateAll", {message: "add_room", content: room, friendData});

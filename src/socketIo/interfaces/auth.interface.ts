@@ -1,13 +1,14 @@
 import { costumName } from "../../express/interfaces/request.interface";
 
 export type DecodedData  = {
+    first_name: string;
+    last_name: string;
     userId: string;
     userSoul: string;
     email: string;
     costumName: costumName;
     iat?: number;
     exp?: number;
-
 }
 
 export type AllDataUser = {

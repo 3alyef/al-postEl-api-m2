@@ -7,6 +7,8 @@ const jwt = require("jsonwebtoken");
 interface User {
     _id: string;
     soulName: string;
+    first_name: string;
+    last_name: string
 }
 
 export interface costumName {
@@ -30,7 +32,7 @@ class Login {
             if(user){             
                 const costumNameContain:costumName | {custom_name: undefined, lastUpdateIn: undefined} = await findCostumName(user.soulName)
 
-                const token = this.TokenGenerator( user._id, user.soulName, email, costumNameContain );
+                const token = this.TokenGenerator( user._id, user.soulName, user.first_name, user.last_name, email, costumNameContain );
                 if(token){
                     res.status(200).json({ auth: true, token: token , URL_M2: this.URL_M2 });
                 } else {
@@ -48,14 +50,14 @@ class Login {
         }
     }
 
-    private async findUser(email: string, password: string): Promise<{ _id: string, soulName: string } | null> {   
+    private async findUser(email: string, password: string): Promise<User | null> {   
         
         const {passEncrypt}: { passEncrypt: string } = await validateCredentials(email, password, true);
-        const user: User | null = await userModel.findOne({ email: email, password: passEncrypt }, '_id soulName');
+        const user: User | null = await userModel.findOne({ email: email, password: passEncrypt }, '_id soulName first_name last_name');
 
         if (user) {
             // Returns an object containing the _id and soulName of the user
-            return { _id: user._id, soulName: user.soulName };
+            return { _id: user._id, soulName: user.soulName, first_name: user.first_name, last_name: user.last_name};
         } else {
             // Returns null if no user is found
             return null;
@@ -63,10 +65,10 @@ class Login {
       
     }  
 
-    private TokenGenerator( userId: string, userSoul: string, email:string, costumName:costumName  ): string {
+    private TokenGenerator( userId: string, userSoul: string, first_name: string, last_name: string, email:string, costumName:costumName  ): string {
         try{
             // 1800 => 30min  30 => 0.5min
-            const token = jwt.sign( { userId, userSoul, email, costumName }, this.tokenKey, { expiresIn: 7200 })
+            const token = jwt.sign( { userId, userSoul, first_name, last_name, email, costumName }, this.tokenKey, { expiresIn: 7200 })
 
             return token;
         } catch(error){
