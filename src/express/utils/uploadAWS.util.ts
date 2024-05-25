@@ -16,6 +16,7 @@ const upload = multer({
         bucket: "alpostel",
         acl: 'public-read',
         key(req: Request, file:{originalname: string} , cb:(vl: null, newName: string) => string){
+            
             cb(null, uuid() + path.extname(file.originalname))
         }
     })

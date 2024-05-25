@@ -3,4 +3,5 @@ import { createConnectionController } from "./CreateConnectionController/CreateC
 import { sendMsgController } from "./SendMsgController/SendMsgController";
 import { createNewGroupController } from "./CreateNewGroupController/CreateNewGroupController";
 import { unregisterController } from "./UnregisterController/UnregisterController";
-export { searchUserController, createConnectionController, sendMsgController, createNewGroupController, unregisterController };
+import { profileImageController } from "./ProfileImageController/ProfileImageController"
+export { searchUserController, createConnectionController, sendMsgController, createNewGroupController, unregisterController, profileImageController };

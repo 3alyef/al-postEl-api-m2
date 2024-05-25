@@ -69,7 +69,10 @@ const router = (
         
     );
 
-    
+    Controll.profileImageController.setProfileImage(
+        socket,
+        "setProfileImage"
+    )
     
 }
 

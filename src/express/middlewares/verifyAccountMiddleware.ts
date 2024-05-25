@@ -5,14 +5,15 @@ import { CustomError } from "../interfaces/common.interface";
 export default async function verifyAccount(req: Request, res: Response, next: NextFunction){
     try {
         const soulName = req.headers.soulname;
-        console.log(soulName)
+        console.log('verify',soulName)
         if(soulName){
             const user = await userModel.findOne({ soulName });
-
+            
             if (!user) {
                 throw { status: 401, message: "User not found" };
             }
-            next()
+            //console.log("passou")
+            next();
         } else {
             throw {status: 401, message: "need soulName"}
         }

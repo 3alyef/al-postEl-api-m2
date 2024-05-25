@@ -21,6 +21,7 @@ export function verifyJWT (socket: Socket, next: (err?: ExtendedError | undefine
     } else {
         socket.auth = decoded
         if(decoded){
+            console.log('userProps: decoded', decoded)
             socket.emit('updateSoul', {soulName: decoded.userSoul,userProps: decoded })
         }
         
