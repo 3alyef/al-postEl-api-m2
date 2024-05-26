@@ -58,7 +58,7 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
             const msgs = this.previousMessages.get(room);
             //console.log('previousMessages', this.previousMessages)
             
-            if(msgs){
+            if(msgs) {
                 
                 //console.log('msgs=>>>',msgs)
                 let msgCase = msgs[0]?.fromUser

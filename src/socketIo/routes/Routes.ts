@@ -71,7 +71,10 @@ const router = (
 
     Controll.profileImageController.setProfileImage(
         socket,
-        "setProfileImage"
+        "setProfileImage",
+        roomsProps,
+        roomsExpectUsers,
+        userSocketMap
     )
     
 }

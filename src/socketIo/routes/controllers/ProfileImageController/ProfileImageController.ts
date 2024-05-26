@@ -1,8 +1,8 @@
 import { Socket } from "socket.io";
-import { DecodedData } from "../../../interfaces/auth.interface";
+import { AllDataUser, DecodedData } from "../../../interfaces/auth.interface";
 
 class ProfileImageController{
-    public setProfileImage(socket: Socket, route: string) {
+    public setProfileImage(socket: Socket, route: string, roomsProps:  Map<string, AllDataUser[]>, roomsExpectUsers: Map<string, string[]>, userSocketMap:Map<string, Socket[]>) {
         socket.on(route, async ({image, type, name}:{image: File, type: string, name: string})=>{
             let decoded: DecodedData = socket.auth;
 
@@ -17,7 +17,42 @@ class ProfileImageController{
             if(urlImage) {
                 decoded.imageProps = {userImage: urlImage.urlPhoto, lastUpdateIn: urlImage.lastUpdateIn};
                 socket.auth = decoded;
-                socket.emit('updateSoul', {soulName: decoded.userSoul,userProps: decoded })
+                socket.emit('updateSoul', {soulName: decoded.userSoul,userProps: decoded });
+                
+                roomsProps.forEach((value)=>{
+                    const userInfo = value.filter((el)=>el.userSoul === decoded.userSoul);
+                    if(userInfo.length > 0){
+                        userInfo.forEach((el)=>{
+                            if(decoded.imageProps){
+                                el.imageData = decoded.imageProps
+                            }
+                        })
+                    }
+                })
+                let soulNamesF: string[] = [];
+
+                roomsExpectUsers.forEach((value, key) => {
+                    if (key === decoded.userSoul) {
+                        value.forEach((room) => {
+                            roomsExpectUsers.forEach((valueS, keyS) => {
+                                if (valueS.includes(room) && keyS !== decoded.userSoul) {
+                                    soulNamesF.push(keyS);
+                                }
+                            });
+                        });
+                    }
+                });
+
+                console.log('soulNamesF', soulNamesF, 'me', decoded.userSoul)
+
+                soulNamesF.forEach((el)=>{
+                    const socketsF = userSocketMap.get(el);
+                    if(socketsF){
+                        socketsF.forEach((socket)=>{
+                            socket.emit("updateFriendData", ({soulName: decoded.userSoul, imageProps: {userImage: urlImage.urlPhoto, lastUpdateIn: urlImage.lastUpdateIn}}))
+                        })
+                    }
+                })
             }
             console.log('urlImage', urlImage);
 
