@@ -1,5 +1,5 @@
 import { dataUserImageModel, userModel } from "../../db/models/Models";
-import { searchProfile, searchProfileInt } from "../EmailLogin/EmailLogin.service";
+import { searchProfile, imageProps } from "../EmailLogin/EmailLogin.service";
 import { costumName, findCostumName } from "../Login/Login.service";
 
 
@@ -15,7 +15,7 @@ class SearchByEmail {
             if('userSoul' in userData){
                 let costumName: costumName | null;
                 costumName = await findCostumName(userData.userSoul);
-                let userImageDataSearch: searchProfileInt | null = await searchProfile(userData.userSoul);
+                let userImageDataSearch: imageProps | null = await searchProfile(userData.userSoul);
 
                 let userImageData: imageResp | null = {lastUpdateIn: undefined, userImage: undefined};
 

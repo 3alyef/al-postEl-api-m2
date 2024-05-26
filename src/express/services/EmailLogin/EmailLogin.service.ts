@@ -8,7 +8,7 @@ interface userLoginEmail {
     soulName: string 
 }
 
-export interface searchProfileInt {
+export interface imageProps {
     userImage: string | undefined;
     lastUpdateIn: string | undefined
 }
@@ -22,7 +22,7 @@ export class EmailLogin {
                 const userData: userLoginEmail | null = await this.searchEmail(email)
                 if(userData){
                     // Irá buscar pela fota de perfil do usuario
-                    const profileImage: searchProfileInt | null = await searchProfile(userData.soulName)
+                    const profileImage: imageProps | null = await searchProfile(userData.soulName)
                     
                     if(profileImage){
                         const token: string = new TokenGenerate().TokenGenerator(profileImage)
@@ -59,14 +59,14 @@ export class EmailLogin {
 
 }
 
-export async function searchProfile(soulName: string): Promise<searchProfileInt | null>{
-    const image: searchProfileInt | null = await
+export async function searchProfile(soulName: string): Promise<imageProps>{
+    const image: imageProps | null = await
     dataUserImageModel.findOne({soulName: soulName}, "userImage lastUpdateIn")
     if (image) {
        
         return image;
     } else {
       
-        return null;
+        return {lastUpdateIn: undefined, userImage: undefined};
     }
 }

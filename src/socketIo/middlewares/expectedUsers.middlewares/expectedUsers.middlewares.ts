@@ -54,7 +54,7 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
             socket.join(room);
 
             socket.emit("updateAll", {message: "add_room", content: room, friendData});
-
+            console.log("friendDATA", friendData)
             const msgs = this.previousMessages.get(room);
             //console.log('previousMessages', this.previousMessages)
             
@@ -74,8 +74,8 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
             if(friendData){
                 const _isFriendOnline = this.userSocketMap.get(friendData.userSoul);
                 if(_isFriendOnline && _isFriendOnline.length > 0){
-                    console.log('friendIsOnline')
-                    console.log('friendData.userSoul', friendData.userSoul)
+                    //console.log('friendIsOnline')
+                    //console.log('friendData.userSoul', friendData.userSoul)
                     socket.emit("updateFriendsOnline", {userSoul: friendData.userSoul, online: true});
 
                     // Atualiza o status do user Online to the friends

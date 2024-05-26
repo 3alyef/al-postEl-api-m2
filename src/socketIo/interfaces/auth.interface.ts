@@ -1,4 +1,5 @@
 import { costumName } from "../../express/interfaces/request.interface";
+import { imageProps } from "../../express/services/EmailLogin/EmailLogin.service";
 
 export type DecodedData  = {
     first_name: string;
@@ -9,6 +10,7 @@ export type DecodedData  = {
     costumName: costumName;
     iat?: number;
     exp?: number;
+    imageProps: imageProps | null
 }
 
 export type AllDataUser = {

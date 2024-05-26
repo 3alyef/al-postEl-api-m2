@@ -1,5 +1,4 @@
 import { dataUserImageModel, dataUserModel, userModel } from "../../db/models/Models";
-import { searchProfile, searchProfileInt } from "../EmailLogin/EmailLogin.service";
 import { costumName, findCostumName } from "../Login/Login.service";
 
 

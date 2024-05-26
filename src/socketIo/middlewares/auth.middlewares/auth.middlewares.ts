@@ -2,11 +2,22 @@ import { Socket } from "socket.io";
 import { TokenValidate } from "../../services/Services";
 import { ExtendedError } from "socket.io/dist/namespace";
 import { DecodedData } from "../../interfaces/auth.interface"
+import { searchProfile } from "../../../express/services/EmailLogin/EmailLogin.service";
 
-export function verifyJWT (socket: Socket, next: (err?: ExtendedError | undefined) => void){
+export async function verifyJWT (socket: Socket, next: (err?: ExtendedError | undefined) => void){
     const token: string = socket.handshake.headers.authorization || ""; 
     const {decoded, error} = new TokenValidate<DecodedData>().tokenValidate(token);
-    console.log(decoded)
+    if(decoded){
+        const imageProps = await searchProfile(decoded.userSoul);
+        if(imageProps.userImage){
+            decoded.imageProps = imageProps;
+        } else {
+            decoded.imageProps = null;
+        }
+        
+    }
+    
+    
     
     if(error){ 
         // Se o token for válido o user tem acesso as outras salas se não a conexão é encerrada
