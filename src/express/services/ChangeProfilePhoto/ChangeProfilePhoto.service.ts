@@ -8,16 +8,18 @@ export async function changeProfilePhoto(res: Response, soulName: string, urlPho
         const previousImg = await searchPreviousImage(soulName);
 
         if (previousImg) {
-            const previousURL = await changeUrlName(soulName, urlPhoto);
+            const data = await changeUrlName(soulName, urlPhoto);
             // Apagar a antiga imagem no AWS
-            if(previousURL){
-                await deletePreviousImage(previousURL)
+            if(data.previousURL){
+                await deletePreviousImage(data.previousURL)
             }
+            res.status(200).json({ message: "Profile photo changed successfully", urlPhoto, lastUpdateIn: data.lastUpdateIn }).end();
         } else {
-            await createNewImageOnDataBase(soulName, urlPhoto);
+            const lastUpdateIn = await createNewImageOnDataBase(soulName, urlPhoto);
+            res.status(200).json({ message: "Profile photo changed successfully", urlPhoto, lastUpdateIn }).end();
         }
         
-        res.status(200).json({ message: "Profile photo changed successfully" }).end();
+        
 
     } catch (error) {
         handleError(error, res);
@@ -48,6 +50,7 @@ async function createNewImageOnDataBase(soulName: string, urlPhoto: string) {
         if (!newImage) {
             throw { message: "An error occurred while creating the profile photo.", status: 501 };
         }
+        return lastUpdateIn;
     } catch (error) {
         console.error("Error while creating new image:", error);
         throw { message: "An error occurred while creating the profile photo.", status: 501 };
@@ -70,7 +73,7 @@ async function changeUrlName(soulName: string, urlPhoto: string) {
             throw { message: "An error occurred while changing the profile photo.", status: 502 };
         }
 
-        return previousURL.userImage;
+        return {previousURL: previousURL.userImage, lastUpdateIn} ;
     } catch (error) {
         console.error("Error while changing profile photo:", error);
         throw { message: "An error occurred while changing the profile photo.", status: 502 };

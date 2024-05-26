@@ -4,7 +4,7 @@ import { DecodedData } from "../../../interfaces/auth.interface";
 class ProfileImageController{
     public setProfileImage(socket: Socket, route: string) {
         socket.on(route, async ({image, type, name}:{image: File, type: string, name: string})=>{
-            const decoded: DecodedData = socket.auth;
+            let decoded: DecodedData = socket.auth;
 
             const blob = new Blob([image], { type }); 
 
@@ -13,13 +13,18 @@ class ProfileImageController{
 
             console.log('Reconstructed File:', reconstructedFile);
 
-            const urlImage = await this.changeImage(decoded.userSoul, reconstructedFile)
+            const urlImage: {message: string, urlPhoto: string, lastUpdateIn: string} | undefined = await this.changeImage(decoded.userSoul, reconstructedFile);
+            if(urlImage) {
+                decoded.imageProps = {userImage: urlImage.urlPhoto, lastUpdateIn: urlImage.lastUpdateIn};
+                socket.auth = decoded;
+                socket.emit('updateSoul', {soulName: decoded.userSoul,userProps: decoded })
+            }
             console.log('urlImage', urlImage);
 
         })
     }
 
-    private async changeImage(soulName: string, image: File){
+    private async changeImage(soulName: string, image: File): Promise<{message: string, urlPhoto: string, lastUpdateIn: string} | undefined>{
         try {
             // Cria um objeto FormData
             const formData = new FormData();
