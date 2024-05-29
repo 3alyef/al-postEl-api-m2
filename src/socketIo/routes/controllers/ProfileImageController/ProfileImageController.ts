@@ -84,9 +84,9 @@ class ProfileImageController{
             const data = await resp.json();
             return data
         } catch(error){
-            console.log(error)
+            console.log(error);
         }
     }
 }
 const profileImageController = new ProfileImageController();
-export {profileImageController}
+export {profileImageController};
