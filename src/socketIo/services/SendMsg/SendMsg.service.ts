@@ -25,7 +25,7 @@ class SendMsg {
         await this.sendMessagesToM3(content)
         socket.to(toRoom).emit("newMsg", {messageData: content, room:toRoom});  
         
-        socket.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "delivered", toUser})
+        socket.to(toRoom).emit("msgStatus", {room: toRoom, createdIn, viewStatus: "delivered", toUser})
         
     }
 
