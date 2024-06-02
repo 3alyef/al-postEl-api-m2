@@ -11,7 +11,7 @@ class ProfileImageController{
             // 2. Criar um novo objeto File
             const reconstructedFile = new File([blob], name); // Use o nome de arquivo correto, se disponível
 
-            console.log('Reconstructed File:', reconstructedFile);
+            //console.log('Reconstructed File:', reconstructedFile);
 
             const urlImage: {message: string, urlPhoto: string, lastUpdateIn: string} | undefined = await this.changeImage(decoded.userSoul, reconstructedFile);
             if(urlImage) {

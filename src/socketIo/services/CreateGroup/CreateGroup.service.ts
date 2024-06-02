@@ -3,10 +3,11 @@ import { newGroup, newGroupResponse } from "../../interfaces/group.interface";
 import { DecodedData } from "../../interfaces/auth.interface";
 import { localResgistrer } from "../Services";
 class CreateGroup{
-    public async initialize(socket: Socket, {groupName, groupParticipants}: newGroup, groupsExpectUsers: Map<string, newGroupResponse[]>, groupsAdmin: Map<string, string[]>, userSocketMap:Map<string, Socket[]>){
+    public async initialize(socket: Socket, {groupName, groupParticipants}: newGroup, groupsExpectUsers: Map<string, newGroupResponse[]>, groupsAdmin: Map<string, string[]>, userSocketMap:Map<string, Socket[]>,
+    reconstructedFile: File
+    ){
         try {
             const decoded: DecodedData = socket.auth;
-
             const { userSoul } = decoded;
             const participants = groupParticipants;
             participants.push(userSoul);
@@ -19,28 +20,40 @@ class CreateGroup{
             const resp: newGroupResponse = await this.createNewGroup(group);
             const groupId = resp._id;
             
-            
-            resp.groupAdministratorParticipants.forEach((el)=>{
+            const urlImage: {message: string, urlPhoto: string, lastUpdateIn: string} | undefined = await this.changeGroupImage(groupId, reconstructedFile);
+
+            resp.groupAdministratorParticipants.forEach((admPart)=>{
                 //
                 const group = groupsAdmin.get(groupId);
                 if(!group){
                     const group: string[] = []
                     groupsAdmin.set(groupId, group)
                 }
-                group?.push(el);
+                group?.push(admPart);
                 //
-                localResgistrer(el, resp, groupId, groupsExpectUsers, userSocketMap, true)
+                localResgistrer(admPart, resp, groupsExpectUsers, userSocketMap, 
+                    {
+                        _id: groupId, groupAdministratorParticipants: [userSoul], 
+                        imageData: {userImage: urlImage?.urlPhoto || '', lastUpdateIn: urlImage?.lastUpdateIn || ''}, 
+                        groupName, groupParticipants 
+                    }
+                )
             })
 
-            resp.groupParticipants.forEach((el)=>{
+            resp.groupParticipants.forEach((groupPart)=>{
                 
-                if(!resp.groupAdministratorParticipants.includes(el)){
-                  
-                    localResgistrer(el, resp, groupId, groupsExpectUsers, userSocketMap, false)
+                if(!resp.groupAdministratorParticipants.includes(groupPart)){
+                    localResgistrer(groupPart, resp, groupsExpectUsers, userSocketMap, 
+                        {
+                            _id: groupId, groupAdministratorParticipants: [userSoul], 
+                            imageData: {userImage: urlImage?.urlPhoto || '', lastUpdateIn: urlImage?.lastUpdateIn || ''}, 
+                            groupName, groupParticipants 
+                        }
+                    )
                 }       
             })
             
-            return
+            return 
 
         } catch( error ){
             console.error("Erro ao criar novo grupo: "+ error)
@@ -77,9 +90,35 @@ class CreateGroup{
         } catch(error) {
             throw new Error("Erro ao contactar M3: " + error);
         }
-    }
+    };
+    private async changeGroupImage(_id: string, image: File): Promise<{message: string, urlPhoto: string, lastUpdateIn: string} | undefined>{
+        try {
+            // Cria um objeto FormData
+            const formData = new FormData();
+            formData.append('imagem', image); 
 
-    
+            // Faz a requisição fetch
+            const resp = await fetch(`${process.env.URL_M2}/addPhoto`, {
+                method: 'POST',
+                headers: {
+                    'soulName': _id,
+                    'method': 'changeGroupProfile'
+                },
+                body: formData,
+            });
+
+            // Verifica a resposta
+            if (!resp.ok) {
+                throw new Error(`Erro na requisição: ${resp.statusText}`);
+            }
+
+            // Processa a resposta
+            const data = await resp.json();
+            return data
+        } catch(error){
+            console.log(error);
+        }
+    }
 }
 
 export default CreateGroup;

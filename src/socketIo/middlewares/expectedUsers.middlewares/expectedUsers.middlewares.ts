@@ -26,10 +26,9 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
 
             const groupAdmin = this.groupsAdmin.get(group._id);
             if(groupAdmin?.includes(userSoul)){
-                
-                socket.emit("updateGroup", {group: group._id, isAdmin: true, groupName: group.groupName})       
+                socket.emit("updateGroup", group)       
             } else {
-                socket.emit("updateGroup", {group: group._id, isAdmin: false, groupName: group.groupName})  
+                socket.emit("updateGroup", group)  
             }
 
             const msgs = this.previousGroupMessages.get(group._id)

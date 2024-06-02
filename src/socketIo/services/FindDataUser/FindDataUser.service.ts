@@ -45,7 +45,7 @@ async function findMainDataUser(soulName: string): Promise<{email: string | unde
     }
 }
 
-async function findMainDataImage(soulName: string): Promise<{userImage: string | undefined, lastUpdateIn: string | undefined}> {
+export async function findMainDataImage(soulName: string): Promise<{userImage: string | undefined, lastUpdateIn: string | undefined}> {
     try {
         const mainDataImage: {userImage: string, lastUpdateIn: string} | null = await dataUserImageModel.findOne({soulName}, "userImage lastUpdateIn")
         if(!mainDataImage) {

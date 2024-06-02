@@ -1,38 +1,31 @@
 import { Socket } from "socket.io";
 import { newGroupResponse } from "../../interfaces/group.interface";
-
-export async function localResgistrer(userSoul: string, resp: newGroupResponse, groupId: string, groupsExpectUsers: Map<string, newGroupResponse[]>, userSocketMap:Map<string, Socket[]>, isAdmin: boolean ){
+export interface propsGroupsRes {
+    _id: string;
+    imageData: {userImage: string | undefined, lastUpdateIn: string | undefined}
+    groupName: string;
+    groupParticipants: string[];
+    groupAdministratorParticipants: string[]
+}
+export async function localResgistrer(userSoul: string, resp: newGroupResponse, groupsExpectUsers: Map<string, newGroupResponse[]>, userSocketMap:Map<string, Socket[]>, group: propsGroupsRes ){
     const socketUser = userSocketMap.get(userSoul);
     const isUserInGroup = groupsExpectUsers.get(userSoul)
  
-    if(isUserInGroup){//includes(groupId)
-        if(!isUserInGroup.some(obj => obj._id.includes(groupId))){
+    if(isUserInGroup){
+        if(!isUserInGroup.some((obj) => obj._id.includes(group._id))){
             if(socketUser){
                 
                 socketUser.forEach((socketElement) => {
-                    socketElement.join(groupId);
+                    socketElement.join(group._id);
                     // Envia a mensagem para todos os "nicknames" que detenham o mesmo soulName
-                    
-                    if(isAdmin){
-                 
-                        socketElement.emit("updateGroup", {group: groupId, isAdmin: true}) 
-                    } else {
-                 
-                        socketElement.emit("updateGroup", {group: groupId, isAdmin: false}) 
-                    }
-                    
+             
+                    socketElement.emit("updateGroup", group);
                     
                 });
-                
-            } 
-            isUserInGroup.push(resp)
-          
+            };
+            isUserInGroup.push(resp);
         }
     } else {
-        groupsExpectUsers.set(userSoul, [resp])
-     
-    }
-    
-     
-    
+        groupsExpectUsers.set(userSoul, [resp]);
+    }    
 }

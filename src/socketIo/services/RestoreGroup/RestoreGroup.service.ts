@@ -1,6 +1,7 @@
 import { msgsGroupDB, newGroupResponse } from "../../interfaces/group.interface";
 import { msgsResponse } from "../../interfaces/msgs.interface";
 import { msgsDB, networksDB } from "../../interfaces/networkGetPrevious.interface";
+import { findMainDataImage } from "../FindDataUser/FindDataUser.service";
 
 class RestoreGroup {
     public async initialize(userSoul: string, groupsExpectUsers: Map<string, newGroupResponse[]>, groupsAdmin = new Map<string, string[]>(), previousGroupMessages: Map<string, msgsGroupDB[]>) {
@@ -13,9 +14,10 @@ class RestoreGroup {
                 //console.log("GRUPO")
                 for(const group of groups){
                     
-                    const groupId = group._id
-                    
-            
+                    const groupId = group._id;
+                    const images = await findMainDataImage(groupId);
+                    group.imageData = images;
+                    console.log('groupDATA', group)
                     for(const admins of group.groupAdministratorParticipants){
                         let groupAdmins = groupsAdmin.get(groupId);
                         if(!groupAdmins){

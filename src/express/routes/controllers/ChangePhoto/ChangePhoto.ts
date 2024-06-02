@@ -15,7 +15,13 @@ export class ChangePhoto {
         if(method === "changeProfile" && urlPhoto && soulName){
             changeProfilePhoto(res, soulName, urlPhoto)
         } else {
-            res.send({});
+            if(method === "changeGroupProfile" && urlPhoto && soulName){
+                changeProfilePhoto(res, soulName, urlPhoto);
+                // soulName === _id group
+            } else {
+                res.send({});
+            }
+            
         }
         
     }

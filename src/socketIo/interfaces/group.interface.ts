@@ -1,15 +1,18 @@
 export interface newGroup {
+    //groupImage?: {image: File, type: string, name: string}
     groupName: string;
     groupParticipants: string[];
     groupAdministratorParticipants?: string[]
 }
 
 export interface newGroupResponse {
+    _id: string;
+    imageData: {userImage: string | undefined, lastUpdateIn: string | undefined};
+    __v: number;
     groupName: string;
     groupParticipants: string[];
     groupAdministratorParticipants: string[];
-    _id: string;
-    __v: number
+   
 
 }
 
