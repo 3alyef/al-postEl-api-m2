@@ -4,7 +4,7 @@ import { DecodedData } from "../../interfaces/auth.interface";
 import { localResgistrer } from "../Services";
 class CreateGroup{
     public async initialize(socket: Socket, {groupName, groupParticipants}: newGroup, groupsExpectUsers: Map<string, newGroupResponse[]>, groupsAdmin: Map<string, string[]>, userSocketMap:Map<string, Socket[]>,
-    reconstructedFile: File
+    reconstructedFile: File | undefined
     ){
         try {
             const decoded: DecodedData = socket.auth;
@@ -19,8 +19,11 @@ class CreateGroup{
             }
             const resp: newGroupResponse = await this.createNewGroup(group);
             const groupId = resp._id;
+            let urlImage: {message: string, urlPhoto: string, lastUpdateIn: string} | undefined 
+            if(reconstructedFile){
+                urlImage = await this.changeGroupImage(groupId, reconstructedFile);
+            }
             
-            const urlImage: {message: string, urlPhoto: string, lastUpdateIn: string} | undefined = await this.changeGroupImage(groupId, reconstructedFile);
 
             resp.groupAdministratorParticipants.forEach((admPart)=>{
                 //

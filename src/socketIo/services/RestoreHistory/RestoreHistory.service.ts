@@ -16,9 +16,9 @@ class RestoreHistory {
                     const room = roomNameGenerate(net.user, net.friend, roomsExpectUsers);
 
                     // ROOM PROPS
-                    const AllDataAboutFriend: AllDataUser = await findDataUser(net.friend)
+                    const AllDataAboutFriend: AllDataUser = await findDataUser(net.friend);
                 
-                    const AllDataAboutUser: AllDataUser = await findDataUser(net.user)
+                    const AllDataAboutUser: AllDataUser = await findDataUser(net.user);
                     if(!roomsProps.has(room)) {
                         roomsProps.set(room, []);
                     }
