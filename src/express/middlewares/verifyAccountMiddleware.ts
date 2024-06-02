@@ -10,7 +10,7 @@ export default async function verifyAccount(req: Request, res: Response, next: N
             const user = await userModel.findOne({ soulName });
             const method = req.headers.method as string;
     
-            if (!user && method !== "changeProfile" && method !== "changeGroupProfile") {
+            if (!user && method !== "changeGroupProfile") {
                 throw { status: 401, message: "User not found" };
             }
             //console.log("passou")
