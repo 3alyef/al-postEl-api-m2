@@ -20,12 +20,12 @@ class SendGroupMsg {
         console.log(roomObj);
 
         // envia de volta com: onServer
-        socket.emit("msgStatus", {room: toGroup, createdIn, viewStatus: "onServer"})
+        //socket.emit("msgGroupStatus", {room: toGroup, createdIn, viewStatus: "onServer"})
 
-        socket.to(toGroup).emit("newMsg", {messageData: content, room:toGroup});  
-        await this.sendMessagesToM3(content)
+        socket.to(toGroup).emit("newGroupMsg", {messageData: content});  
+        //=>>>>>>>await this.sendMessagesToM3(content)
         // envia de volta com: delivered
-        socket.emit("msgStatus", {room: toGroup, createdIn, viewStatus: "delivered"})
+        //socket.emit("msgGroupStatus", {room: toGroup, createdIn, viewStatus: "delivered"})
     }
 
     private async sendMessagesToM3(content: msgsGroupDB){

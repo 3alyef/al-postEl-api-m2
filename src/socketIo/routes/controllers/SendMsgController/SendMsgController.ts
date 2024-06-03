@@ -28,7 +28,8 @@ class SendMsgController {
             if(!isGroup && toRoom){
                 
                 await new SendMsg().initialize(io, socket,previousMessages, fromUser, deletedTo, toUser, toRoom, message, createdIn)
-            } else if(isGroup && toGroup){
+            } 
+            if(isGroup && toGroup){
                 await new SendGroupMsg().initialize(io, socket, previousGroupMessages, fromUser, deletedTo, toGroup, message, createdIn)
             }
                            
