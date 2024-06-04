@@ -29,8 +29,9 @@ export interface msgsGroupDB {
     _id?: string;
     fromUser: string;
     deletedTo: "none" | "justFrom" | "all";
-    viewStatus: "onServer" | "delivered" | "seen";
-    toGroup: string;
+    toUsers: string[];
+    viewStatus?: "onServer" | Map<string, "delivered" | "seen">;
     message: string;
-    createdIn: string;
+    toGroup: string;
+    createdIn: string
 }

@@ -28,10 +28,22 @@ class SendMsgController {
             if(!isGroup && toRoom){
                 
                 await new SendMsg().initialize(io, socket,previousMessages, fromUser, deletedTo, toUser, toRoom, message, createdIn)
-            } 
-            if(isGroup && toGroup){
-                await new SendGroupMsg().initialize(io, socket, previousGroupMessages, fromUser, deletedTo, toGroup, message, createdIn)
             }
+                           
+        })
+    }
+
+    sendGroupMsg(
+        io:Io,
+        socket: Socket,
+        routeName: string, 
+        previousMessages: Map<string, msgsResponse[]>,
+        previousGroupMessages: Map<string, msgsGroupDB[]>
+    ){
+        socket.on(routeName, async (data: msgsGroupDB)=>{ 
+        
+            await new SendGroupMsg().initialize(io, socket, previousGroupMessages, data)
+          
                            
         })
     }

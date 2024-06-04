@@ -38,6 +38,14 @@ const router = (
         previousGroupMessages
         
     );
+
+    Controll.sendMsgController.sendGroupMsg(
+        io,
+        socket,
+        "sendGroupMsg",
+        previousMessages,
+        previousGroupMessages
+    )
     Controll.sendMsgController.msgSeenUpdate(
         io,
         socket,
