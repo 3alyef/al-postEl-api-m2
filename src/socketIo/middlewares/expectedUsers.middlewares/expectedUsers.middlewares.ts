@@ -34,7 +34,7 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
             const msgs = this.previousGroupMessages.get(group._id)
             msgs?.forEach((msg)=>{
                 console.log("previous messages", msg)
-                socket.emit("previousGroupMsgs", msg)
+                socket.emit("previousGroupMsgs", {messageData: msg})
             })
             
         })

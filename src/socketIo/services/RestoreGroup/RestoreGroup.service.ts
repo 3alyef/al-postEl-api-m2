@@ -17,7 +17,7 @@ class RestoreGroup {
                     const groupId = group._id;
                     const images = await findMainDataImage(groupId);
                     group.imageData = images;
-                    console.log('groupDATA', group)
+                    console.log('groupDATA', group);
                     for(const admins of group.groupAdministratorParticipants){
                         let groupAdmins = groupsAdmin.get(groupId);
                         if(!groupAdmins){
@@ -26,7 +26,7 @@ class RestoreGroup {
                         }
                         groupAdmins.push(admins);
                         //console.log("GRUPO ADMIN", groupName, admins)
-                    }
+                    };
 
                     // HERE -----------------
                     for(const user of group.groupParticipants){
@@ -37,14 +37,14 @@ class RestoreGroup {
                         }
                         groupUsers.push(group);
                         console.log("Grupo EXPECT", groupUsers)
-                    }
-                    const msgs: msgsGroupDB[] | null = await this.getMessages(group)
+                    };
+                    const msgs: msgsGroupDB[] | null = await this.getMessages(group);
                     if(msgs){
                         for(const msg of msgs) {    
                             let _msgList = previousGroupMessages.get(groupId);
                 
                             if(!_msgList){
-                                _msgList = []
+                                _msgList = [];
                                 previousGroupMessages.set(groupId, _msgList);
                             } 
                             _msgList.push(msg);
