@@ -1,13 +1,17 @@
 import { Server as Io, Socket } from "socket.io";
-import { msgsGroupDB } from '../../interfaces/group.interface';
+import { msgsGroupDB, msgsGroupDBRequest } from '../../interfaces/group.interface';
+
+
+
 class SendGroupMsg {
     public async initialize(io: Io, socket: Socket, previousGroupMessages: Map<string, msgsGroupDB[]>, messageData: msgsGroupDB){
-        let viewStatusNv: "onServer" | Map<string, "delivered" | "seen"> = new Map()
-        if(messageData.viewStatus === "onServer"){
-            messageData.toUsers.forEach((user)=>{
-                viewStatusNv.set(user, "delivered")
-            })
-        }
+        let viewStatusNv: "onServer" | Map<string, "delivered" | "seen"> = new Map();
+
+        socket.emit("msgGroupStatus", {createdIn: messageData.createdIn, toGroup: messageData.toGroup, viewStatus: "onServer"})
+
+        messageData.toUsers.forEach((user)=>{
+            viewStatusNv.set(user, "delivered")
+        })
         
         const content: msgsGroupDB = {  
             fromUser: messageData.fromUser,
@@ -16,19 +20,15 @@ class SendGroupMsg {
             toGroup: messageData.toGroup,
             createdIn: messageData.createdIn,
             toUsers: messageData.toUsers,
-            viewStatus: viewStatusNv
+            viewStatus: JSON.stringify(viewStatusNv)
         }
-        
+        console.log('viewStatusNv', content.viewStatus)
         let roomObj = previousGroupMessages.get(messageData.toGroup);
         if(!roomObj){
             roomObj = [];
             previousGroupMessages.set(messageData.toGroup, roomObj);
         }
         roomObj?.push(content);
-        console.log(roomObj);
-
-        // envia de volta com: onServer
-        socket.emit("msgGroupStatus", {createdIn: messageData.createdIn, toGroup: messageData.toGroup, viewStatus: "onServer"})
 
         socket.to(messageData.toGroup).emit("newGroupMsg", {messageData: content});  
         await this.sendMessagesToM3(content)
@@ -36,8 +36,29 @@ class SendGroupMsg {
         socket.emit("msgGroupStatus", {createdIn: messageData.createdIn, toGroup: messageData.toGroup, viewStatus: messageData.viewStatus})
     }
 
-    private async sendMessagesToM3(content: msgsGroupDB){
-        const body = JSON.stringify(content);
+    private async sendMessagesToM3(content: msgsGroupDB /*msgsGroupDBRequest*/){
+        //const viewStatusObject = JSON.stringify(Object.fromEntries(content.viewStatus as Map<string, "delivered" | "seen">));
+        let contentWithObjectViewStatus;
+        /*if(content.deletedTo != "none"){
+            const deleteToObject = content.deletedTo 
+            ? JSON.stringify(Object.fromEntries(content.deletedTo)) 
+            : null;*/
+        contentWithObjectViewStatus = {
+            ...content,
+            /*viewStatus: viewStatusObject,
+            deleteTo: deleteToObject*/
+        };
+        /*} else {
+            contentWithObjectViewStatus = {
+                ...content,
+                viewStatus: viewStatusObject
+            };
+        }*/
+        
+        
+
+        const body = JSON.stringify(contentWithObjectViewStatus);
+        //console.log("////body---", body);
         const response = await fetch(`${process.env.URL_M3}/setNewGroupMsg`, {
             method: 'POST',
             headers: {
@@ -45,8 +66,17 @@ class SendGroupMsg {
             },
             body: body
         })
-        console.log(response)
+        //console.log(response)
     }
 }
 
 export default SendGroupMsg;
+
+export function viewStatusJsonToMap(jsonStr: string): Map<string, "delivered" | "seen"> {
+    const obj = JSON.parse(jsonStr);
+    return new Map(Object.entries(obj));
+}
+export function deletedToJsonToMap(jsonStr: string): Map<string, "justTo" | "justFrom" | "all"> {
+    const obj = JSON.parse(jsonStr);
+    return new Map(Object.entries(obj));
+}

@@ -25,7 +25,29 @@ export interface groupDB {
 
 
 
+export interface msgsGroupFromDB {
+    _id?: string;
+    fromUser: string;
+    deletedTo: string;
+    toUsers: string[];
+    viewStatus?: any;
+    message: string;
+    toGroup: string;
+    createdIn: string
+}
+
 export interface msgsGroupDB {
+    _id?: string;
+    fromUser: string;
+    deletedTo: string;
+    toUsers: string[];
+    viewStatus?: string;
+    message: string;
+    toGroup: string;
+    createdIn: string
+}
+
+export interface msgsGroupDBRequest {
     _id?: string;
     fromUser: string;
     deletedTo: "none" | Map<string, "justTo" | "justFrom" | "all">;

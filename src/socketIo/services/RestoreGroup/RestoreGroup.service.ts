@@ -1,7 +1,8 @@
-import { msgsGroupDB, newGroupResponse } from "../../interfaces/group.interface";
+import { msgsGroupDB, msgsGroupFromDB, newGroupResponse } from "../../interfaces/group.interface";
 import { msgsResponse } from "../../interfaces/msgs.interface";
 import { msgsDB, networksDB } from "../../interfaces/networkGetPrevious.interface";
 import { findMainDataImage } from "../FindDataUser/FindDataUser.service";
+import { deletedToJsonToMap, viewStatusJsonToMap } from "../SendGroupMsg/SendGroupMsg.service";
 
 class RestoreGroup {
     public async initialize(userSoul: string, groupsExpectUsers: Map<string, newGroupResponse[]>, groupsAdmin = new Map<string, string[]>(), previousGroupMessages: Map<string, msgsGroupDB[]>) {
@@ -13,7 +14,6 @@ class RestoreGroup {
             if(groups){
                 //console.log("GRUPO")
                 for(const group of groups){
-                    
                     const groupId = group._id;
                     const images = await findMainDataImage(groupId);
                     group.imageData = images;
@@ -38,23 +38,26 @@ class RestoreGroup {
                         groupUsers.push(group);
                         console.log("Grupo EXPECT", groupUsers)
                     };
-                    const msgs: msgsGroupDB[] | null = await this.getMessages(group);
+                    const msgs: msgsGroupFromDB[] | null = await this.getMessages(group);
+                    ///
+                    console.log('msgBEFORE', msgs);
+                    ///
                     if(msgs){
-                        for(const msg of msgs) {    
-                            let _msgList = previousGroupMessages.get(groupId);
-                
-                            if(!_msgList){
-                                _msgList = [];
-                                previousGroupMessages.set(groupId, _msgList);
-                            } 
-                            _msgList.push(msg);
-                            
+                        
+                        if(msgs.length > 0){
+                            for(const msg of msgs) {    
+                                let _msgList = previousGroupMessages.get(groupId);
+                    
+                                if(!_msgList){
+                                    _msgList = [];
+                                    previousGroupMessages.set(groupId, _msgList);
+                                } 
+                                _msgList.push(msg);
+                            }
                         }
+                        
                     } 
                 }
-
-                 
-                    
             }
             return;
         }catch(error){
@@ -96,11 +99,10 @@ class RestoreGroup {
     }
     
     
-    private async getMessages(groupData: newGroupResponse): Promise<msgsGroupDB[] | null>{
+    private async getMessages(groupData: newGroupResponse): Promise<msgsGroupFromDB[] | null>{
         try {
             const body = JSON.stringify({ group: groupData._id })
             const response = await fetch(`${process.env.URL_M3}/previousGroupMsgs`,{
-            
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -111,7 +113,7 @@ class RestoreGroup {
             if (!response.ok) {
                 throw new Error(`Falha na solicitação: ${response.statusText}`);
             } 
-            const data: msgsGroupDB[] | { error: string }= await response.json();
+            const data: msgsGroupFromDB[] | { error: string }= await response.json();
             console.log("mensagem", data)
             if ('error' in data) {
                

@@ -41,10 +41,7 @@ class SendMsgController {
         previousGroupMessages: Map<string, msgsGroupDB[]>
     ){
         socket.on(routeName, async (data: msgsGroupDB)=>{ 
-        
-            await new SendGroupMsg().initialize(io, socket, previousGroupMessages, data)
-          
-                           
+            await new SendGroupMsg().initialize(io, socket, previousGroupMessages, data);
         })
     }
 
