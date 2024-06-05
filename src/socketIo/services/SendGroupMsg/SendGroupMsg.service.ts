@@ -22,7 +22,7 @@ class SendGroupMsg {
             toUsers: messageData.toUsers,
             viewStatus: JSON.stringify(viewStatusNv)
         }
-        console.log('viewStatusNv', content.viewStatus)
+        //console.log('viewStatusNv', content.viewStatus)
         let roomObj = previousGroupMessages.get(messageData.toGroup);
         if(!roomObj){
             roomObj = [];

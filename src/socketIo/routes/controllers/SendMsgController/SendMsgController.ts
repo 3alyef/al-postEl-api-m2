@@ -37,7 +37,6 @@ class SendMsgController {
         io:Io,
         socket: Socket,
         routeName: string, 
-        previousMessages: Map<string, msgsResponse[]>,
         previousGroupMessages: Map<string, msgsGroupDB[]>
     ){
         socket.on(routeName, async (data: msgsGroupDB)=>{ 

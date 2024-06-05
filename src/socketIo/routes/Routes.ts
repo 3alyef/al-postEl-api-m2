@@ -43,7 +43,6 @@ const router = (
         io,
         socket,
         "sendGroupMsg",
-        previousMessages,
         previousGroupMessages
     )
     Controll.sendMsgController.msgSeenUpdate(
