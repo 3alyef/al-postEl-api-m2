@@ -8,7 +8,7 @@ export interface newGroup {
 export interface newGroupResponse {
     _id: string;
     imageData: {userImage: string | undefined, lastUpdateIn: string | undefined};
-    __v: number;
+    __v?: number;
     groupName: string;
     groupParticipants: string[];
     groupAdministratorParticipants: string[];

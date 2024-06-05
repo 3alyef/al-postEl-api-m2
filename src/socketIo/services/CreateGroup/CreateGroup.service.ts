@@ -2,6 +2,7 @@ import { Socket } from "socket.io";
 import { newGroup, newGroupResponse } from "../../interfaces/group.interface";
 import { DecodedData } from "../../interfaces/auth.interface";
 import { localResgistrer } from "../Services";
+import { propsGroupsRes } from "../LocalGroupRegistrer/LocalGroupRegistrer.service";
 class CreateGroup{
     public async initialize(socket: Socket, {groupName, groupParticipants}: newGroup, groupsExpectUsers: Map<string, newGroupResponse[]>, groupsAdmin: Map<string, string[]>, userSocketMap:Map<string, Socket[]>,
     reconstructedFile: File | undefined
@@ -17,28 +18,34 @@ class CreateGroup{
                 groupParticipants: participants,
                 groupAdministratorParticipants: [userSoul]
             }
+            console.log("group", group);
+
             const resp: newGroupResponse = await this.createNewGroup(group);
+
+            console.log("resposta from server 3", resp)
             const groupId = resp._id;
-            let urlImage: {message: string, urlPhoto: string, lastUpdateIn: string} | undefined 
+            let urlImage: {message: string, urlPhoto: string, lastUpdateIn: string} | undefined;
             if(reconstructedFile){
                 urlImage = await this.changeGroupImage(groupId, reconstructedFile);
             }
-            
-
             resp.groupAdministratorParticipants.forEach((admPart)=>{
                 //
-                const group = groupsAdmin.get(groupId);
-                if(!group){
-                    const group: string[] = []
-                    groupsAdmin.set(groupId, group)
+                let groupS: string[] | undefined = groupsAdmin.get(groupId);
+                if(!groupS){
+                    groupS = []
+                    groupsAdmin.set(groupId, groupS)
                 }
-                group?.push(admPart);
+                groupS?.push(admPart);
                 //
-                localResgistrer(admPart, resp, groupsExpectUsers, userSocketMap, 
+                localResgistrer(admPart, groupsExpectUsers, userSocketMap, 
                     {
-                        _id: groupId, groupAdministratorParticipants: [userSoul], 
-                        imageData: {userImage: urlImage?.urlPhoto || '', lastUpdateIn: urlImage?.lastUpdateIn || ''}, 
-                        groupName, groupParticipants 
+                        _id: groupId,
+                        groupAdministratorParticipants: [userSoul], 
+                        imageData: {
+                            userImage: urlImage?.urlPhoto || '', lastUpdateIn: urlImage?.lastUpdateIn || ''
+                        }, 
+                        groupName, 
+                        groupParticipants 
                     }
                 )
             })
@@ -46,11 +53,14 @@ class CreateGroup{
             resp.groupParticipants.forEach((groupPart)=>{
                 
                 if(!resp.groupAdministratorParticipants.includes(groupPart)){
-                    localResgistrer(groupPart, resp, groupsExpectUsers, userSocketMap, 
+                    localResgistrer(groupPart, groupsExpectUsers, userSocketMap, 
                         {
                             _id: groupId, groupAdministratorParticipants: [userSoul], 
-                            imageData: {userImage: urlImage?.urlPhoto || '', lastUpdateIn: urlImage?.lastUpdateIn || ''}, 
-                            groupName, groupParticipants 
+                            imageData: {
+                                userImage: urlImage?.urlPhoto || '', lastUpdateIn: urlImage?.lastUpdateIn || ''
+                            }, 
+                            groupName, 
+                            groupParticipants 
                         }
                     )
                 }       

@@ -5,7 +5,7 @@ import { CustomError } from "../interfaces/common.interface";
 export default async function verifyAccount(req: Request, res: Response, next: NextFunction){
     try {
         const soulName = req.headers.soulname;
-        console.log('verify',soulName)
+        //console.log('verify',soulName)
         if(soulName){
             const user = await userModel.findOne({ soulName });
             const method = req.headers.method as string;

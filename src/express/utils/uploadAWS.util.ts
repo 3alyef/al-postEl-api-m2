@@ -10,7 +10,6 @@ aws.config.update({
 })
 const s3 = new aws.S3()
 const upload = multer({
-
     storage: multerS3({
         s3,
         bucket: "alpostel",

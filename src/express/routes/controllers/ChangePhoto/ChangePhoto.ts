@@ -6,8 +6,8 @@ interface FilesRequest extends Request {
 }
 export class ChangePhoto {
     public postChangePhoto(req: FilesRequest, res: Response) {
-        console.log("CHANGE_PHOTO");
-        console.log(req.file?.location);
+        //console.log("CHANGE_PHOTO");
+        //console.log(req.file?.location);
 
         const method = req.headers.method as string;
         const soulName: string = req.headers.soulname as string;
