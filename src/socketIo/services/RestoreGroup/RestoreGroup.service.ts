@@ -17,7 +17,7 @@ class RestoreGroup {
                     const groupId = group._id;
                     const images = await findMainDataImage(groupId);
                     group.imageData = images;
-                    console.log('groupDATA', group);
+                    //console.log('groupDATA', group);
                     for(const admins of group.groupAdministratorParticipants){
                         let groupAdmins = groupsAdmin.get(groupId);
                         if(!groupAdmins){
@@ -36,11 +36,11 @@ class RestoreGroup {
                             groupsExpectUsers.set(user, groupUsers)
                         }
                         groupUsers.push(group);
-                        console.log("Grupo EXPECT", groupUsers)
+                        //console.log("Grupo EXPECT", groupUsers)
                     };
                     const msgs: msgsGroupFromDB[] | null = await this.getMessages(group);
                     ///
-                    console.log('msgBEFORE', msgs);
+                    //console.log('msgBEFORE', msgs);
                     ///
                     if(msgs){
                         
@@ -55,7 +55,6 @@ class RestoreGroup {
                                 _msgList.push(msg);
                             }
                         }
-                        
                     } 
                 }
             }
@@ -89,7 +88,7 @@ class RestoreGroup {
             if ('error' in data) {
                 throw new Error(data.error);
             } else {
-                console.log("Aqui está os groups: ", data)
+                //console.log("Aqui está os groups: ", data)
                 return data;
             }
             
@@ -114,7 +113,7 @@ class RestoreGroup {
                 throw new Error(`Falha na solicitação: ${response.statusText}`);
             } 
             const data: msgsGroupFromDB[] | { error: string }= await response.json();
-            console.log("mensagem", data)
+            //console.log("mensagem", data)
             if ('error' in data) {
                
                 throw new Error(data.error);
