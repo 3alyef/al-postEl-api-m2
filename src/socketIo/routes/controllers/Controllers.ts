@@ -3,5 +3,6 @@ import { createConnectionController } from "./CreateConnectionController/CreateC
 import { sendMsgController } from "./SendMsgController/SendMsgController";
 import { createNewGroupController } from "./CreateNewGroupController/CreateNewGroupController";
 import { unregisterController } from "./UnregisterController/UnregisterController";
-import { profileImageController } from "./ProfileImageController/ProfileImageController"
-export { searchUserController, createConnectionController, sendMsgController, createNewGroupController, unregisterController, profileImageController };
+import { profileImageController } from "./ProfileImageController/ProfileImageController";
+import { userDetailsController } from "./UserDetailsController/UserDetailsController";
+export { searchUserController, createConnectionController, sendMsgController, createNewGroupController, unregisterController, profileImageController, userDetailsController };

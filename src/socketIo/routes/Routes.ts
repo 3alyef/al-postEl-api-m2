@@ -83,6 +83,11 @@ const router = (
         roomsExpectUsers,
         userSocketMap
     )
+
+    Controll.userDetailsController.getDataUser(
+        socket,
+        "getDataUser"
+    )
     
 }
 
