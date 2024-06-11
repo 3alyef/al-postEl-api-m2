@@ -7,6 +7,7 @@ import SocketIo from "./socketIo/SocketIo"; // Class que cuidará das regras de 
 import { createServer } from 'http';
 
 import { Server as ServerHTTP } from 'http';
+import router from "./m3_server/routes/Routes";
 const cors = require("cors");
 
 class Server extends SocketIo {
@@ -25,6 +26,7 @@ class Server extends SocketIo {
         this.jsonParse();
         this.setupCors();
         this.routes(); 
+        this.routesM3();
      
     }
 
@@ -54,6 +56,9 @@ class Server extends SocketIo {
         this.app.use(expressRoutes);
     }
 
+    private routesM3(): void {
+        this.app.use(router)
+    }
 }
 
 

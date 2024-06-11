@@ -19,8 +19,6 @@ router.post('/register', Controll.registerController.postRegister);
 
 router.post('/unregister', unregisterMiddleware, Controll.unregisterController.postUnregister);
 
-
-
 router.post('/addPhoto', verifyAccount, upload.single("imagem"),
 Controll.changePhoto.postChangePhoto);
 

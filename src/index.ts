@@ -1,4 +1,4 @@
-import { authenticate } from "./express/db/DB";
+import { authenticate } from "./database/DB";
 import { Server } from "./Server";
 import dotenv from "dotenv";
 dotenv.config();
