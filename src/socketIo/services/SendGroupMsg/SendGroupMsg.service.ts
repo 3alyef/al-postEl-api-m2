@@ -36,29 +36,12 @@ class SendGroupMsg {
         socket.emit("msgGroupStatus", {createdIn: messageData.createdIn, toGroup: messageData.toGroup, viewStatus: messageData.viewStatus})
     }
 
-    private async sendMessagesToM3(content: msgsGroupDB /*msgsGroupDBRequest*/){
-        //const viewStatusObject = JSON.stringify(Object.fromEntries(content.viewStatus as Map<string, "delivered" | "seen">));
+    private async sendMessagesToM3(content: msgsGroupDB){
         let contentWithObjectViewStatus;
-        /*if(content.deletedTo != "none"){
-            const deleteToObject = content.deletedTo 
-            ? JSON.stringify(Object.fromEntries(content.deletedTo)) 
-            : null;*/
         contentWithObjectViewStatus = {
             ...content,
-            /*viewStatus: viewStatusObject,
-            deleteTo: deleteToObject*/
         };
-        /*} else {
-            contentWithObjectViewStatus = {
-                ...content,
-                viewStatus: viewStatusObject
-            };
-        }*/
-        
-        
-
         const body = JSON.stringify(contentWithObjectViewStatus);
-        //console.log("////body---", body);
         const response = await fetch(`${process.env.URL_M3}/setNewGroupMsg`, {
             method: 'POST',
             headers: {

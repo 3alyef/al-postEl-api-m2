@@ -88,7 +88,19 @@ const router = (
         socket,
         "getDataUser"
     )
-    
+
+    Controll.deleteMsgController.deleteDuoMsg(
+        socket,
+        "deleteDuoMsg",
+        previousMessages
+    )
+
+    Controll.deleteMsgController.deleteGroupMsg(
+        socket,
+        "deleteGroupMsg",
+        previousGroupMessages
+    )
+
 }
 
 export { router };
