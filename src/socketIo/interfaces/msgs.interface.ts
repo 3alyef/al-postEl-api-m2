@@ -1,7 +1,7 @@
 export interface msgsResponse {
     _id?: string;
     fromUser: string;
-    deletedTo: "none" | "justFrom" | "all";
+    deletedTo: "none" | "justTo" | "justFrom" | "all";
     viewStatus: "onServer" | "delivered" | "seen";
     toUser: string;
     toChannel?: string;

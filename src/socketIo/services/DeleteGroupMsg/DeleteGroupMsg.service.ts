@@ -2,24 +2,20 @@ import { messageGroupModel } from "../../../m3_server/db/models/Models";
 import { DeleteGroupMsg as DeleteGpMsg } from "../../interfaces/deleteMsg.interface";
 import { msgsGroupDB } from "../../interfaces/group.interface";
 class DeleteGroupMsg {
-    public async delete({room, createdIn, deletedTo}: DeleteGpMsg, previousGroupMessages: Map<string, msgsGroupDB[]>){
-        if(Array.isArray(createdIn)){
-            createdIn.forEach(async (msgCIN)=>{
-                await this.deleteMsg_messageGroupModel({createdIn: msgCIN, deletedTo});
-                await this.updateMsgOnServer_messageGroupModel(msgCIN, deletedTo, previousGroupMessages, room);
-            })
-        } else {
-            await this.deleteMsg_messageGroupModel({createdIn, deletedTo});
-            await this.updateMsgOnServer_messageGroupModel(createdIn, deletedTo, previousGroupMessages, room);
-        }
+    public async delete({room, createdIn, deletedTo, fromUser, toUsers}: DeleteGpMsg, previousGroupMessages: Map<string, msgsGroupDB[]>){
+        
+        await this.deleteMsg_messageGroupModel({room, createdIn, deletedTo, fromUser, toUsers});
+        await this.updateMsgOnServer_messageGroupModel(createdIn, deletedTo, previousGroupMessages, room);
+        return
+        
     }
 
     private async deleteMsg_messageGroupModel(
-        {createdIn, deletedTo}: {createdIn: string, deletedTo: string}
+        {room, createdIn, deletedTo, fromUser, toUsers}: {room: string, createdIn: string, deletedTo: "none" | "justTo" | "justFrom" | "all", fromUser: string, toUsers: string[]}
     ) {
         try {
             const updateResult = await messageGroupModel.updateMany(
-                { createdIn: createdIn },
+                { toGroup: room, createdIn: createdIn, toUsers, fromUser },
                 { $set: { deletedTo: deletedTo } }
             );
 
@@ -33,7 +29,7 @@ class DeleteGroupMsg {
         }
     }
 
-    private async updateMsgOnServer_messageGroupModel(createdIn: string, deletedTo: string, previousGroupMessages: Map<string, msgsGroupDB[]>, room: string){
+    private async updateMsgOnServer_messageGroupModel(createdIn: string, deletedTo: "none" | "justTo" | "justFrom" | "all", previousGroupMessages: Map<string, msgsGroupDB[]>, room: string){
         const msgs = previousGroupMessages.get(room);
         if(msgs) {
             msgs.forEach((msg)=>{

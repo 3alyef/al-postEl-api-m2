@@ -32,8 +32,16 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
             }
 
             const msgs = this.previousGroupMessages.get(group._id)
-            console.log('previosMSG', msgs)
+            console.log('previosMSG', msgs);
+            
             if(msgs){
+                msgs.forEach((msg)=>{
+                    if(msg.deletedTo === "all" || 
+                    (msg.deletedTo === "justFrom" && msg.fromUser === userSoul) || 
+                    (msg.deletedTo === "justTo" && msg.toUsers.includes(userSoul) && msg.fromUser !== userSoul)){
+                        msg.message = "";
+                    } 
+                })
                 socket.emit("previousGroupMsgs", {messageData: msgs})
             }
                 
@@ -54,22 +62,26 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
             socket.join(room);
 
             socket.emit("updateAll", {message: "add_room", content: room, friendData});
-            //console.log("friendDATA", friendData);
             const msgs = this.previousMessages.get(room);
-            //console.log('previousMessages', this.previousMessages)
             
             if(msgs) {
                 
                 //console.log('msgs=>>>',msgs)
-                let msgCase = msgs[0]?.fromUser;
-                if(!msgCase || msgCase === userSoul){
-                    msgCase = msgs[0]?.toUser;
+                let roomBySoulName = msgs[0]?.fromUser;
+                if(roomBySoulName === userSoul){
+                    roomBySoulName = msgs[0]?.toUser;
                 }
+                msgs.forEach((msg)=>{
+                    if(msg.deletedTo === "all" || 
+                    (msg.deletedTo === "justFrom" && msg.fromUser === userSoul) || 
+                    (msg.deletedTo === "justTo" && msg.toUser === userSoul && msg.fromUser !== userSoul)){
+                        msg.message = "";
+                    } 
+                })
                 //console.log('msgCase:', msgCase, userSoul)
-                socket.emit("previousMsgs", {messageData: msgs, room, msgCase });
+                socket.emit("previousMsgs", {messageData: msgs, room, roomBySoulName });
             }
-
-
+            
             // Atualiza o status dos friends Online para o user
             if(friendData){
                 const _isFriendOnline = this.userSocketMap.get(friendData.userSoul);

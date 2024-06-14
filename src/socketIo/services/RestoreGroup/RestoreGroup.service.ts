@@ -2,7 +2,7 @@ import { msgsGroupDB, msgsGroupFromDB, newGroupResponse } from "../../interfaces
 import { msgsResponse } from "../../interfaces/msgs.interface";
 import { msgsDB, networksDB } from "../../interfaces/networkGetPrevious.interface";
 import { findMainDataImage } from "../FindDataUser/FindDataUser.service";
-import { deletedToJsonToMap, viewStatusJsonToMap } from "../SendGroupMsg/SendGroupMsg.service";
+import { viewStatusJsonToMap } from "../SendGroupMsg/SendGroupMsg.service";
 
 class RestoreGroup {
     public async initialize(userSoul: string, groupsExpectUsers: Map<string, newGroupResponse[]>, groupsAdmin = new Map<string, string[]>(), previousGroupMessages: Map<string, msgsGroupDB[]>) {

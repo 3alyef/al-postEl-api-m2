@@ -1,11 +1,15 @@
 export interface DeleteGroupMsg {
-    createdIn: string | string[]; 
+    createdIn: string; 
     room: string; 
-    deletedTo: string;
+    deletedTo: "none" | "justTo" | "justFrom" | "all";
+    fromUser: string; 
+    toUsers: string[]
 }
 
 export interface DeleteDuoMsg {
-    createdIn: string | string[]; 
+    createdIn: string; 
     room: string; 
-    deletedTo: "none" | "justFrom" | "all";
+    deletedTo: "none" | "justTo" | "justFrom" | "all";
+    fromUser: string; 
+    toUser: string
 }

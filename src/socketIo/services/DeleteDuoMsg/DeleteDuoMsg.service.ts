@@ -3,24 +3,18 @@ import { DeleteDuoMsg as DeleteMsg} from "../../interfaces/deleteMsg.interface";
 import { msgsResponse } from "../../interfaces/msgs.interface";
 
 class DeleteDuoMsg {
-    public async delete({room, createdIn, deletedTo}: DeleteMsg, previousMessages: Map<string, msgsResponse[]>){
-        if(Array.isArray(createdIn)){
-            createdIn.forEach(async (msgCIN)=>{
-                await this.deleteMsg_messageModel({createdIn: msgCIN, deletedTo});
-                await this.updateMsgOnServer_messageModel(msgCIN, deletedTo, previousMessages, room);
-            })
-        } else {
-            await this.deleteMsg_messageModel({createdIn, deletedTo});
-            await this.updateMsgOnServer_messageModel(createdIn, deletedTo, previousMessages, room);
-        }
+    public async delete({room, createdIn, deletedTo, fromUser, toUser}: DeleteMsg, previousMessages: Map<string, msgsResponse[]>){
+        await this.deleteMsg_messageModel({createdIn, deletedTo, fromUser, toUser});
+        await this.updateMsgOnServer_messageModel(createdIn, deletedTo, previousMessages, room);
+        return;
     }
 
     private async deleteMsg_messageModel(
-        {createdIn, deletedTo}: {createdIn: string, deletedTo: "none" | "justFrom" | "all"}
+        {createdIn, deletedTo, fromUser, toUser}: {createdIn: string, deletedTo: "none" | "justFrom" | "justTo" | "all", fromUser: string, toUser: string}
     ) {
         try {
             const updateResult = await messageModel.updateMany(
-                { createdIn: createdIn },
+                { createdIn, fromUser, toUser },
                 { $set: { deletedTo: deletedTo } }
             );
 
@@ -34,7 +28,7 @@ class DeleteDuoMsg {
         }
     }
 
-    private async updateMsgOnServer_messageModel(createdIn: string, deletedTo: "none" | "justFrom" | "all", previousMessages: Map<string, msgsResponse[]>, room: string){
+    private async updateMsgOnServer_messageModel(createdIn: string, deletedTo: "none" | "justFrom"  | "justTo" | "all", previousMessages: Map<string, msgsResponse[]>, room: string){
         const msgs = previousMessages.get(room);
         if(msgs) {
             msgs.forEach((msg)=>{

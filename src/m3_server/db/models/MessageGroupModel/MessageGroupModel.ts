@@ -13,9 +13,6 @@ const NewMessageGroupSchema = new Schema({
 
 NewMessageGroupSchema.methods.toJSON = function() {
     const obj = this.toObject();
-    if (obj.deletedTo instanceof Map) {
-        obj.deletedTo = Object.fromEntries(obj.deletedTo);
-    }
     if (obj.viewStatus instanceof Map) {
         obj.viewStatus = Object.fromEntries(obj.viewStatus);
     }

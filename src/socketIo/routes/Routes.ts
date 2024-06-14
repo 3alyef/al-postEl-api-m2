@@ -92,13 +92,15 @@ const router = (
     Controll.deleteMsgController.deleteDuoMsg(
         socket,
         "deleteDuoMsg",
-        previousMessages
+        previousMessages,
+        userSocketMap
     )
 
     Controll.deleteMsgController.deleteGroupMsg(
         socket,
         "deleteGroupMsg",
-        previousGroupMessages
+        previousGroupMessages,
+        userSocketMap
     )
 
 }
