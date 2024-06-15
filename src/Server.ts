@@ -1,7 +1,6 @@
-import express, { Request, Response, Application } from "express";
+import express, { Application } from "express";
 
 import { router as expressRoutes } from "./express/routes/Routes";
-
 import SocketIo from "./socketIo/SocketIo"; // Class que cuidará das regras de SocketIo
 
 import { createServer } from 'http';
@@ -9,6 +8,10 @@ import { createServer } from 'http';
 import { Server as ServerHTTP } from 'http';
 import router from "./m3_server/routes/Routes";
 const cors = require("cors");
+
+
+import { createServer as createServerHTTPS } from 'https'; // Import para criar servidor HTTPS
+import * as fs from 'fs'; // Import para ler os arquivos de certificado
 
 class Server extends SocketIo {
     private app: Application;
@@ -18,6 +21,14 @@ class Server extends SocketIo {
     constructor(){
         const app = express();     
         const server = createServer(app);  
+
+        // Configuração do servidor HTTPS
+        /*const options = {
+            key: fs.readFileSync('../ssl/ssl_key.pem'),
+            cert: fs.readFileSync('../ssl_cert/ssl.pem')
+        };
+        const server = createServerHTTPS(options, app);  */
+
         super( server );
         this.server = server;
         this.app = app;  
@@ -27,7 +38,6 @@ class Server extends SocketIo {
         this.setupCors();
         this.routes(); 
         this.routesM3();
-     
     }
 
     private jsonParse(): void {
