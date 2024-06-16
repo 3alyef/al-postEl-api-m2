@@ -1,6 +1,6 @@
 export interface msgsRequest {
     fromUser: string;
-    deletedTo: "none" | "justFrom" | "all";
+    deletedTo: "none" | "justTo" | "justAll" | "justFrom" | "all" | "allFrom" | "allTo";
     viewStatus: "onServer" | "delivered" | "seen";
     toUser: string;
     message: string;

@@ -11,7 +11,7 @@ class DeleteGroupMsg {
     }
 
     private async deleteMsg_messageGroupModel(
-        {room, createdIn, deletedTo, fromUser, toUsers}: {room: string, createdIn: string, deletedTo: "none" | "justTo" | "justFrom" | "all", fromUser: string, toUsers: string[]}
+        {room, createdIn, deletedTo, fromUser, toUsers}: {room: string, createdIn: string, deletedTo: "none" | "justTo" | "justAll" | "justFrom" | "all", fromUser: string, toUsers: string[]}
     ) {
         try {
             const updateResult = await messageGroupModel.updateMany(
@@ -29,7 +29,7 @@ class DeleteGroupMsg {
         }
     }
 
-    private async updateMsgOnServer_messageGroupModel(createdIn: string, deletedTo: "none" | "justTo" | "justFrom" | "all", previousGroupMessages: Map<string, msgsGroupDB[]>, room: string){
+    private async updateMsgOnServer_messageGroupModel(createdIn: string, deletedTo: "none" | "justTo" | "justAll" | "justFrom" | "all" | "allFrom" | "allTo", previousGroupMessages: Map<string, msgsGroupDB[]>, room: string){
         const msgs = previousGroupMessages.get(room);
         if(msgs) {
             msgs.forEach((msg)=>{

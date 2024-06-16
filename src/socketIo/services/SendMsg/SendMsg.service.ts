@@ -1,7 +1,7 @@
 import { Server as Io, Socket } from "socket.io";
 import { msgsResponse } from '../../interfaces/msgs.interface';
 class SendMsg {
-    public async initialize(io: Io, socket: Socket, previousMessages: Map<string, msgsResponse[]>, fromUser: string, deletedTo: "none" | "justFrom" | "all", toUser: string, toRoom: string, message: string, createdIn: string){ 
+    public async initialize(io: Io, socket: Socket, previousMessages: Map<string, msgsResponse[]>, fromUser: string, deletedTo: "none" | "justTo" | "justAll" | "justFrom" | "all" | "allFrom" | "allTo", toUser: string, toRoom: string, message: string, createdIn: string){ 
         //const dateInf = new Date(); 
         //const data = dateInf.toISOString();
         const content: msgsResponse = {  

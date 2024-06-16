@@ -10,7 +10,7 @@ class DeleteDuoMsg {
     }
 
     private async deleteMsg_messageModel(
-        {createdIn, deletedTo, fromUser, toUser}: {createdIn: string, deletedTo: "none" | "justFrom" | "justTo" | "all", fromUser: string, toUser: string}
+        {createdIn, deletedTo, fromUser, toUser}: {createdIn: string, deletedTo: "none" | "justFrom" | "justAll" | "justTo" | "all", fromUser: string, toUser: string}
     ) {
         try {
             const updateResult = await messageModel.updateMany(
@@ -28,7 +28,7 @@ class DeleteDuoMsg {
         }
     }
 
-    private async updateMsgOnServer_messageModel(createdIn: string, deletedTo: "none" | "justFrom"  | "justTo" | "all", previousMessages: Map<string, msgsResponse[]>, room: string){
+    private async updateMsgOnServer_messageModel(createdIn: string, deletedTo: "none" | "justTo" | "justAll" | "justFrom" | "all", previousMessages: Map<string, msgsResponse[]>, room: string){
         const msgs = previousMessages.get(room);
         if(msgs) {
             msgs.forEach((msg)=>{
