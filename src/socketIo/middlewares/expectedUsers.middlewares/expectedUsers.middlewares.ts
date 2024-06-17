@@ -35,13 +35,19 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
             console.log('previosMSG', msgs);
             
             if(msgs){
-                msgs.forEach((msg)=>{
-                    if(msg.deletedTo === "all" || 
-                    (msg.deletedTo === "justFrom" && msg.fromUser === userSoul) || 
-                    (msg.deletedTo === "justTo" && msg.toUsers.includes(userSoul) && msg.fromUser !== userSoul)){
+                msgs.forEach((msg) => {
+                    if (msg.deletedTo === "all") {
                         msg.message = "";
-                    } 
-                })
+                    }
+                });
+                
+                for (let i = msgs.length - 1; i >= 0; i--) {
+                    const msg = msgs[i];
+                    if ((msg.deletedTo === "justFrom" && msg.fromUser === userSoul) || 
+                    (msg.deletedTo === "justTo" && msg.toUsers.includes(userSoul) && msg.fromUser !== userSoul) || msg.deletedTo === "allFrom") {
+                        msgs.splice(i, 1);
+                    }
+                }
                 socket.emit("previousGroupMsgs", {messageData: msgs})
             }
                 
@@ -71,13 +77,21 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
                 if(roomBySoulName === userSoul){
                     roomBySoulName = msgs[0]?.toUser;
                 }
-                msgs.forEach((msg)=>{
-                    if(msg.deletedTo === "all" || 
-                    (msg.deletedTo === "justFrom" && msg.fromUser === userSoul) || 
-                    (msg.deletedTo === "justTo" && msg.toUser === userSoul && msg.fromUser !== userSoul)){
+                //let toDeleteMsgsIndex: number[] = []
+                msgs.forEach((msg) => {
+                    if (msg.deletedTo === "all") {
                         msg.message = "";
-                    } 
-                })
+                    }
+                });
+                
+                for (let i = msgs.length - 1; i >= 0; i--) {
+                    const msg = msgs[i];
+                    if ((msg.deletedTo === "justFrom" && msg.fromUser === userSoul) || 
+                    (msg.deletedTo === "justTo" && msg.toUser === userSoul && msg.fromUser !== userSoul) || msg.deletedTo === "allFrom") {
+                        msgs.splice(i, 1);
+                    }
+                }
+                
                 //console.log('msgCase:', msgCase, userSoul)
                 socket.emit("previousMsgs", {messageData: msgs, room, roomBySoulName });
             }
