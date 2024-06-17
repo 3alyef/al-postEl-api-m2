@@ -3,6 +3,7 @@ import { DeleteDuoMsg, DeleteGroupMsg } from "../../../interfaces/deleteMsg.inte
 import { DeleteDuoMsg as DeleteServMsg, DeleteGroupMsg as DeleteGpMsg} from "../../../services/Services";
 import { msgsResponse } from "../../../interfaces/msgs.interface";
 import { msgsGroupDB } from "../../../interfaces/group.interface";
+import { DecodedData } from "../../../interfaces/auth.interface";
 
 class DeleteMsgController {
     private deleteMsg: DeleteServMsg;
@@ -18,7 +19,14 @@ class DeleteMsgController {
             console.log("msgData", msgData);
 
             await this.deleteMsg.delete(msgData, previousMessages);
-            socket.emit("updateMsgDelDuoStatus", {room: msgData.room, createdIn: msgData.createdIn, deletedTo: msgData.deletedTo});
+
+            const {userSoul}: DecodedData = socket.auth;
+            const userSockets = userSocketMap.get(userSoul)
+            if(userSockets){
+                userSockets.forEach((socketUser)=>{
+                    socketUser.emit("updateMsgDelDuoStatus", {room: msgData.room, createdIn: msgData.createdIn, deletedTo: msgData.deletedTo});
+                })
+            }
 
             const friend = userSocketMap.get(msgData.toUser);
             if(friend){
@@ -35,7 +43,15 @@ class DeleteMsgController {
             console.log("msgGroupData", msgGroupData);
             
             await this.deleteGpMsg.delete(msgGroupData, previousGroupMessages)
-            socket.emit("updateMsgDelGroupStatus", {room: msgGroupData.room, createdIn: msgGroupData.createdIn, deletedTo: msgGroupData.deletedTo});
+            
+
+            const {userSoul}: DecodedData = socket.auth;
+            const userSockets = userSocketMap.get(userSoul)
+            if(userSockets){
+                userSockets.forEach((socketUser)=>{
+                    socketUser.emit("updateMsgDelGroupStatus", {room: msgGroupData.room, createdIn: msgGroupData.createdIn, deletedTo: msgGroupData.deletedTo});
+                })
+            }
 
             msgGroupData.toUsers.forEach((userFriend)=>{
                 const friendSockets = userSocketMap.get(userFriend);
