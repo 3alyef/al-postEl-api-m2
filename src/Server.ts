@@ -67,7 +67,7 @@ class Server extends SocketIo {
     }
 
     private routesM3(): void {
-        this.app.use(router)
+        this.app.use(router);
     }
 }
 
