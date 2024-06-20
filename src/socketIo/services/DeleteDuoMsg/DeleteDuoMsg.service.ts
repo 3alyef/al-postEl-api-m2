@@ -44,6 +44,7 @@ class DeleteDuoMsg {
                 if(msg.createdIn === createdIn) {
                     //msg.deletedTo = deletedTo;
                     newDeletedTo = changeDeletedTo({deletedTo: msg.deletedTo}, {deletedTo});
+                    msg.deletedTo = newDeletedTo.deletedTo;
                 }
             })
         }
