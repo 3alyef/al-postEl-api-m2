@@ -18,6 +18,6 @@ import { searchUserMethodsM1 } from "./SearchUserMethods/SearchUserMethodsM1.ser
 
 import {findDataUser} from "./FindDataUser/FindDataUser.service"
 
-import DeleteDuoMsg from "./DeleteDuoMsg/DeleteDuoMsg.service";
-import DeleteGroupMsg from "./DeleteGroupMsg/DeleteGroupMsg.service";
-export { SearchUser, SearchUserByEmail, AddToNetworkList, TokenValidate, SendMsg, roomNameGenerate, CreateGroup, localResgistrer, RestoreGroup, SendGroupMsg, encryptCrypto, SearchUserByCustomName, searchUserMethodsM1, findDataUser, DeleteDuoMsg, DeleteGroupMsg };
+import { deleteDuoMsg } from "./DeleteDuoMsg/DeleteDuoMsg.service";
+import { deleteGroupMsg } from "./DeleteGroupMsg/DeleteGroupMsg.service";
+export { SearchUser, SearchUserByEmail, AddToNetworkList, TokenValidate, SendMsg, roomNameGenerate, CreateGroup, localResgistrer, RestoreGroup, SendGroupMsg, encryptCrypto, SearchUserByCustomName, searchUserMethodsM1, findDataUser, deleteDuoMsg, deleteGroupMsg };

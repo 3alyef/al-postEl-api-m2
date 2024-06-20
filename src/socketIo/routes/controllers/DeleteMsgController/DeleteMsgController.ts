@@ -1,24 +1,19 @@
 import { Socket } from "socket.io";
-import { DeleteDuoMsg, DeleteGroupMsg } from "../../../interfaces/deleteMsg.interface";
-import { DeleteDuoMsg as DeleteServMsg, DeleteGroupMsg as DeleteGpMsg} from "../../../services/Services";
+import { DeleteDuoMsg as DeleteDuoMsgType, DeleteGroupMsg as DeleteGroupMsgType } from "../../../interfaces/deleteMsg.interface";
+import { deleteDuoMsg, deleteGroupMsg} from "../../../services/Services";
 import { msgsResponse } from "../../../interfaces/msgs.interface";
 import { msgsGroupDB } from "../../../interfaces/group.interface";
 import { DecodedData } from "../../../interfaces/auth.interface";
+import { DeletedToType } from "../../../services/DeleteDuoMsg/DeleteDuoMsg.service";
 
 class DeleteMsgController {
-    private deleteMsg: DeleteServMsg;
-    private deleteGpMsg: DeleteGpMsg;
-    constructor() {
-        this.deleteMsg = new DeleteServMsg();
-        this.deleteGpMsg = new DeleteGpMsg();
-    }
     public deleteDuoMsg(socket: Socket, routeName: string,
     previousMessages: Map<string, msgsResponse[]>,
     userSocketMap:Map<string, Socket[]>) {
-        socket.on(routeName, async (msgData: DeleteDuoMsg)=>{
+        socket.on(routeName, async (msgData: DeleteDuoMsgType)=>{
             console.log("msgData", msgData);
 
-            await this.deleteMsg.delete(msgData, previousMessages);
+            await deleteDuoMsg.delete(msgData, previousMessages);
 
             const {userSoul}: DecodedData = socket.auth;
             const userSockets = userSocketMap.get(userSoul)
@@ -39,10 +34,10 @@ class DeleteMsgController {
 
     public deleteGroupMsg(socket: Socket, routeName: string, previousGroupMessages: Map<string, msgsGroupDB[]>,
     userSocketMap:Map<string, Socket[]>) {
-        socket.on(routeName, async (msgGroupData: DeleteGroupMsg)=>{
+        socket.on(routeName, async (msgGroupData: DeleteGroupMsgType)=>{
             console.log("msgGroupData", msgGroupData);
             
-            await this.deleteGpMsg.delete(msgGroupData, previousGroupMessages)
+            await deleteGroupMsg.delete(msgGroupData, previousGroupMessages)
             
 
             const {userSoul}: DecodedData = socket.auth;
@@ -64,6 +59,25 @@ class DeleteMsgController {
             })
         })
     }
+}
+
+export function changeDeletedTo(previous: DeletedToType, current: DeletedToType): DeletedToType{
+    let newValue: DeletedToType = {deletedTo: "none"}
+    if(previous.deletedTo === "all"){
+        if(current.deletedTo === "justFrom"){
+            newValue.deletedTo = "allFrom";
+        } else if(current.deletedTo === "justTo"){
+            newValue.deletedTo = "allTo";
+        }
+    } else if(previous.deletedTo === "allFrom" || previous.deletedTo === "allTo"){
+        newValue.deletedTo === "justAll";
+
+    } else if((previous.deletedTo === "justFrom" && current.deletedTo === "justTo") || (previous.deletedTo === "justTo" && current.deletedTo === "justFrom")){
+        newValue.deletedTo === "justAll";
+        
+    }
+
+    return newValue;
 }
 
 export const deleteMsgController = new DeleteMsgController();
