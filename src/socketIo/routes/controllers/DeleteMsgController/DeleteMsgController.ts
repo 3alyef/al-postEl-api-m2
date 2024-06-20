@@ -68,13 +68,15 @@ export function changeDeletedTo(previous: DeletedToType, current: DeletedToType)
             newValue.deletedTo = "allFrom";
         } else if(current.deletedTo === "justTo"){
             newValue.deletedTo = "allTo";
-        }
+        } 
     } else if(previous.deletedTo === "allFrom" || previous.deletedTo === "allTo"){
         newValue.deletedTo === "justAll";
 
     } else if((previous.deletedTo === "justFrom" && current.deletedTo === "justTo") || (previous.deletedTo === "justTo" && current.deletedTo === "justFrom")){
         newValue.deletedTo === "justAll";
         
+    } else if(previous.deletedTo === "none"){
+        newValue.deletedTo = current.deletedTo;
     }
 
     return newValue;
