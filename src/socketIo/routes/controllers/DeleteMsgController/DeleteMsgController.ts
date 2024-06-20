@@ -13,20 +13,20 @@ class DeleteMsgController {
         socket.on(routeName, async (msgData: DeleteDuoMsgType)=>{
             console.log("msgData", msgData);
 
-            await deleteDuoMsg.delete(msgData, previousMessages);
+            let newDeletedTo = await deleteDuoMsg.delete(msgData, previousMessages);
 
             const {userSoul}: DecodedData = socket.auth;
             const userSockets = userSocketMap.get(userSoul)
             if(userSockets){
                 userSockets.forEach((socketUser)=>{
-                    socketUser.emit("updateMsgDelDuoStatus", {room: msgData.room, createdIn: msgData.createdIn, deletedTo: msgData.deletedTo});
+                    socketUser.emit("updateMsgDelDuoStatus", {room: msgData.room, createdIn: msgData.createdIn, deletedTo: newDeletedTo.deletedTo});
                 })
             }
 
             const friend = userSocketMap.get(msgData.toUser);
             if(friend){
                 friend.forEach((socketFriend)=>{
-                    socketFriend.emit("updateMsgDelDuoStatus", {room: msgData.room, createdIn: msgData.createdIn, deletedTo: msgData.deletedTo});
+                    socketFriend.emit("updateMsgDelDuoStatus", {room: msgData.room, createdIn: msgData.createdIn, deletedTo: newDeletedTo.deletedTo});
                 })
             }
         })
@@ -37,14 +37,14 @@ class DeleteMsgController {
         socket.on(routeName, async (msgGroupData: DeleteGroupMsgType)=>{
             console.log("msgGroupData", msgGroupData);
             
-            await deleteGroupMsg.delete(msgGroupData, previousGroupMessages)
+            let newDeletedTo = await deleteGroupMsg.delete(msgGroupData, previousGroupMessages)
             
 
             const {userSoul}: DecodedData = socket.auth;
             const userSockets = userSocketMap.get(userSoul)
             if(userSockets){
                 userSockets.forEach((socketUser)=>{
-                    socketUser.emit("updateMsgDelGroupStatus", {room: msgGroupData.room, createdIn: msgGroupData.createdIn, deletedTo: msgGroupData.deletedTo});
+                    socketUser.emit("updateMsgDelGroupStatus", {room: msgGroupData.room, createdIn: msgGroupData.createdIn, deletedTo: newDeletedTo.deletedTo});
                 })
             }
 
@@ -52,7 +52,7 @@ class DeleteMsgController {
                 const friendSockets = userSocketMap.get(userFriend);
                 if(friendSockets){
                     friendSockets.forEach((socketFriend)=>{
-                        socketFriend.emit("updateMsgDelGroupStatus", {room: msgGroupData.room, createdIn: msgGroupData.createdIn, deletedTo: msgGroupData.deletedTo});
+                        socketFriend.emit("updateMsgDelGroupStatus", {room: msgGroupData.room, createdIn: msgGroupData.createdIn, deletedTo: newDeletedTo.deletedTo});
                     })
                     
                 }

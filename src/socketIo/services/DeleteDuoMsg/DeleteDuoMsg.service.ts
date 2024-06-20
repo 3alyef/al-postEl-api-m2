@@ -7,12 +7,12 @@ export interface DeletedToType {
     deletedTo:"none" | "justTo" | "justAll" | "justFrom" | "all" | "allFrom" | "allTo"
 }
 class DeleteDuoMsg {
-    public async delete({room, createdIn, deletedTo, fromUser, toUser}: DeleteMsg, previousMessages: Map<string, msgsResponse[]>){
+    public async delete({room, createdIn, deletedTo, fromUser, toUser}: DeleteMsg, previousMessages: Map<string, msgsResponse[]>): Promise<DeletedToType>{
 
         let newValue = await this.updateMsgOnServer_messageModel(createdIn, {deletedTo}, previousMessages, room);
 
         await this.deleteMsg_messageModel({createdIn, deletedTo: newValue.deletedTo, fromUser, toUser});
-        return;
+        return newValue;
     }
 
     private async deleteMsg_messageModel(
