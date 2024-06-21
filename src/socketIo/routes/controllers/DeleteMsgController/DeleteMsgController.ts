@@ -11,12 +11,13 @@ class DeleteMsgController {
     previousMessages: Map<string, msgsResponse[]>,
     userSocketMap:Map<string, Socket[]>) {
         socket.on(routeName, async (msgData: DeleteDuoMsgType)=>{
-            console.log("msgData", msgData);
+            //console.log("msgData", msgData);
 
             let newDeletedTo = await deleteDuoMsg.delete(msgData, previousMessages);
 
             const {userSoul}: DecodedData = socket.auth;
-            const userSockets = userSocketMap.get(userSoul)
+            const userSockets = userSocketMap.get(userSoul);
+            console.log('newDeletedTo', newDeletedTo, "msgData.toUser", msgData.toUser)
             if(userSockets){
                 userSockets.forEach((socketUser)=>{
                     socketUser.emit("updateMsgDelDuoStatus", {room: msgData.room, createdIn: msgData.createdIn, deletedTo: newDeletedTo.deletedTo});
@@ -35,13 +36,14 @@ class DeleteMsgController {
     public deleteGroupMsg(socket: Socket, routeName: string, previousGroupMessages: Map<string, msgsGroupDB[]>,
     userSocketMap:Map<string, Socket[]>) {
         socket.on(routeName, async (msgGroupData: DeleteGroupMsgType)=>{
-            console.log("msgGroupData", msgGroupData);
+            //console.log("msgGroupData", msgGroupData);
             
             let newDeletedTo = await deleteGroupMsg.delete(msgGroupData, previousGroupMessages)
             
 
             const {userSoul}: DecodedData = socket.auth;
-            const userSockets = userSocketMap.get(userSoul)
+            const userSockets = userSocketMap.get(userSoul);
+            console.log('newDeletedTo', newDeletedTo)
             if(userSockets){
                 userSockets.forEach((socketUser)=>{
                     socketUser.emit("updateMsgDelGroupStatus", {room: msgGroupData.room, createdIn: msgGroupData.createdIn, deletedTo: newDeletedTo.deletedTo});
@@ -62,21 +64,28 @@ class DeleteMsgController {
 }
 
 export function changeDeletedTo(previous: DeletedToType, current: DeletedToType): DeletedToType{
-    let newValue: DeletedToType = {deletedTo: "none"}
-    if(previous.deletedTo === "all"){
-        if(current.deletedTo === "justFrom"){
-            newValue.deletedTo = "allFrom";
-        } else if(current.deletedTo === "justTo"){
-            newValue.deletedTo = "allTo";
-        } 
-    } else if(previous.deletedTo === "allFrom" || previous.deletedTo === "allTo"){
-        newValue.deletedTo === "justAll";
+    let newValue: DeletedToType = {deletedTo: "none"};
+    console.log("previous", previous);
+    console.log("current", current);
 
-    } else if((previous.deletedTo === "justFrom" && current.deletedTo === "justTo") || (previous.deletedTo === "justTo" && current.deletedTo === "justFrom")){
-        newValue.deletedTo === "justAll";
-        
-    } else if(previous.deletedTo === "none"){
+    if(previous.deletedTo === "none"){
         newValue.deletedTo = current.deletedTo;
+    } else if(previous.deletedTo === "all"){
+        if(current.deletedTo === "justFrom"){
+            newValue.deletedTo = "allFrom"
+        } else {
+            newValue.deletedTo = "allTo";
+        }
+    } else if(previous.deletedTo === "allFrom" || previous.deletedTo === "allTo"){
+        newValue.deletedTo = "justAll"
+    } else if(previous.deletedTo === "justFrom"){
+        if(current.deletedTo === "justTo"){
+            newValue.deletedTo = "justAll";
+        }
+    } else if(previous.deletedTo === "justTo"){
+        if(current.deletedTo === "justFrom"){
+            newValue.deletedTo = "justAll";
+        }
     }
 
     return newValue;
