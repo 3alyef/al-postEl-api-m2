@@ -15,18 +15,19 @@ class DeleteMsgController {
 
             let newDeletedTo = await deleteDuoMsg.delete(msgData, previousMessages);
 
-            const {userSoul}: DecodedData = socket.auth;
-            const userSockets = userSocketMap.get(userSoul);
-            console.log('newDeletedTo', newDeletedTo, "msgData.toUser", msgData.toUser)
-            if(userSockets){
-                userSockets.forEach((socketUser)=>{
+            //const {userSoul}: DecodedData = socket.auth;
+            const fromUser = userSocketMap.get(msgData.fromUser);
+            console.log('newDeletedTo', newDeletedTo, "msgData.toUser", msgData.toUser);
+
+            if(fromUser){
+                fromUser.forEach((socketUser)=>{
                     socketUser.emit("updateMsgDelDuoStatus", {room: msgData.room, createdIn: msgData.createdIn, deletedTo: newDeletedTo.deletedTo});
                 })
             }
 
-            const friend = userSocketMap.get(msgData.toUser);
-            if(friend){
-                friend.forEach((socketFriend)=>{
+            const toUser = userSocketMap.get(msgData.toUser);
+            if(toUser){
+                toUser.forEach((socketFriend)=>{
                     socketFriend.emit("updateMsgDelDuoStatus", {room: msgData.room, createdIn: msgData.createdIn, deletedTo: newDeletedTo.deletedTo});
                 })
             }
@@ -41,11 +42,11 @@ class DeleteMsgController {
             let newDeletedTo = await deleteGroupMsg.delete(msgGroupData, previousGroupMessages)
             
 
-            const {userSoul}: DecodedData = socket.auth;
-            const userSockets = userSocketMap.get(userSoul);
+            //const {userSoul}: DecodedData = socket.auth;
+            const fromUser = userSocketMap.get(msgGroupData.fromUser);
             console.log('newDeletedTo', newDeletedTo)
-            if(userSockets){
-                userSockets.forEach((socketUser)=>{
+            if(fromUser){
+                fromUser.forEach((socketUser)=>{
                     socketUser.emit("updateMsgDelGroupStatus", {room: msgGroupData.room, createdIn: msgGroupData.createdIn, deletedTo: newDeletedTo.deletedTo});
                 })
             }
@@ -85,8 +86,10 @@ export function changeDeletedTo(previous: DeletedToType, current: DeletedToType)
     } else if(previous.deletedTo === "justTo"){
         if(current.deletedTo === "justFrom"){
             newValue.deletedTo = "justAll";
+        } else if(current.deletedTo === "all"){
+            newValue.deletedTo = "allTo";
         }
-    }
+    } 
 
     return newValue;
 }

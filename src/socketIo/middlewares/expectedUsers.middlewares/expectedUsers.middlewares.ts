@@ -35,11 +35,20 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
             console.log('previosMSG', msgs);
             
             if(msgs){
-                msgs.forEach((msg) => {
+                let indexesDel: number[] = []
+                msgs.forEach((msg, index) => {
                     if (msg.deletedTo === "all") {
                         msg.message = "";
+                    } else if((msg.deletedTo === "allFrom" && msg.fromUser === decoded.userSoul) || (msg.deletedTo === "allTo" && msg.toUsers.includes(decoded.userSoul))){
+                        indexesDel.push(index)
                     }
                 });
+                
+                if(indexesDel.length > 0) {
+                    for(let i = 0; i < indexesDel.length; i++){
+                        msgs.splice(indexesDel[i], 1);
+                    }
+                }
                 
                 for (let i = msgs.length - 1; i >= 0; i--) {
                     const msg = msgs[i];
@@ -78,11 +87,20 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
                     roomBySoulName = msgs[0]?.toUser;
                 }
                 //let toDeleteMsgsIndex: number[] = []
-                msgs.forEach((msg) => {
+                let indexesDel: number[] = []
+                msgs.forEach((msg, index) => {
                     if (msg.deletedTo === "all") {
                         msg.message = "";
+                    } else if((msg.deletedTo === "allFrom" && msg.fromUser === decoded.userSoul) || (msg.deletedTo === "allTo" && msg.toUser === decoded.userSoul)){
+                        indexesDel.push(index)
                     }
                 });
+
+                if(indexesDel.length > 0) {
+                    for(let i = 0; i < indexesDel.length; i++){
+                        msgs.splice(indexesDel[i], 1);
+                    }
+                }
                 
                 for (let i = msgs.length - 1; i >= 0; i--) {
                     const msg = msgs[i];
@@ -93,6 +111,7 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
                 }
                 
                 //console.log('msgCase:', msgCase, userSoul)
+                console.log('prvMSG', msgs)
                 socket.emit("previousMsgs", {messageData: msgs, room, roomBySoulName });
             }
             
