@@ -89,14 +89,15 @@ const router = (
         "getDataUser"
     )
 
-    Controll.deleteMsgController.deleteDuoMsg(
+    const deleteMsg = new Controll.DeleteMsgController();
+
+    deleteMsg.deleteDuoMsg(
         socket,
         "deleteDuoMsg",
         previousMessages,
         userSocketMap
     )
-
-    Controll.deleteMsgController.deleteGroupMsg(
+    deleteMsg.deleteGroupMsg(
         socket,
         "deleteGroupMsg",
         previousGroupMessages,

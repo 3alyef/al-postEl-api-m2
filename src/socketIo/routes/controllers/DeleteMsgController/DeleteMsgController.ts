@@ -3,10 +3,24 @@ import { DeleteDuoMsg as DeleteDuoMsgType, DeleteGroupMsg as DeleteGroupMsgType 
 import { deleteDuoMsg, deleteGroupMsg} from "../../../services/Services";
 import { msgsResponse } from "../../../interfaces/msgs.interface";
 import { msgsGroupDB } from "../../../interfaces/group.interface";
-import { DecodedData } from "../../../interfaces/auth.interface";
 import { DeletedToType } from "../../../services/DeleteDuoMsg/DeleteDuoMsg.service";
 
 class DeleteMsgController {
+    private socketFunction(socket: Socket, type2:boolean){
+        function listener(ok: boolean){
+            if(ok === true){
+                console.log("ok", ok);
+                if(type2){
+                    socket.emit("deleteGroupMsgNext", ok);
+                } else {
+                    socket.emit("deleteDuoMsgNext", ok);
+                }
+                socket.off("returnToDeleteMsg", listener);
+            }
+        }
+        
+        socket.on("returnToDeleteMsg", listener);
+    }
     public deleteDuoMsg(socket: Socket, routeName: string,
     previousMessages: Map<string, msgsResponse[]>,
     userSocketMap:Map<string, Socket[]>) {
@@ -18,19 +32,19 @@ class DeleteMsgController {
             //const {userSoul}: DecodedData = socket.auth;
             const fromUser = userSocketMap.get(msgData.fromUser);
             console.log('newDeletedTo', newDeletedTo, "msgData.toUser", msgData.toUser);
-
+            
             if(fromUser){
                 fromUser.forEach((socketUser)=>{
                     socketUser.emit("updateMsgDelDuoStatus", {room: msgData.room, createdIn: msgData.createdIn, deletedTo: newDeletedTo.deletedTo});
                 })
             }
-
             const toUser = userSocketMap.get(msgData.toUser);
             if(toUser){
                 toUser.forEach((socketFriend)=>{
                     socketFriend.emit("updateMsgDelDuoStatus", {room: msgData.room, createdIn: msgData.createdIn, deletedTo: newDeletedTo.deletedTo});
                 })
             }
+            this.socketFunction(socket, false);
         })
     }
 
@@ -60,6 +74,7 @@ class DeleteMsgController {
                     
                 }
             })
+            this.socketFunction(socket, true);
         })
     }
 }
@@ -94,4 +109,4 @@ export function changeDeletedTo(previous: DeletedToType, current: DeletedToType)
     return newValue;
 }
 
-export const deleteMsgController = new DeleteMsgController();
+export {DeleteMsgController};

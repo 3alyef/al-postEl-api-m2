@@ -5,5 +5,5 @@ import { createNewGroupController } from "./CreateNewGroupController/CreateNewGr
 import { unregisterController } from "./UnregisterController/UnregisterController";
 import { profileImageController } from "./ProfileImageController/ProfileImageController";
 import { userDetailsController } from "./UserDetailsController/UserDetailsController";
-import { deleteMsgController } from "./DeleteMsgController/DeleteMsgController";
-export { searchUserController, createConnectionController, sendMsgController, createNewGroupController, unregisterController, profileImageController, userDetailsController, deleteMsgController };
+import { DeleteMsgController } from "./DeleteMsgController/DeleteMsgController";
+export { searchUserController, createConnectionController, sendMsgController, createNewGroupController, unregisterController, profileImageController, userDetailsController, DeleteMsgController };

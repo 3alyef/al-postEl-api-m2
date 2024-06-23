@@ -19,7 +19,8 @@ class DeleteDuoMsg {
         {createdIn, deletedTo, fromUser, toUser}: {createdIn: string, deletedTo: "none" | "justTo" | "justAll" | "justFrom" | "all" | "allFrom" | "allTo", fromUser: string, toUser: string}
     ) {
         try {
-            const updateResult = await messageModel.updateMany(
+            
+            const updateResult = await messageModel.updateOne(
                 { createdIn, fromUser, toUser },
                 { $set: { deletedTo: deletedTo } }
             );
@@ -28,7 +29,7 @@ class DeleteDuoMsg {
             if (updateResult.modifiedCount > 0) {
                 return;
             }
-            throw { error: "Erro ao atualizar Msg" };
+            throw { error: "Erro ao atualizar Msg" + updateResult };
         } catch (error) {
             console.log("Error: ", error)
         }
@@ -44,6 +45,7 @@ class DeleteDuoMsg {
                 if(msg.createdIn === createdIn) {
                     //msg.deletedTo = deletedTo;
                     newDeletedTo = changeDeletedTo({deletedTo: msg.deletedTo}, {deletedTo});
+                    console.log("newDeletedTo", newDeletedTo.deletedTo)
                     msg.deletedTo = newDeletedTo.deletedTo;
                 }
             })
