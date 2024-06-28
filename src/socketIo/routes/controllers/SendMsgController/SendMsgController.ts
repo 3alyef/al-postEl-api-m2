@@ -40,6 +40,7 @@ class SendMsgController {
         previousGroupMessages: Map<string, msgsGroupDB[]>
     ){
         socket.on(routeName, async (data: msgsGroupDB)=>{ 
+            console.log("new group MSG", data)
             await new SendGroupMsg().initialize(io, socket, previousGroupMessages, data);
         })
     }
