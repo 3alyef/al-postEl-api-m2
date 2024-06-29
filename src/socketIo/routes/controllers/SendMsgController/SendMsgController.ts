@@ -21,7 +21,6 @@ class SendMsgController {
         socket: Socket,
         routeName: string, 
         previousMessages: Map<string, msgsResponse[]>,
-        previousGroupMessages: Map<string, msgsGroupDB[]>
     ){
         socket.on(routeName, async ({fromUser, deletedTo, toUser, toRoom, message, isGroup, chatName, toGroup, createdIn }: sendMsg)=>{ 
             
@@ -64,7 +63,7 @@ class SendMsgController {
                     return msg;
                 });
                 previousMessages.set(room, updatedMsgs);
-                await this.msgUpdateMsg({fromUser, toUser, createdIn, viewStatus})
+                await this.msgUpdateDuo({fromUser, toUser, createdIn, viewStatus})
                 const userFromSockets = userSocketMap.get(fromUser)
                 if(userFromSockets){
                     userFromSockets.forEach((socket: Socket)=>{
@@ -77,7 +76,7 @@ class SendMsgController {
         })
     }
 
-    private async msgUpdateMsg({fromUser, toUser, createdIn, viewStatus}: {fromUser: string, toUser: string, createdIn: string, viewStatus: string}){
+    private async msgUpdateDuo({fromUser, toUser, createdIn, viewStatus}: {fromUser: string, toUser: string, createdIn: string, viewStatus: string}){
         try {
             const body = JSON.stringify({fromUser, toUser, viewStatus, createdIn});
             const response = await fetch(`${process.env.URL_M3}/statusMsgUpdate`, {

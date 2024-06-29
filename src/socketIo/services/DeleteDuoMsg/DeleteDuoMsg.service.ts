@@ -6,6 +6,9 @@ import { changeDeletedTo } from "../../routes/controllers/DeleteMsgController/De
 export interface DeletedToType {
     deletedTo:"none" | "justTo" | "justAll" | "justFrom" | "all" | "allFrom" | "allTo"
 }
+export interface DeletedToTypeGroup {
+    deletedTo: "none" | "justFrom" | "all" | "allFrom" | string;
+}
 class DeleteDuoMsg {
     public async delete({room, createdIn, deletedTo, fromUser, toUser}: DeleteMsg, previousMessages: Map<string, msgsResponse[]>): Promise<DeletedToType>{
 

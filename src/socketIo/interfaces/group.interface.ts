@@ -37,7 +37,9 @@ export interface msgsGroupFromDB {
 export interface msgsGroupDB {
     _id?: string;
     fromUser: string;
-    deletedTo: "none" | "justTo" | "justAll" | "justFrom" | "all" | "allFrom" | "allTo";
+    deletedTo: "none" | "justFrom" | "all" | "allFrom" | string;
+    // string =>> Map<string, "allTo" | "justTo">();
+    //| "justTo" | "justAll" | "justFrom" | "all" | "allFrom" | "allTo"
     toUsers: string[];
     viewStatus?: string;
     message: string;

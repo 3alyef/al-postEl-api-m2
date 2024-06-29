@@ -34,9 +34,7 @@ const router = (
         io,
         socket,
         "sendMsg",
-        previousMessages,
-        previousGroupMessages
-        
+        previousMessages
     );
 
     Controll.sendMsgController.sendGroupMsg(

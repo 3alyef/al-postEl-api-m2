@@ -58,7 +58,7 @@ class DeleteMsgController {
 
             //const {userSoul}: DecodedData = socket.auth;
             const fromUser = userSocketMap.get(msgGroupData.fromUser);
-            console.log('newDeletedTo', newDeletedTo)
+            console.log('newDeletedGroupTo', newDeletedTo)
             if(fromUser){
                 fromUser.forEach((socketUser)=>{
                     socketUser.emit("updateMsgDelGroupStatus", {room: msgGroupData.room, createdIn: msgGroupData.createdIn, deletedTo: newDeletedTo.deletedTo});

@@ -2,9 +2,9 @@ import { messageGroupModel } from "../../../m3_server/db/models/Models";
 import { DeleteGroupMsg as DeleteGpMsg } from "../../interfaces/deleteMsg.interface";
 import { msgsGroupDB } from "../../interfaces/group.interface";
 import { changeDeletedTo } from "../../routes/controllers/DeleteMsgController/DeleteMsgController";
-import { DeletedToType } from '../DeleteDuoMsg/DeleteDuoMsg.service';
+import {  DeletedToTypeGroup } from '../DeleteDuoMsg/DeleteDuoMsg.service';
 class DeleteGroupMsg {
-    public async delete({room, createdIn, deletedTo, fromUser, toUsers}: DeleteGpMsg, previousGroupMessages: Map<string, msgsGroupDB[]>): Promise<DeletedToType>{
+    public async delete({room, createdIn, deletedTo, fromUser, toUsers}: DeleteGpMsg, previousGroupMessages: Map<string, msgsGroupDB[]>): Promise<DeletedToTypeGroup>{
 
         let newValue = await this.updateMsgOnServer_messageGroupModel(createdIn, deletedTo, previousGroupMessages, room);
 
@@ -15,7 +15,7 @@ class DeleteGroupMsg {
     }
 
     private async deleteMsg_messageGroupModel(
-        {room, createdIn, deletedTo, fromUser, toUsers}: {room: string, createdIn: string, deletedTo: "none" | "justTo" | "justAll" | "justFrom" | "all" | "allFrom" | "allTo", fromUser: string, toUsers: string[]}
+        {room, createdIn, deletedTo, fromUser, toUsers}: {room: string, createdIn: string, deletedTo: "none" | "justFrom" | "all" | "allFrom" | string, fromUser: string, toUsers: string[]}
     ) {
         try {
             const updateResult = await messageGroupModel.updateMany(
@@ -33,19 +33,20 @@ class DeleteGroupMsg {
         }
     }
 
-    private async updateMsgOnServer_messageGroupModel(createdIn: string, deletedTo: "none" | "justTo" | "justAll" | "justFrom" | "all" | "allFrom" | "allTo", previousGroupMessages: Map<string, msgsGroupDB[]>, room: string): Promise<DeletedToType>{
+    private async updateMsgOnServer_messageGroupModel(createdIn: string, deletedTo: "none" | "justFrom" | "all" | "allFrom" | string, previousGroupMessages: Map<string, msgsGroupDB[]>, room: string): Promise<DeletedToTypeGroup>{
         const msgs = previousGroupMessages.get(room);
-        let newDeletedTo:DeletedToType = {deletedTo: "none"};
+        //let newDeletedTo:DeletedToTypeGroup = {deletedTo: "none"};
         if(msgs) {
             msgs.forEach((msg)=>{
                 if(msg.createdIn === createdIn) {
                     //msg.deletedTo = deletedTo;
-                    newDeletedTo = changeDeletedTo({deletedTo: msg.deletedTo}, {deletedTo});
-                    msg.deletedTo = newDeletedTo.deletedTo;
+                    //newDeletedTo = changeDeletedTo({deletedTo: msg.deletedTo}, {deletedTo});
+                    //newDeletedTo = {deletedTo};
+                    msg.deletedTo = deletedTo;
                 }
             })
         }
-        return newDeletedTo;
+        return {deletedTo};
     }
 }
 
