@@ -51,14 +51,14 @@ class DeleteMsgController {
     public deleteGroupMsg(socket: Socket, routeName: string, previousGroupMessages: Map<string, msgsGroupDB[]>,
     userSocketMap:Map<string, Socket[]>) {
         socket.on(routeName, async (msgGroupData: DeleteGroupMsgType)=>{
-            //console.log("msgGroupData", msgGroupData);
+            console.log("DeleteGroupMsgType", msgGroupData);
             
             let newDeletedTo = await deleteGroupMsg.delete(msgGroupData, previousGroupMessages)
             
 
             //const {userSoul}: DecodedData = socket.auth;
             const fromUser = userSocketMap.get(msgGroupData.fromUser);
-            console.log('newDeletedGroupTo', newDeletedTo)
+            //console.log('newDeletedGroupTo', newDeletedTo)
             if(fromUser){
                 fromUser.forEach((socketUser)=>{
                     socketUser.emit("updateMsgDelGroupStatus", {room: msgGroupData.room, createdIn: msgGroupData.createdIn, deletedTo: newDeletedTo.deletedTo});

@@ -1,7 +1,7 @@
 export interface DeleteGroupMsg {
     createdIn: string; 
     room: string; 
-    deletedTo: "none" | "justTo" | "justAll" | "justFrom" | "all" | "allFrom" | "allTo";
+    deletedTo: "none" | "justFrom" | "all" | "allFrom" | string;
     fromUser: string; 
     toUsers: string[]
 }
