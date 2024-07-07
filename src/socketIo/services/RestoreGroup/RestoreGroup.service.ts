@@ -1,8 +1,5 @@
 import { msgsGroupDB, msgsGroupFromDB, newGroupResponse } from "../../interfaces/group.interface";
-import { msgsResponse } from "../../interfaces/msgs.interface";
-import { msgsDB, networksDB } from "../../interfaces/networkGetPrevious.interface";
 import { findMainDataImage } from "../FindDataUser/FindDataUser.service";
-import { viewStatusJsonToMap } from "../SendGroupMsg/SendGroupMsg.service";
 
 class RestoreGroup {
     public async initialize(userSoul: string, groupsExpectUsers: Map<string, newGroupResponse[]>, groupsAdmin = new Map<string, string[]>(), previousGroupMessages: Map<string, msgsGroupDB[]>) {
@@ -131,3 +128,15 @@ class RestoreGroup {
 }
 
 export { RestoreGroup };
+
+
+// Converte Map ==> String_Map:
+export function mapToString<K, V>(map: Map<K, V>): string{
+    return JSON.stringify(Array.from(map.entries()));
+}
+
+// Converte String_Map ==> Map:
+export function stringToMap<K, V>(str: string): Map<K, V> {
+    const parsedEntries: [K, V][] = JSON.parse(str);
+    return new Map<K, V>(parsedEntries);
+}

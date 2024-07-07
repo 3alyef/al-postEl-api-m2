@@ -3,7 +3,7 @@ import { ExtendedError } from "socket.io/dist/namespace";
 import SocketIo from "../../SocketIo";
 import { DecodedData } from "../../interfaces/auth.interface";
 import { RestoreHistory } from "../../services/RestoreHistory/RestoreHistory.service";
-import { RestoreGroup } from "../../services/Services";
+import { RestoreGroup, verifyMsgs } from "../../services/Services";
 
 
 export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: ExtendedError | undefined) => void) {
@@ -19,10 +19,10 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
     usersGroup = this.groupsExpectUsers.get(userSoul);
 
     if(usersGroup){
-        console.log("existe")
+        //console.log("existe")
         usersGroup.forEach((group)=>{
             socket.join(group._id);
-            console.log("grupo",group._id)
+            //console.log("grupo",group._id)
 
             const groupAdmin = this.groupsAdmin.get(group._id);
             if(groupAdmin?.includes(userSoul)){
@@ -32,35 +32,14 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
             }
 
             const msgs = this.previousGroupMessages.get(group._id)
-            console.log('previosMSG', msgs);
+            
             
             if(msgs){
-                let indexesDel: number[] = []
-                msgs.forEach((msg, index) => {
-                    if (msg.deletedTo === "all") {
-                        msg.message = "";
-                    } else if((msg.deletedTo === "allFrom" && msg.fromUser === decoded.userSoul) || (msg.deletedTo === "allTo" && msg.toUsers.includes(decoded.userSoul))){
-                        indexesDel.push(index)
-                    }
-                });
-                
-                if(indexesDel.length > 0) {
-                    for(let i = 0; i < indexesDel.length; i++){
-                        msgs.splice(indexesDel[i], 1);
-                    }
-                }
-                
-                for (let i = msgs.length - 1; i >= 0; i--) {
-                    const msg = msgs[i];
-                    if ((msg.deletedTo === "justFrom" && msg.fromUser === userSoul) || 
-                    (msg.deletedTo === "justTo" && msg.toUsers.includes(userSoul) && msg.fromUser !== userSoul) || msg.deletedTo === "allFrom") {
-                        msgs.splice(i, 1);
-                    }
-                }
-                socket.emit("previousGroupMsgs", {messageData: msgs})
+                console.log("prevMsgs", msgs)
+                let finalMsgs = verifyMsgs.verifyGroupMsgs(msgs, userSoul); 
+                console.log("currentMsgs", finalMsgs)
+                socket.emit("previousGroupMsgs", {messageData: finalMsgs})
             }
-                
-            
         })
         
     }
@@ -134,3 +113,4 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
     }
     next(); 
 }
+

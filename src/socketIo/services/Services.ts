@@ -20,4 +20,5 @@ import {findDataUser} from "./FindDataUser/FindDataUser.service"
 
 import { deleteDuoMsg } from "./DeleteDuoMsg/DeleteDuoMsg.service";
 import { deleteGroupMsg } from "./DeleteGroupMsg/DeleteGroupMsg.service";
-export { SearchUser, SearchUserByEmail, AddToNetworkList, TokenValidate, SendMsg, roomNameGenerate, CreateGroup, localResgistrer, RestoreGroup, SendGroupMsg, encryptCrypto, SearchUserByCustomName, searchUserMethodsM1, findDataUser, deleteDuoMsg, deleteGroupMsg };
+import verifyMsgs from "./VerifyMsgs/VerifyMsgs";
+export { SearchUser, SearchUserByEmail, AddToNetworkList, TokenValidate, SendMsg, roomNameGenerate, CreateGroup, localResgistrer, RestoreGroup, SendGroupMsg, encryptCrypto, SearchUserByCustomName, searchUserMethodsM1, findDataUser, deleteDuoMsg, deleteGroupMsg, verifyMsgs };

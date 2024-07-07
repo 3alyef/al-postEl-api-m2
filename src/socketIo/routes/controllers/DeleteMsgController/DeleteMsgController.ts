@@ -25,23 +25,21 @@ class DeleteMsgController {
     previousMessages: Map<string, msgsResponse[]>,
     userSocketMap:Map<string, Socket[]>) {
         socket.on(routeName, async (msgData: DeleteDuoMsgType)=>{
-            //console.log("msgData", msgData);
 
             let newDeletedTo = await deleteDuoMsg.delete(msgData, previousMessages);
 
-            //const {userSoul}: DecodedData = socket.auth;
             const fromUser = userSocketMap.get(msgData.fromUser);
-            console.log('newDeletedTo', newDeletedTo, "msgData.toUser", msgData.toUser);
+            //console.log('newDeletedTo', newDeletedTo, "msgData.toUser", msgData.toUser);
             
             if(fromUser){
                 fromUser.forEach((socketUser)=>{
-                    socketUser.emit("updateMsgDelDuoStatus", {room: msgData.room, createdIn: msgData.createdIn, deletedTo: newDeletedTo.deletedTo});
+                    socketUser.emit("updateMsgDelDuoStatus", {room: msgData.room, createdIn: msgData.createdIn, deletedTo: newDeletedTo});
                 })
             }
             const toUser = userSocketMap.get(msgData.toUser);
             if(toUser){
                 toUser.forEach((socketFriend)=>{
-                    socketFriend.emit("updateMsgDelDuoStatus", {room: msgData.room, createdIn: msgData.createdIn, deletedTo: newDeletedTo.deletedTo});
+                    socketFriend.emit("updateMsgDelDuoStatus", {room: msgData.room, createdIn: msgData.createdIn, deletedTo: newDeletedTo});
                 })
             }
             this.socketFunction(socket, false);
@@ -53,15 +51,12 @@ class DeleteMsgController {
         socket.on(routeName, async (msgGroupData: DeleteGroupMsgType)=>{
             console.log("DeleteGroupMsgType", msgGroupData);
             
-            let newDeletedTo = await deleteGroupMsg.delete(msgGroupData, previousGroupMessages)
-            
-
-            //const {userSoul}: DecodedData = socket.auth;
+            await deleteGroupMsg.delete(msgGroupData, previousGroupMessages);
+        
             const fromUser = userSocketMap.get(msgGroupData.fromUser);
-            //console.log('newDeletedGroupTo', newDeletedTo)
             if(fromUser){
                 fromUser.forEach((socketUser)=>{
-                    socketUser.emit("updateMsgDelGroupStatus", {room: msgGroupData.room, createdIn: msgGroupData.createdIn, deletedTo: newDeletedTo.deletedTo});
+                    socketUser.emit("updateMsgDelGroupStatus", {room: msgGroupData.room, createdIn: msgGroupData.createdIn, deletedTo: msgGroupData.deletedTo});
                 })
             }
 
@@ -69,7 +64,7 @@ class DeleteMsgController {
                 const friendSockets = userSocketMap.get(userFriend);
                 if(friendSockets){
                     friendSockets.forEach((socketFriend)=>{
-                        socketFriend.emit("updateMsgDelGroupStatus", {room: msgGroupData.room, createdIn: msgGroupData.createdIn, deletedTo: newDeletedTo.deletedTo});
+                        socketFriend.emit("updateMsgDelGroupStatus", {room: msgGroupData.room, createdIn: msgGroupData.createdIn, deletedTo: msgGroupData.deletedTo});
                     })
                     
                 }
@@ -79,30 +74,30 @@ class DeleteMsgController {
     }
 }
 
-export function changeDeletedTo(previous: DeletedToType, current: DeletedToType): DeletedToType{
-    let newValue: DeletedToType = {deletedTo: "none"};
+export function changeDeletedTo(previous: DeletedToType, current: DeletedToType): DeletedToType {
+    let newValue: DeletedToType = "none";
     console.log("previous", previous);
     console.log("current", current);
 
-    if(previous.deletedTo === "none"){
-        newValue.deletedTo = current.deletedTo;
-    } else if(previous.deletedTo === "all"){
-        if(current.deletedTo === "justFrom"){
-            newValue.deletedTo = "allFrom"
+    if(previous === "none"){
+        newValue = current;
+    } else if(previous === "all"){
+        if(current === "justFrom"){
+            newValue = "allFrom"
         } else {
-            newValue.deletedTo = "allTo";
+            newValue = "allTo";
         }
-    } else if(previous.deletedTo === "allFrom" || previous.deletedTo === "allTo"){
-        newValue.deletedTo = "justAll"
-    } else if(previous.deletedTo === "justFrom"){
-        if(current.deletedTo === "justTo"){
-            newValue.deletedTo = "justAll";
+    } else if(previous === "allFrom" || previous === "allTo"){
+        newValue = "justAll"
+    } else if(previous === "justFrom"){
+        if(current === "justTo"){
+            newValue = "justAll";
         }
-    } else if(previous.deletedTo === "justTo"){
-        if(current.deletedTo === "justFrom"){
-            newValue.deletedTo = "justAll";
-        } else if(current.deletedTo === "all"){
-            newValue.deletedTo = "allTo";
+    } else if(previous === "justTo"){
+        if(current === "justFrom"){
+            newValue = "justAll";
+        } else if(current === "all"){
+            newValue = "allTo";
         }
     } 
 
