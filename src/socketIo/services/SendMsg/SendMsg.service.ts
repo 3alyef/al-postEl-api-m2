@@ -1,13 +1,25 @@
 import { Server as Io, Socket } from "socket.io";
 import { msgsResponse } from '../../interfaces/msgs.interface';
+interface SendMsgType {
+    io: Io;
+    socket: Socket;
+    previousMessages: Map<string, msgsResponse[]>;
+    fromUser: string, deletedTo: "none" | "justTo" | "justAll" | "justFrom" | "all" | "allFrom" | "allTo";
+    toUser: string;
+    toRoom: string;
+    message: string;
+    createdIn: string;
+    userSocketMap:Map<string, Socket[]>
+}
 class SendMsg {
-    public async initialize(io: Io, socket: Socket, previousMessages: Map<string, msgsResponse[]>, fromUser: string, deletedTo: "none" | "justTo" | "justAll" | "justFrom" | "all" | "allFrom" | "allTo", toUser: string, toRoom: string, message: string, createdIn: string){ 
+    public async initialize({createdIn, deletedTo, fromUser, io, message, previousMessages, socket, toRoom, toUser, userSocketMap}:SendMsgType){ 
         //const dateInf = new Date(); 
         //const data = dateInf.toISOString();
+        
         const content: msgsResponse = {  
             fromUser,
             deletedTo,
-            viewStatus: "delivered",
+            viewStatus: "onServer", // "delivered"
             toUser,
             message, 
             createdIn
@@ -20,13 +32,24 @@ class SendMsg {
         }
         roomObj?.push(content);
 
-        socket.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "onServer", toUser})
-
-        await this.sendMessagesToM3(content)
+        
+        let socketsUser = userSocketMap.get(fromUser);
+        //socket.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "onServer", toUser})
+        if(socketsUser) {
+            socketsUser.forEach((socketUs)=>{
+                socketUs.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "onServer", toUser});
+            })
+        }
+        await this.sendMessagesToM3(content);
         socket.to(toRoom).emit("newMsg", {messageData: content, room:toRoom});  
         
-        socket.to(toRoom).emit("msgStatus", {room: toRoom, createdIn, viewStatus: "delivered", toUser})
-        socket.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "delivered", toUser})
+        socket.to(toRoom).emit("msgStatus", {room: toRoom, createdIn, viewStatus: "delivered", toUser});
+        //socket.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "delivered", toUser})
+        if(socketsUser) {
+            socketsUser.forEach((socketUs)=>{
+                socketUs.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "delivered", toUser})
+            })
+        }
         
     }
 

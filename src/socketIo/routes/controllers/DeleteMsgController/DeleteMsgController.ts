@@ -49,7 +49,7 @@ class DeleteMsgController {
     public deleteGroupMsg(socket: Socket, routeName: string, previousGroupMessages: Map<string, msgsGroupDB[]>,
     userSocketMap:Map<string, Socket[]>) {
         socket.on(routeName, async (msgGroupData: DeleteGroupMsgType)=>{
-            console.log("DeleteGroupMsgType", msgGroupData);
+            //console.log("DeleteGroupMsgType", msgGroupData);
             
             await deleteGroupMsg.delete(msgGroupData, previousGroupMessages);
         
@@ -76,8 +76,8 @@ class DeleteMsgController {
 
 export function changeDeletedTo(previous: DeletedToType, current: DeletedToType): DeletedToType {
     let newValue: DeletedToType = "none";
-    console.log("previous", previous);
-    console.log("current", current);
+    //console.log("previous", previous);
+    //console.log("current", current);
 
     if(previous === "none"){
         newValue = current;
