@@ -25,17 +25,17 @@ export async function expectUsers(this: SocketIo, socket: Socket, next: (err?: E
             //console.log("grupo",group._id)
 
             const groupAdmin = this.groupsAdmin.get(group._id);
-            if(groupAdmin?.includes(userSoul)){
+            /*if(groupAdmin?.includes(userSoul)){
                 socket.emit("updateGroup", group)       
             } else {
                 socket.emit("updateGroup", group)  
-            }
-
+            }*/
+            socket.emit("updateGroup", group)
             const msgs = this.previousGroupMessages.get(group._id)
             
-            
+            console.log("messages(msgs)group", msgs)
             if(msgs){
-                console.log("prevMsgs", msgs)
+                //console.log("prevMsgs", msgs)
                 let finalMsgs = verifyMsgs.verifyGroupMsgs(msgs, userSoul); 
                 console.log("currentMsgs", finalMsgs)
                 socket.emit("previousGroupMsgs", {messageData: finalMsgs})

@@ -13,10 +13,10 @@ class VerifyMsgs {
                     if(del === "all" || del === "allFrom" || del === "allTo"){
 
                         msg.message = "";
-                    } else if(Soul === userSoul && del === "justFrom"){
+                    } else if(msg.fromUser === userSoul && del === "justFrom"){
 
                         msg.message = "";
-                    } else if(msg.fromUser === userSoul && del === "justTo") {
+                    } else if(Soul === msg.fromUser && msg.fromUser === userSoul && del === "justTo") {
 
                         msg.message = "";
                     }

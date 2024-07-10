@@ -11,7 +11,8 @@ const router = (
     roomsExpectUsers: Map<string, string[]>,
     previousMessages: Map<string, msgsResponse[]>,
     groupsExpectUsers: Map<string, newGroupResponse[]>,
-    groupsAdmin: Map<string, string[]>, previousGroupMessages: Map<string, msgsGroupDB[]>,
+    groupsAdmin: Map<string, string[]>,
+    previousGroupMessages: Map<string, msgsGroupDB[]>,
     roomsProps: Map<string, AllDataUser[]>
     ) => { 
    
@@ -45,13 +46,21 @@ const router = (
         previousGroupMessages
     )
     Controll.sendMsgController.msgSeenUpdate(
-        io,
         socket,
         "msgSeenUpdate",
         previousMessages,
         userSocketMap
         
     );
+    Controll.sendMsgController.msgSeenUpdateGroup(
+        {
+            socket,
+            routeName: "msgSeenUpdateGroup",
+            previousGroupMessages,
+            userSocketMap
+        }
+    );
+
     Controll.sendMsgController.setTypingState(
         io,
         socket,

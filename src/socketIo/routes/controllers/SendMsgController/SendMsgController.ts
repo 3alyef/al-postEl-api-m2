@@ -7,12 +7,25 @@ import { msgsGroupDB } from "../../../interfaces/group.interface";
     NOTE: Todas as mensagens enviadas do tipo user1 => user2 são direcionadas à um channel especifico criado a partir da rendomização de 2 numbers + soulName1 + soulName2
 */
 
-export interface msgStatus {
+interface msgSeenUpdateGroupType {
+    socket: Socket,
+    routeName: string, 
+    previousGroupMessages: Map<string, msgsGroupDB[]>,
+    userSocketMap:Map<string, Socket[]>,
+}
+interface status {
     fromUser: string;
-    toUser: string;
     room: string;
     createdIn: string;
+}
+export interface msgStatus extends status{
+    toUser: string;
     viewStatus: "onServer" | "delivered" | "seen";
+}
+
+export interface msgStatusGroup extends status{
+    toUsers: string[];
+    viewStatus: string;
 }
 
 class SendMsgController {
@@ -46,7 +59,6 @@ class SendMsgController {
     }
 
     msgSeenUpdate(
-        io:Io,
         socket: Socket,
         routeName: string, 
         previousMessages: Map<string, msgsResponse[]>,
@@ -111,6 +123,18 @@ class SendMsgController {
         })
     }
 
+    public msgSeenUpdateGroup(
+        {
+            socket,
+            routeName, 
+            previousGroupMessages,
+            userSocketMap,
+        }: msgSeenUpdateGroupType
+    ) {
+        socket.on(routeName, async (data: msgStatusGroup)=>{
+            console.log(routeName, data);
+        })
+    }
     
 }
 const sendMsgController = new SendMsgController();
