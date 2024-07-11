@@ -7,7 +7,7 @@ class GetPreviousGroupMsg{
             const {group} = req.body;
             if(group){
                 const resp = await this.getPreviousMsgs(group);
-                console.log("mensagens", resp);
+                //console.log("mensagens", resp);
                 res.status(200).send(JSON.stringify(resp)).end();
             } else {
                 res.status(401).send(JSON.stringify(null)).end();

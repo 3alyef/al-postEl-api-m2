@@ -3,7 +3,7 @@ import { messageModel } from "../../db/models/Models";
 import { msgsUpdateStatusRequest } from "../../interfaces/msgsGetPrev.interface";
 
 export async function UpdateMsgStatus(req: Request<{body: msgsUpdateStatusRequest}>, res: Response){
-    try {
+    try { 
         const {fromUser, toUser, viewStatus, createdIn}: msgsUpdateStatusRequest = req.body;
         const newMsg = await updateStatusMsg({fromUser, toUser, viewStatus, createdIn});
         console.log({fromUser, toUser, viewStatus, createdIn})

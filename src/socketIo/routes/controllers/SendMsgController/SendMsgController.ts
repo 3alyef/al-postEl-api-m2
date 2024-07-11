@@ -2,6 +2,7 @@ import { Server as Io, Socket } from "socket.io";
 import { msgsResponse, sendMsg } from "../../../interfaces/msgs.interface";
 import { SendGroupMsg, SendMsg } from "../../../services/Services";
 import { msgsGroupDB } from "../../../interfaces/group.interface";
+import { PropsReqUp } from "../../../../m3_server/services/UpdateGroupMsgStatus/UpdateGroupMsgStatus.service";
 
 /* 
     NOTE: Todas as mensagens enviadas do tipo user1 => user2 são direcionadas à um channel especifico criado a partir da rendomização de 2 numbers + soulName1 + soulName2
@@ -50,11 +51,12 @@ class SendMsgController {
         io:Io,
         socket: Socket,
         routeName: string, 
-        previousGroupMessages: Map<string, msgsGroupDB[]>
+        previousGroupMessages: Map<string, msgsGroupDB[]>,
+        userSocketMap:Map<string, Socket[]>
     ){
         socket.on(routeName, async (data: msgsGroupDB)=>{ 
             console.log("new group MSG", data)
-            await new SendGroupMsg().initialize(io, socket, previousGroupMessages, data);
+            await new SendGroupMsg().initialize(io, socket, previousGroupMessages, data, userSocketMap);
         })
     }
 
@@ -66,7 +68,7 @@ class SendMsgController {
     ){
         socket.on(routeName, async ({fromUser, toUser, room, viewStatus, createdIn }: msgStatus)=>{
             const msgs = previousMessages.get(room);
-            console.log('msgSeenUpdate', {fromUser, toUser, room, viewStatus, createdIn });
+            //console.log('msgSeenUpdate', {fromUser, toUser, room, viewStatus, createdIn });
             
             if(msgs){
                 const updatedMsgs = msgs.map((msg) => {
@@ -131,9 +133,55 @@ class SendMsgController {
             userSocketMap,
         }: msgSeenUpdateGroupType
     ) {
-        socket.on(routeName, async (data: msgStatusGroup)=>{
-            console.log(routeName, data);
+        socket.on(routeName, async ({createdIn, fromUser, room, toUsers, viewStatus}: msgStatusGroup)=>{
+            //console.log("hine STATUS", routeName);
+            const previousMsgs = previousGroupMessages.get(room);
+            
+            if(previousMsgs) {
+                const updateMsgs = previousMsgs.map((msg)=>{
+                    if(msg.createdIn === createdIn){
+                        return {...msg, viewStatus}
+                    }
+                    return msg;
+                })
+                previousGroupMessages.set(room, updateMsgs);
+
+                await this.msgGroupUpdateDB({createdIn, fromUser, toUsers, viewStatus});
+
+                const userFromSockets = userSocketMap.get(fromUser)
+                if(userFromSockets){
+                    userFromSockets.forEach((socketUs: Socket)=>{
+                        socketUs.emit('msgGroupStatus', { toGroup: room, createdIn, viewStatus});
+                    })
+                }
+                // atualizará para todos os usuarios
+                toUsers.forEach((user)=>{
+                    let userSockets = userSocketMap.get(user);
+                    if(userSockets){
+                        userSockets.forEach((socketUs: Socket)=>{
+                            socketUs.emit('msgGroupStatus', { toGroup: room, createdIn, viewStatus});
+                        })
+                    }
+                })
+            }
+            
         })
+    }
+
+    private async msgGroupUpdateDB(msgData: PropsReqUp) {
+        try {
+            let body = JSON.stringify(msgData)
+            let response = await fetch(`${process.env.URL_M3}/statusGroupMsgUpdate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: body
+            })
+            console.log('atualizacao msg', response)
+        } catch(error) {
+            console.error(error)
+        }
     }
     
 }

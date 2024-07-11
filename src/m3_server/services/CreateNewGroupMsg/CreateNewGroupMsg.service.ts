@@ -6,12 +6,6 @@ class CreateNewGroupMsg {
     public async initialize(req: Request<{body: msgsGroupRequest}>, res: Response){
         try {
             const {fromUser, deletedTo, viewStatus, toGroup, message, createdIn, toUsers}: msgsGroupRequest = req.body;
-            //console.log("here =>>",fromUser, toGroup, message, createdIn);
-            console.log('viewStatus', viewStatus);
-
-            //const adjustedDeletedTo = deletedTo === "none" ? "none" : new Map(deletedTo);
-            //const adjustedViewStatus = viewStatus === "onServer" ? "onServer" : new Map(viewStatus);
-            //console.log('///', adjustedDeletedTo, adjustedViewStatus)
             const newMsg = await this.registrerNewMsg({fromUser, deletedTo, viewStatus, toGroup, message, createdIn, toUsers});
             res.status(200).json(newMsg).end();
         } catch(error){

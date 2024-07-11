@@ -1,18 +1,29 @@
 import { Server as Io, Socket } from "socket.io";
-import { msgsGroupDB, msgsGroupDBRequest } from '../../interfaces/group.interface';
-
+import { msgsGroupDB, ViewStatus } from '../../interfaces/group.interface';
+import { mapToString, stringToMap } from "../RestoreGroup/RestoreGroup.service";
 
 
 class SendGroupMsg {
-    public async initialize(io: Io, socket: Socket, previousGroupMessages: Map<string, msgsGroupDB[]>, messageData: msgsGroupDB){
-        let viewStatusNv: "onServer" | Map<string, "delivered" | "seen"> = new Map();
+    public async initialize(io: Io, socket: Socket, previousGroupMessages: Map<string, msgsGroupDB[]>, messageData: msgsGroupDB, userSocketMap:Map<string, Socket[]>){
+        let viewStatus = stringToMap<string, ViewStatus>(messageData.viewStatus);
 
-        socket.emit("msgGroupStatus", {createdIn: messageData.createdIn, toGroup: messageData.toGroup, viewStatus: "onServer"})
+        //socket.emit("msgGroupStatus", {createdIn: messageData.createdIn, toGroup: messageData.toGroup, viewStatus: "onServer"})
 
-        messageData.toUsers.forEach((user)=>{
-            viewStatusNv.set(user, "delivered")
+        viewStatus.forEach((vS, soul)=>{
+            viewStatus.set(soul, "onServer")
         })
-        
+
+        // encia para o sender que a menssagem esta no servidor
+        let socketsUser = userSocketMap.get(messageData.fromUser);
+        if(socketsUser){
+            socketsUser.forEach((socketUs)=>{
+                socketUs.emit("msgGroupStatus", {createdIn: messageData.createdIn, toGroup: messageData.toGroup, viewStatus: mapToString(viewStatus)})
+            })
+        }
+
+        viewStatus.forEach((vS, soul)=>{
+            viewStatus.set(soul, "delivered")
+        })
         const content: msgsGroupDB = {  
             fromUser: messageData.fromUser,
             deletedTo: messageData.deletedTo,
@@ -20,7 +31,7 @@ class SendGroupMsg {
             toGroup: messageData.toGroup,
             createdIn: messageData.createdIn,
             toUsers: messageData.toUsers,
-            viewStatus: JSON.stringify(viewStatusNv)
+            viewStatus: mapToString(viewStatus)
         }
         //console.log('viewStatusNv', content.viewStatus)
         let roomObj = previousGroupMessages.get(messageData.toGroup);
@@ -33,7 +44,11 @@ class SendGroupMsg {
         socket.to(messageData.toGroup).emit("newGroupMsg", {messageData: content});  
         await this.sendMessagesToM3(content)
         // envia de volta com: delivered
-        socket.emit("msgGroupStatus", {createdIn: messageData.createdIn, toGroup: messageData.toGroup, viewStatus: messageData.viewStatus})
+        if(socketsUser){
+            socketsUser.forEach((socketUs)=>{
+                socketUs.emit("msgGroupStatus", {createdIn: messageData.createdIn, toGroup: messageData.toGroup, viewStatus: mapToString(viewStatus)})
+            })
+        }
     }
 
     private async sendMessagesToM3(content: msgsGroupDB){

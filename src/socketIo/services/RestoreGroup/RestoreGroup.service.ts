@@ -43,6 +43,7 @@ class RestoreGroup {
                         
                         if(msgs.length > 0){
                             for(const msg of msgs) {    
+                                console.log("ALLERTTT", msg)
                                 let _msgList = previousGroupMessages.get(groupId);
                     
                                 if(!_msgList){

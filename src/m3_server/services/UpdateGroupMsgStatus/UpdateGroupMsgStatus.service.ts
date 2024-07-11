@@ -1,12 +1,18 @@
 import { Request, Response } from "express";
 import { msgsUpdateStatusRequest } from "../../interfaces/msgsGetPrev.interface";
 import { messageGroupModel } from "../../db/models/Models";
-
+export interface PropsReqUp {
+    fromUser: string, 
+    toUsers: string[], 
+    viewStatus: string, 
+    createdIn: string
+}
 export async function UpdateGroupMsgStatus(req: Request<{body: msgsUpdateStatusRequest}>, res: Response){
     try {
-        const {fromUser, toUser, viewStatus, createdIn}: msgsUpdateStatusRequest = req.body;
-        const newMsg = await updateStatusMsg({fromUser, toUser, viewStatus, createdIn});
-        console.log({fromUser, toUser, viewStatus, createdIn})
+        const {fromUser, toUsers, viewStatus, createdIn}: PropsReqUp = req.body;
+        console.log("update ViewStatus Message Group: ", viewStatus)
+        const newMsg = await updateStatusMsg({fromUser, toUsers, viewStatus, createdIn});
+        console.log({fromUser, toUsers, viewStatus, createdIn})
         res.status(200).json(newMsg).end();
     } catch(error){
         console.log("Error: "+error);
@@ -14,10 +20,14 @@ export async function UpdateGroupMsgStatus(req: Request<{body: msgsUpdateStatusR
     }
 }
 
-async function updateStatusMsg({fromUser, toUser, createdIn, viewStatus}: msgsUpdateStatusRequest) {
+async function updateStatusMsg({fromUser, toUsers, createdIn, viewStatus}: PropsReqUp) {
     try {
         const result = await messageGroupModel.updateOne(
-            { fromUser, toUser, createdIn },
+            { 
+                fromUser, 
+                toUsers, 
+                createdIn 
+            },
             { $set: { viewStatus } }
         )
 

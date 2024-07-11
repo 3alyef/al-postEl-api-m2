@@ -16,7 +16,7 @@ class VerifyMsgs {
                     } else if(msg.fromUser === userSoul && del === "justFrom"){
 
                         msg.message = "";
-                    } else if(Soul === msg.fromUser && msg.fromUser === userSoul && del === "justTo") {
+                    } else if( userSoul === Soul && del === "justTo") {
 
                         msg.message = "";
                     }
