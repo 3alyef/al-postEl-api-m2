@@ -6,6 +6,13 @@ router.get("/",(req: Request, res: Response)=>{
     res.status(200).send("Hello, Welcome to Al postEl M3!");
 })
 
+router.post("/startSystem", (req: Request, res: Response)=>{
+    let data = new Date(req.body.data);
+    let hours = data.getHours().toString().padStart(2, '0');
+    console.log("hours: ", hours)
+    res.send(`Sistema iniciado hora: ${hours}`).end();
+})
+
 
 router.post("/previousMsgs", Controll.previousMsgsController.previousPost);
 router.post("/setNewMsg", Controll.setNewMsgController.newMsgPost);

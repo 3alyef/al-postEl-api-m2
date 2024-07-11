@@ -7,7 +7,6 @@ class SendGroupMsg {
     public async initialize(io: Io, socket: Socket, previousGroupMessages: Map<string, msgsGroupDB[]>, messageData: msgsGroupDB, userSocketMap:Map<string, Socket[]>){
         let viewStatus = stringToMap<string, ViewStatus>(messageData.viewStatus);
 
-        //socket.emit("msgGroupStatus", {createdIn: messageData.createdIn, toGroup: messageData.toGroup, viewStatus: "onServer"})
 
         viewStatus.forEach((vS, soul)=>{
             viewStatus.set(soul, "onServer")
@@ -22,8 +21,13 @@ class SendGroupMsg {
         }
 
         viewStatus.forEach((vS, soul)=>{
-            viewStatus.set(soul, "delivered")
+            if(soul === messageData.fromUser){
+                viewStatus.set(soul, "seen");
+            } else {
+                viewStatus.set(soul, userSocketMap.has(soul) ? "delivered" : "onServer")
+            }
         })
+
         const content: msgsGroupDB = {  
             fromUser: messageData.fromUser,
             deletedTo: messageData.deletedTo,
@@ -57,14 +61,13 @@ class SendGroupMsg {
             ...content,
         };
         const body = JSON.stringify(contentWithObjectViewStatus);
-        const response = await fetch(`${process.env.URL_M3}/setNewGroupMsg`, {
+        await fetch(`${process.env.URL_M3}/setNewGroupMsg`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: body
         })
-        //console.log(response)
     }
 }
 

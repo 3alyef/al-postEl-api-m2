@@ -15,11 +15,13 @@ class SendMsg {
     public async initialize({createdIn, deletedTo, fromUser, io, message, previousMessages, socket, toRoom, toUser, userSocketMap}:SendMsgType){ 
         //const dateInf = new Date(); 
         //const data = dateInf.toISOString();
-        
+
+        let viewStatus: "onServer" | "delivered" = userSocketMap.has(toUser) ? "delivered" : "onServer";
+
         const content: msgsResponse = {  
             fromUser,
             deletedTo,
-            viewStatus: "onServer", // "delivered"
+            viewStatus, 
             toUser,
             message, 
             createdIn
@@ -32,7 +34,6 @@ class SendMsg {
         }
         roomObj?.push(content);
 
-        
         let socketsUser = userSocketMap.get(fromUser);
         //socket.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "onServer", toUser})
         if(socketsUser) {
@@ -43,11 +44,11 @@ class SendMsg {
         await this.sendMessagesToM3(content);
         socket.to(toRoom).emit("newMsg", {messageData: content, room:toRoom});  
         
-        socket.to(toRoom).emit("msgStatus", {room: toRoom, createdIn, viewStatus: "delivered", toUser});
+        socket.to(toRoom).emit("msgStatus", {room: toRoom, createdIn, viewStatus, toUser});
         //socket.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "delivered", toUser})
         if(socketsUser) {
             socketsUser.forEach((socketUs)=>{
-                socketUs.emit("msgStatus", {room: toRoom, createdIn, viewStatus: "delivered", toUser})
+                socketUs.emit("msgStatus", {room: toRoom, createdIn, viewStatus, toUser})
             })
         }
         
