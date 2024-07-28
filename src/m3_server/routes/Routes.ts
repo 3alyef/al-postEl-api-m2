@@ -9,7 +9,7 @@ router.get("/",(req: Request, res: Response)=>{
 router.post("/startSystem", (req: Request, res: Response)=>{
     let data = new Date(req.body.data);
     let hours = data.getHours().toString().padStart(2, '0');
-    console.log("hours: ", hours)
+    //console.log("hours: ", hours)
     res.json({msg: `Sistema iniciado hora: ${hours}`}).end();
 })
 
