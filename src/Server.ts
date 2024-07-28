@@ -49,17 +49,10 @@ class Server extends SocketIo {
 
         this.app.use(cors({
             origin: [this.ALLOW, this.ALLOW_ALPOSTEL],
-            methods: ["GET", "PUT", "POST", "DELETE"]
+            methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS"],
+            allowedHeaders: ["Content-Type", "Authorization"],
+            credentials: true
         }));
-        /*this.app.use((req: Request, res: Response, next)=>{
-
-            /*res.header("Access-Control-Allow-Origin", [this.ALLOW, this.ALLOW_ALPOSTEL] );
-            res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-            this.app.use(cors());
-
-            
-            next();
-        })*/
     }
 
     private routes(): void {
