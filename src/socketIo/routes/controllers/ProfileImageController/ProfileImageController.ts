@@ -43,7 +43,7 @@ class ProfileImageController{
                     }
                 });
 
-                console.log('soulNamesF', soulNamesF, 'me', decoded.userSoul)
+                //console.log('soulNamesF', soulNamesF, 'me', decoded.userSoul)
 
                 soulNamesF.forEach((el)=>{
                     const socketsF = userSocketMap.get(el);
@@ -54,7 +54,7 @@ class ProfileImageController{
                     }
                 })
             }
-            console.log('urlImage', urlImage);
+            //console.log('urlImage', urlImage);
 
         })
     }

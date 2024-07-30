@@ -23,14 +23,14 @@ export class EmailLogin {
                 if(userData){
                     // Irá buscar pela fota de perfil do usuario
                     const profileImage: imageProps | null = await searchProfile(userData.soulName)
-                    
                     if(profileImage){
                         const token: string = new TokenGenerate().TokenGenerator(profileImage)
                         res.status(200).json({ token })
                     } else {
                         const token: string = new TokenGenerate().TokenGenerator({userImage: undefined, lastUpdateIn: undefined})
-                        res.status(200).json({token})
+                        res.status(200).json({ token })
                     }
+                
                 } else {
                     throw {status: 401, message: "email não encontrado..."}
                 }
