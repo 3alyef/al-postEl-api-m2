@@ -22,7 +22,7 @@
 - **dotenv**: Environment variable manager, allowing secure and flexible application configuration.
 - **Socket.IO**: Library for real-time communication, managing the connection between the client and server for instant message sending and receiving.
 - **TypeScript**: Language that adds static typing to JavaScript, providing safer and more efficient development.
-
+- **Jest**: Testing framework. Some functions have unit tests implemented using Jest.
 ## Installation
 
 To install and run the API locally, follow these steps:
