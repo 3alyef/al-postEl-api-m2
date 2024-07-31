@@ -1,7 +1,7 @@
 import request from "supertest";
-import app from "../server";
-import { messageModel } from "../../db/models/Models";
-jest.mock("../../db/models/Models.ts");
+import app from "../../server";
+import { messageModel } from "../../../m3_server/db/models/Models";
+jest.mock("../../../m3_server/db/models/Models.ts");
 
 describe("UpdateMsgStatus", ()=>{
     it("Isso deve mudar o status de visualização da mensagem", async ()=>{
