@@ -4,8 +4,11 @@
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
     "@types/jsonwebtoken": "^9.0.6",
+    "@types/supertest": "^6.0.2",
     "jest": "^29.7.0",
+    "supertest": "^7.0.0",
     "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
     "tsx": "^4.7.1"
   },
   "name": "al-postel-rest-api-m1",
@@ -38,7 +41,7 @@
     "yn": "^3.1.1"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "build": "tsc",
     "start": "node ./dist/index",
     "dev": "tsx watch src/index.ts"

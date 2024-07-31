@@ -122,21 +122,3 @@ class Register {
 }
 
 export { Register };
-
-/**private async createNewImage(image: string, soulName: string): Promise<object> {
-        const dateInf = new Date(); 
-        const lastUpdateIn =  dateInf.toISOString();
-        const newUserImage = new DataUserImageModel (
-            {
-                userImage: image,
-                soulName: soulName,
-                lastUpdateIn   
-            }
-        )
-
-        await newUserImage.save();
-        if(!newUserImage){
-            throw {message: "Ocorreu um erro ao salvar imagem.", status: 501}
-        }
-        return newUserImage; 
-    } */
