@@ -42,6 +42,7 @@
   },
   "scripts": {
     "test": "jest --coverage",
+    "test-live": "jest --coverage --watchAll",
     "build": "tsc",
     "start": "node ./dist/index",
     "dev": "tsx watch src/index.ts"
